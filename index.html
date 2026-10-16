@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>GRIDCO Power Intelligence</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314171C'/%3E%3Cpath d='M18 4 8 18h7l-2 10 11-15h-7z' fill='%23FFC53D'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -303,6 +304,20 @@ body.drawer-open .content{padding-right:412px}
 @media (max-width:1760px){body.drawer-open .c21,body.drawer-open .c12,body.drawer-open .chatw,body.drawer-open .docv{grid-template-columns:minmax(0,1fr)}body.drawer-open .conv{height:auto;min-height:0}body.drawer-open .msgs{max-height:560px}body.drawer-open .guide{grid-template-columns:minmax(0,1fr)}body.drawer-open .try{justify-content:flex-start}}
 @media (max-width:560px){.top-r{flex-wrap:wrap;margin-left:0;width:100%;justify-content:space-between}.env{display:none}.user select{max-width:170px}.seg{flex-wrap:wrap}}
 @media (max-width:900px){.shell{grid-template-columns:minmax(0,1fr)}.side{padding:6px}.side button{align-items:center}.drawer{top:0}.guide{grid-template-columns:minmax(0,1fr)}.try{justify-content:flex-start}.side .nd{display:none}}
+
+.phead .sub,.ph .note{display:none}
+.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.flow button{all:unset;box-sizing:border-box;cursor:pointer;padding:12px 16px;border-left:1px solid var(--line2);position:relative;display:grid;gap:1px}
+.flow button:first-child{border-left:0}
+.flow button:hover{background:var(--sub)}
+.flow button[aria-pressed="true"]{background:var(--accent-soft);box-shadow:inset 0 -2px 0 var(--accent)}
+.flow button:not(:last-child)::after{content:"";position:absolute;right:-6px;top:50%;width:10px;height:10px;background:inherit;border-top:1px solid var(--line2);border-right:1px solid var(--line2);transform:translateY(-50%) rotate(45deg);z-index:1}
+.flow .fl{font-size:12px;color:var(--muted)}
+.flow b{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.ctlbar{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;padding:12px 18px}
+.ctlbar .ctl input[type=range]{width:220px}
+.ctlbar .ctl{white-space:normal;flex-wrap:wrap}
+@media (max-width:900px){.flow{grid-template-columns:repeat(2,minmax(0,1fr))}.flow button::after{display:none}.ctlbar .ctl input[type=range]{width:140px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
@@ -310,16 +325,14 @@ body.drawer-open .content{padding-right:412px}
 <body>
 <header class="top">
   <div class="logo"><i><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></i><b>GRIDCO</b><span>Power Purchase Intelligence</span></div>
-  <form class="gsearch" id="topAsk" role="search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="topAskIn" type="text" placeholder="Ask about a bill, tariff, tomorrow's position…" aria-label="Ask the assistant" autocomplete="off"><kbd>/</kbd></form>
   <div class="top-r">
-    <button class="gbtn" type="button" data-action="guide" aria-label="Open demo guide">Demo guide <b id="guideProg"></b></button>
-    <span class="env" title="All figures are illustrative">DEMO DATA</span>
-    <span class="clock" id="clock"></span>
     <label class="user" for="roleSel"><span class="av" id="avatar">SP</span>
       <select id="roleSel" aria-label="Signed in as">
         <option value="maker">S. Panda · Billing Officer</option>
         <option value="checker">R. Mishra · DGM Finance</option>
         <option value="director">A. Das · Director (Commercial)</option>
+        <option disabled>──────────</option>
+        <option value="__reset">Reset demo data</option>
       </select></label>
   </div>
 </header>
@@ -424,6 +437,10 @@ function seedInvoices(){ return [
    qty:{billedMU:298.0, schedMU:298.0, meterMU:298.4, paf:87.1, napaf:85}, qtyCheck:'sched',
    lines:[L('Capacity charge',38.40,38.40,'Full recovery',['TO-BTPC@Para 14']),L('Energy charge (298.0 MU × ₹2.78)',82.84,82.84,'Scheduled energy × ECR',['TO-BTPC@Para 14']),L('Supplementary (coal grade correction)',0.71,0.71,'Accepted on documentary evidence',[])],
    reason:'Approved 21 Sep 2026. Payment held for fund availability.'},
+  {id:'INV-CSA-2607', sup:'CSA', period:'Jul 2026', periodDate:'2026-07-15', presented:'2026-07-16', status:'approved', source:'RPC / email', supplierRef:'CSA/ER/BILL/07-26', approvedAmt:45.00, decision:'system',
+   qty:{billedMU:1580.0, schedMU:1580.0, meterMU:1580.0}, qtyCheck:'sched',
+   lines:[L('Balance after part payment of ₹336.10 cr on 20 Aug',45.00,45.00,'Balance held for funds since the due date',['REG-LPS@Due date'])],
+   reason:'Balance of the July bill, overdue since 30 Aug 2026.'},
   {id:'INV-BTPC-2608', sup:'BTPC', period:'Aug 2026', periodDate:'2026-08-15', presented:'2026-09-04', status:'paid', paidOn:'2026-09-08', approvedAmt:255.80, decision:'system', source:'Supplier portal', supplierRef:'BTPC/COM/2026-27/0544',
    qty:{billedMU:690.1, schedMU:690.1, meterMU:690.4, paf:86.2, napaf:85}, qtyCheck:'sched', lines:[L('Capacity charge',99.00,99.00,'',[]),L('Energy charge',156.80,156.80,'',[])], reason:'Paid within 5 days.'},
   {id:'INV-CSA-2608', sup:'CSA', period:'Aug 2026', periodDate:'2026-08-15', presented:'2026-09-02', status:'paid', paidOn:'2026-09-06', approvedAmt:378.20, decision:'system', source:'RPC / email', supplierRef:'CSA/ER/BILL/08-26',
@@ -435,9 +452,9 @@ function seedInvoices(){ return [
 /* EPM inputs for 16 Oct 2026 (hourly MW) */
 const H24 = [...Array(24).keys()];
 const DEMAND = [4720,4610,4560,4540,4600,4820,5250,5520,5480,5420,5390,5350,5330,5310,5300,5360,5520,5880,6120,6180,6090,5840,5420,5010];
-const HYDRO  = [300,300,300,300,300,350,550,650,550,400,300,250,250,250,250,300,450,650,750,750,700,600,450,350];
-const SOLARF = [0,0,0,0,0,0,.05,.2,.45,.65,.8,.9,.92,.9,.8,.62,.4,.15,.02,0,0,0,0,0];
-const WINDF  = [.7,.7,.7,.7,.68,.62,.55,.48,.45,.45,.45,.45,.45,.45,.47,.5,.55,.58,.6,.6,.64,.68,.7,.7];
+const HYDRO  = [650,620,600,600,650,750,950,1100,1000,800,600,500,500,500,500,600,850,1150,1350,1350,1300,1150,900,700];
+const SOLARF = [0,0,0,0,0,0,.04,.17,.38,.56,.70,.78,.80,.78,.70,.54,.34,.12,.01,0,0,0,0,0];
+const WINDF  = [.36,.36,.35,.35,.34,.32,.30,.28,.26,.25,.25,.25,.25,.26,.27,.28,.30,.32,.34,.35,.36,.36,.36,.36];
 const DAMP   = [3.1,2.9,2.8,2.8,2.9,3.4,4.6,5.8,5.2,4.4,3.6,3.0,2.8,2.7,2.8,3.3,4.8,7.6,9.4,10.0,9.2,7.4,5.1,3.8];
 const ATC = 1200, EXPORT_LIM = 500, VOLL = 20;
 const OUTLOOK = { months:['Nov 26','Dec 26','Jan 27','Feb 27','Mar 27','Apr 27','May 27','Jun 27','Jul 27','Aug 27','Sep 27','Oct 27'],
@@ -454,7 +471,7 @@ const COST = { months:['Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26','Ap
 /* =========================================================
    2. State (kept in this browser only)
    ========================================================= */
-const STORE_KEY = 'gridco-proto-v4';
+const STORE_KEY = 'gridco-proto-v5';
 const T0 = Date.now();
 function seedState(){ return {
   role:'maker', invoices:seedInvoices(), selInv:'INV-KCP-2609', billFilter:'open', invTab:'recon',
@@ -480,6 +497,19 @@ function seedState(){ return {
   scen:{demand:0, price:0, hydro:100, outage:false, sell:true}, horizon:'day', saved:[], proposals:[], epmHour:19, costSel:11,
   regAck:false, libSel:'PPA-SSP', libDate:'2026-09-15', libQ:'', libType:'All',
   linSel:'e-inv', linTrace:'none',
+  fund:{cash:400, borrow:false}, payTab:'alloc', dispStage:'open', dispSel:'D-2026-014',
+  disputes:[
+    {id:'D-2026-014', sup:'BTPC', bill:'INV-BTPC-2606', amt:2.10, reason:'Capacity charge billed at full fixed cost although SLDC-certified availability for June was 83.2%, below the 85% norm.', cite:'PPA-BTPC@7.3', raised:'2026-07-12', due:'2026-08-20', stage:'reconciliation',
+     hist:[['2026-07-12','raised','Raised by S. Panda; undisputed ₹251.30 cr paid with 1.5% rebate'],['2026-07-13','notice','Dispute notice sent to Brahmani Thermal'],['2026-08-05','notice','Supplier contests: claims deemed availability for two days of coal shortage'],['2026-09-18','reconciliation','Joint meeting held; SLDC asked to confirm deemed availability']]},
+    {id:'D-2026-016', sup:'BPL', bill:'INV-BPL-2607', amt:1.38, reason:'Transmission charges billed by the generator. Under the PPA these are paid directly to the transmission licensee.', cite:'PPA-BPL@3.4', raised:'2026-09-24', due:'2026-09-17', stage:'notice',
+     hist:[['2026-09-24','raised','Raised by S. Panda'],['2026-09-25','notice','Dispute notice sent; reply due 25 Oct']]},
+    {id:'D-2026-009', sup:'CSA', bill:'INV-CSA-2604', amt:1.35, reason:'Energy billed on the provisional regional account; the final account for week 15 is 6.8 MU lower.', cite:'ALLOC-CSA@3', raised:'2026-05-20', due:'2026-06-29', stage:'escalated',
+     hist:[['2026-05-20','raised','Raised by S. Panda'],['2026-05-22','notice','Dispute notice sent'],['2026-06-18','notice','Supplier contests: final account under revision'],['2026-07-30','reconciliation','Joint reconciliation: no agreement'],['2026-09-02','escalated','Petition filed before CERC; hearing listed 12 Nov']]},
+    {id:'D-2026-011', sup:'ECW', bill:'INV-ECW-2605', amt:0.18, reason:'Energy billed at the generator terminal; the joint meter reading was 0.6 MU lower.', cite:'PPA-ECW@6.2', raised:'2026-06-14', due:'2026-07-24', stage:'settled', outcome:'accepted', recovered:0.18,
+     hist:[['2026-06-14','raised','Raised by S. Panda'],['2026-06-15','notice','Dispute notice sent'],['2026-08-20','settled','Supplier accepted; credit note for ₹18.0 lakh adjusted in the August bill']]},
+    {id:'D-2026-012', sup:'MBH', bill:'INV-MBH-2606', amt:0.42, reason:'Rate escalation applied from June.', cite:'PPA-MBH@2.1', raised:'2026-07-15', due:'2026-08-24', stage:'settled', outcome:'rejected', recovered:0, lps:0.01,
+     hist:[['2026-07-15','raised','Raised by S. Panda'],['2026-07-16','notice','Dispute notice sent'],['2026-08-28','settled','Escalation found valid under the FY 2026-27 schedule; paid with ₹1.0 lakh surcharge']]},
+  ],
   chat:null, agent:'auto', taskFilter:'mine',
   audit:[
     ['2026-10-15T10:31','System','Market prices for 16 Oct loaded (96 blocks)','DATA'],
@@ -565,9 +595,9 @@ function applicableVersion(doc, date){ return doc.versions.find(v=>v.from<=date 
 function epmRun(sc){
   const dem = DEMAND.map(d=>Math.round(d*(1+sc.demand/100)));
   const sup = {
-    thermal: H24.map(()=>2400 + (sc.outage?594:1188) + 440 + 150),
+    thermal: H24.map(()=>2000 + (sc.outage?594:1188) + 440 + 150),
     hydro: HYDRO.map(v=>Math.round(v*sc.hydro/100)),
-    solar: SOLARF.map(f=>Math.round(1200*f)),
+    solar: SOLARF.map(f=>Math.round(1500*f)),
     wind: WINDF.map(f=>Math.round(350*f)),
   };
   const avail = H24.map(h=>sup.thermal[h]+sup.hydro[h]+sup.solar[h]+sup.wind[h]);
@@ -748,9 +778,12 @@ const ROLENAME={maker:'Billing Officer',checker:'DGM Finance',director:'Director
    8. Pages
    ========================================================= */
 const NAV=[['overview','Overview','<path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/>','Today at a glance'],
+  ['value','Value delivered','<path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/>','Savings and issues caught'],null,
   ['data','Data hub','<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>','Where the numbers come from'],null,
   ['portfolio','Portfolio (EPM)','<path d="M3 3v18h18"/><path d="m7 15 4-5 4 3 5-7"/>',"Plan tomorrow's power buying"],
   ['billing','Billing','<path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h8M9 17h5"/>','Check supplier bills before paying'],
+  ['disputes','Disputes','<path d="M12 3v18M5 7h14M5 7l-3 7a4 4 0 0 0 6 0zM19 7l-3 7a4 4 0 0 0 6 0z"/>','Challenged bill amounts'],
+  ['payments','Liabilities & payments','<rect x="2" y="6" width="20" height="14" rx="2"/><path d="M16 13h2M2 10h20"/>','What we owe, what to pay first'],
   ['library','Regulations & contracts','<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/>','Which rule applied on which date'],null,
   ['assistant','Assistant','<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>','Ask questions, see the sources'],
   ['approvals','Approvals','<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>','Sign-offs and audit trail']];
@@ -758,7 +791,7 @@ let route='overview';
 function renderNav(){
   const mine=tasks().filter(t=>t.role===S.role), hot=mine.some(t=>t.pri==='High'), active=route==='bill'?'billing':route;
   const flagged=S.invoices.filter(i=>i.status==='discrepancy').length;
-  $('#nav').innerHTML=NAV.map(n=>!n?'<div class="sep"></div>':`<button type="button" data-action="go" data-nav="${n[0]}" ${active===n[0]?'aria-current="page"':''}>${I(n[2],16,1.8)}<span class="nl"><span>${n[1]}</span><span class="nd">${n[3]}</span></span>${n[0]==='approvals'&&mine.length?`<span class="cnt ${hot?'hot':''}">${mine.length}</span>`:n[0]==='billing'&&flagged?`<span class="cnt">${flagged}</span>`:''}</button>`).join('')+`<div class="side-foot"><div>Figures are illustrative. Actions are saved in this browser only.</div><button data-action="reset">Reset demo</button></div>`;
+  $('#nav').innerHTML=NAV.map(n=>!n?'<div class="sep"></div>':`<button type="button" data-action="go" data-nav="${n[0]}" ${active===n[0]?'aria-current="page"':''}>${I(n[2],16,1.8)}<span class="nl"><span>${n[1]}</span><span class="nd">${n[3]}</span></span>${n[0]==='approvals'&&mine.length?`<span class="cnt ${hot?'hot':''}">${mine.length}</span>`:n[0]==='billing'&&flagged?`<span class="cnt">${flagged}</span>`:n[0]==='disputes'&&openDisp().length?`<span class="cnt">${openDisp().length}</span>`:n[0]==='payments'&&overdueBills().length?`<span class="cnt hot">${overdueBills().length}</span>`:''}</button>`).join('');
 }
 
 /* ---- Overview ---- */
@@ -773,7 +806,7 @@ function vOverview(){
   <div class="phead"><div><h1>Overview</h1><div class="sub">${fmtD(TODAY)} · position for ${fmtD(TOMORROW)} and open payables</div></div></div>
   <div class="stats">
     ${stat("Tomorrow's peak shortfall",`${mw(e.peakGap)} <small>MW</small>`,`${e.defMU.toFixed(2)} MU to buy · peak demand ${mw(e.peakDem)} MW`,'','portfolio')}
-    ${stat('Recommended purchase cost',money(e.best.cost),`${money(e.base.cost-e.best.cost)} less than buying on the exchange only`,'','portfolio')}
+    ${stat('Value delivered this year',money(valueTotal()),'Savings, recoveries and rebates since 1 Apr','pos','value')}
     ${stat('Open payables',money(pend),`${open.length} bills · ${money(disp)} under dispute`,'','billing')}
     ${stat('Money at risk in 7 days',money(riskAmt),`${risk.length} bills with a rebate or due date this week`,riskAmt?'neg':'','billing')}
   </div>
@@ -830,7 +863,7 @@ function vData(){
   const tabs=[['lineage','Lineage'],['sources','Sources'],['validation',`Validation (${S.issues.length})`],['master','Master data'],['log','Import log']];
   let body='';
   if(t==='lineage') body=lineage();
-  if(t==='sources') body=`<div class="tw"><table><thead><tr><th>Source</th><th>Method</th><th>Frequency</th><th>Last sync</th><th>Coverage</th><th>Status</th><th></th></tr></thead><tbody>${S.connectors.map(c=>`<tr><td>${esc(c.name)}</td><td>${c.kind}</td><td>${c.freq}</td><td>${c.last}</td><td>${c.recs}</td><td><span class="st ${c.status==='ok'?'good':c.status==='warn'?'warn':'bad'}">${c.status==='ok'?'Current':c.note||'Warnings'}</span></td><td class="num">${c.status==='err'?`<button class="btn sm pri" data-action="reconnect" data-id="${c.id}">Reconnect</button>`:c.id==='inbox'&&S.invoices.some(i=>i.status==='inbox')?`<button class="btn sm" data-action="ingest">Import 1 bill</button>`:''}</td></tr>`).join('')}</tbody></table></div>`;
+  if(t==='sources') body=`<div class="tw"><table><thead><tr><th>Source</th><th>Frequency</th><th>Last sync</th><th>Coverage</th><th>Status</th><th></th></tr></thead><tbody>${S.connectors.map(c=>`<tr><td>${esc(c.name)}</td><td>${c.freq}</td><td>${c.last}</td><td>${c.recs}</td><td><span class="st ${c.status==='ok'?'good':c.status==='warn'?'warn':'bad'}">${c.status==='ok'?'Current':c.note||'Warnings'}</span></td><td class="num">${c.status==='err'?`<button class="btn sm pri" data-action="reconnect" data-id="${c.id}">Reconnect</button>`:c.id==='inbox'&&S.invoices.some(i=>i.status==='inbox')?`<button class="btn sm" data-action="ingest">Import 1 bill</button>`:''}</td></tr>`).join('')}</tbody></table></div>`;
   if(t==='validation') body=S.issues.length?`<div class="tw"><table><thead><tr><th>ID</th><th>Source</th><th>Issue</th><th>Severity</th><th></th></tr></thead><tbody>${S.issues.map(v=>`<tr><td class="id">${v.id}</td><td>${v.src}</td><td>${esc(v.text)}</td><td><span class="st ${v.sev==='bad'?'bad':v.sev==='warn'?'warn':'info'}">${v.sev==='bad'?'Blocking':v.sev==='warn'?'Warning':'Info'}</span></td><td class="num"><button class="btn sm" data-action="resolve" data-id="${v.id}" ${v.needs&&S.connectors.find(c=>c.id===v.needs).status!=='ok'?'disabled title="Reconnect the source first"':''}>${esc(v.fix)}</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No open validation issues.</div>';
   if(t==='master'){ const sel=S.supSel&&SUP[S.supSel]?S.supSel:null;
     body=`<div class="tw"><table><thead><tr><th>Code</th><th>Supplier</th><th>Type</th><th class="num">MW</th><th>Tariff</th><th>Contracts</th><th class="num">Bills</th></tr></thead><tbody>${Object.entries(SUP).map(([k,s])=>`<tr class="rowlink ${sel===k?'on':''}" data-action="sup" data-id="${k}"><td class="id">${k}</td><td>${s.name}</td><td>${s.type}</td><td class="num">${mw(s.cap)}</td><td>${s.tariff}</td><td>${s.docs.map(d=>`<span class="tag">${d}</span>`).join(' ')}</td><td class="num">${S.invoices.filter(i=>i.sup===k).length}</td></tr>`).join('')}</tbody></table></div>${sel?sup360(sel):''}`; }
@@ -871,9 +904,9 @@ function vPortfolio(){
   </div>
   <section class="panel"><div class="ph"><h2>Recommended plan</h2><div class="bar">${approved?`<span class="st good">${approved.id} approved by ${approved.by}</span>`:pending?`<span class="st info">${pending.id} awaiting Director</span>`:'<span class="st">Draft</span>'}
     ${S.role==='director'&&pending?`<button class="btn sm dng" data-action="epm-reject">Return</button><button class="btn sm pri" data-action="epm-approve">Approve ${pending.id}</button>`:!pending?`<button class="btn sm pri" data-action="epm-submit" ${used.length?'':'disabled'}>Submit for approval</button>`:''}</div></div>
-    <div class="tw"><table><thead><tr><th>Option</th><th>Hours used</th><th class="num">Peak MW</th><th class="num">Energy MU</th><th class="num">Avg ₹/kWh</th><th class="num">Cost</th><th>Why</th></tr></thead><tbody>
-    ${used.map(o=>{const hrs=b.rows.filter(r=>r.alloc[o.id]).map(r=>r.h); const why={otc:`Fixed ₹6.20 beats evening exchange (up to ₹${Math.max(...e.dam).toFixed(2)}); take-or-pay block`,bank:'Cheapest; repaid from summer surplus',dam:'Fills hours where it is cheapest',rtm:'Above DAM limit; priced with risk margin',dr:'In-state; used when corridor or price makes imports dearer',peak:'Last resort in-state; corridor limit or price'}[o.id];return `<tr><td><i style="display:inline-block;width:9px;height:9px;background:${OPTC[o.id]};margin-right:7px;border-radius:2px"></i>${o.name}</td><td>${hourRanges(hrs)}</td><td class="num">${mw(o.peak)}</td><td class="num">${o.mu.toFixed(2)}</td><td class="num">${o.avg.toFixed(2)}</td><td class="num">${money(o.cost)}</td><td class="muted small">${why}</td></tr>`;}).join('')||'<tr><td colspan="7" class="empty">No purchase needed.</td></tr>'}
-    </tbody><tfoot><tr><td colspan="3">Total</td><td class="num">${used.reduce((a,o)=>a+o.mu,0).toFixed(2)}</td><td></td><td class="num">${money(b.cost)}</td><td class="muted small">${b.rev?`Less ${money(b.rev)} from selling ${(b.rows.reduce((a,r)=>a+r.sold,0)/1000).toFixed(2)} MU midday surplus`:''}</td></tr></tfoot></table></div></section>
+    <div class="tw"><table><thead><tr><th>Option</th><th>Hours used</th><th class="num">Energy MU</th><th class="num">Avg ₹/kWh</th><th class="num">Cost</th><th>Why</th></tr></thead><tbody>
+    ${used.map(o=>{const hrs=b.rows.filter(r=>r.alloc[o.id]).map(r=>r.h); const why={otc:`Fixed ₹6.20 beats evening exchange (up to ₹${Math.max(...e.dam).toFixed(2)}); take-or-pay block`,bank:'Cheapest; repaid from summer surplus',dam:'Fills hours where it is cheapest',rtm:'Above DAM limit; priced with risk margin',dr:'In-state; used when corridor or price makes imports dearer',peak:'Last resort in-state; corridor limit or price'}[o.id];return `<tr><td><i style="display:inline-block;width:9px;height:9px;background:${OPTC[o.id]};margin-right:7px;border-radius:2px"></i>${o.name}</td><td>${hourRanges(hrs)}</td><td class="num">${o.mu.toFixed(2)}</td><td class="num">${o.avg.toFixed(2)}</td><td class="num">${money(o.cost)}</td><td class="muted small">${why}</td></tr>`;}).join('')||'<tr><td colspan="7" class="empty">No purchase needed.</td></tr>'}
+    </tbody><tfoot><tr><td colspan="2">Total</td><td class="num">${used.reduce((a,o)=>a+o.mu,0).toFixed(2)}</td><td></td><td class="num">${money(b.cost)}</td><td class="muted small">${b.rev?`Less ${money(b.rev)} from selling ${(b.rows.reduce((a,r)=>a+r.sold,0)/1000).toFixed(2)} MU midday surplus`:''}</td></tr></tfoot></table></div></section>
   <div class="cols c2">
     ${panel('Saved scenarios','',S.saved.length?`<div class="tw"><table><thead><tr><th>Scenario</th><th class="num">Peak short</th><th class="num">Buy MU</th><th class="num">Cost</th><th class="num">Unserved</th><th></th></tr></thead><tbody>${S.saved.map((s,i)=>`<tr><td>${esc(s.name)}</td><td class="num">${mw(s.gap)}</td><td class="num">${s.mu.toFixed(2)}</td><td class="num">${money(s.cost)}</td><td class="num">${s.unmet.toFixed(2)}</td><td class="num"><button class="btn sm" data-action="del-scen" data-id="${i}">Remove</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Change the controls above and save to compare. Try +6% demand and +30% price.</div>',true)}
     ${panel(`Deviation settlement, ${fmtD('2026-10-14')}`,'',`<dl class="kv"><dt>Over-drawal</dt><dd>3.84 MU</dd><dt>Under-drawal</dt><dd>1.12 MU</dd><dt>Net DSM charge</dt><dd class="neg">${money(1.36)}</dd><dt>Blocks outside ±10%</dt><dd>7 of 96</dd><dt>Worst block</dt><dd>19:15–19:30, +212 MW</dd></dl><div class="callout warn" style="margin-top:10px">Evening demand ran 3.1% above schedule. Keep RTM headroom for 18:45–20:00.</div>`)}
@@ -890,8 +923,8 @@ function vBilling(){
   <div class="stats">${stat('Open bills',`${open.length}`,`${money(open.reduce((a,i)=>a+payable(i),0))} payable`)}${stat('Under dispute',money(disc.reduce((a,i)=>a+diffOf(i),0)),`${disc.length} bills, supplier figure above ours`,disc.length?'neg':'')}${stat('Matched without change',`${proc.filter(isMatch).length} of ${proc.length}`,'No manual recalculation')}${stat('Rebate lost to delay',money(lost),'Paid bills, last 30 days',lost?'neg':'')}</div>
   ${panel('Payment calendar','<span class="note">Pay before a window closes to keep the rebate; after 45 days LPS accrues</span>',ins(calInsight(open))+payCalendar(open.slice().sort((a,b)=>stakeOf(a).days-stakeOf(b).days)))}
   <section class="panel"><div class="ph"><h2>Bills</h2><div class="seg">${[['open','Open'],['disc','Discrepancy'],['paid','Paid'],['all','All']].map(([k,l])=>`<button data-action="bfilter" data-id="${k}" aria-pressed="${f===k}">${l}</button>`).join('')}</div></div>
-  <div class="tw"><table><thead><tr><th>Bill</th><th>Supplier</th><th>Period</th><th class="num">Billed</th><th class="num">Calculated</th><th class="num">Difference</th><th>Status</th><th>With</th><th>Deadline</th></tr></thead><tbody>
-  ${list.map(i=>{const df=diffOf(i);return `<tr class="rowlink" data-action="go" data-nav="bill:${i.id}"><td class="id">${i.id}</td><td>${SUP[i.sup].short}</td><td>${i.period}</td><td class="num">${money(billedTotal(i))}</td><td class="num">${money(sysTotal(i))}</td><td class="num ${Math.abs(df)>0.004?'neg':'faint'}">${Math.abs(df)>0.004?money(df):'—'}</td><td>${statusPill(i)}</td><td class="muted">${stageOwner(i)}</td><td>${deadlinePill(i)}</td></tr>`;}).join('')||'<tr><td colspan="9" class="empty">No bills.</td></tr>'}
+  <div class="tw"><table><thead><tr><th>Bill</th><th>Supplier</th><th class="num">Billed</th><th class="num">Calculated</th><th class="num">Difference</th><th>Status</th><th>Deadline</th></tr></thead><tbody>
+  ${list.map(i=>{const df=diffOf(i);return `<tr class="rowlink" data-action="go" data-nav="bill:${i.id}"><td class="id">${i.id}</td><td>${SUP[i.sup].short} <span class="faint">${i.period}</span></td><td class="num">${money(billedTotal(i))}</td><td class="num">${money(sysTotal(i))}</td><td class="num ${Math.abs(df)>0.004?'neg':'faint'}">${Math.abs(df)>0.004?money(df):'—'}</td><td>${statusPill(i)}</td><td>${deadlinePill(i)}</td></tr>`;}).join('')||'<tr><td colspan="7" class="empty">No bills.</td></tr>'}
   </tbody></table></div></section>`;
 }
 function vBill(){
@@ -921,7 +954,7 @@ function vBill(){
   return `${crumbs([['Billing','billing'],[i.id]])}
   <section class="panel"><div class="ph"><div><h1 style="font-size:18px"><span class="mono" style="font-size:17px">${i.id}</span></h1><div class="muted">${s.name} · ${i.period} · ref ${esc(i.supplierRef)} · ${i.source}</div></div><div class="bar">${statusPill(i)}<button class="btn sm" data-action="ask" data-q="Why has ${i.id} been flagged?">Ask assistant</button></div></div>
    <div class="facts"><div><span>Billed</span><b>${money(bt)}</b></div><div><span>Calculated</span><b>${money(st)}</b></div><div><span>Difference</span><b class="${fl?'neg':''}">${fl?money(df):'None'}</b></div><div><span>Presented</span><b>${fmtD(i.presented)}</b></div><div><span>${d&&d.kind==='rebate'?`${d.pct}% rebate until`:'Due date'}</span><b class="${d&&d.left<=3?'neg':''}">${d?(d.kind==='rebate'?fmtD(d.until):fmtD(d.due)):'—'}</b></div><div><span>With</span><b>${stageOwner(i)}</b></div></div>
-   ${act}</section>
+   ${act}${dispLink(i)}</section>
   <section class="panel"><div class="tabs" role="tablist">${tabs.map(([k,l])=>`<button role="tab" aria-selected="${S.billTab===k}" data-action="btab" data-id="${k}">${l}</button>`).join('')}</div>${body}</section>`;
 }
 function docViewer(i){
@@ -962,7 +995,7 @@ function vLibrary(){
 
 /* ---- Assistant ---- */
 const AG={portfolio:'Portfolio agent',billing:'Billing agent',regulatory:'Regulatory agent',analytics:'Analytics agent'};
-const SUGG=['Why has INV-KCP-2609 been flagged?','Which tariff applies to Sambal Solar for September 2026?','Will there be a shortage tomorrow?',"What is the cheapest way to cover tomorrow's shortage?",'Which bills should we pay first?','What is our LPS exposure?','Why did power purchase cost rise in April and May?','Does the new fuel adjustment notice affect any bills?'];
+const SUGG=['What value has the system delivered this year?','How much is tied up in disputes?','We have ₹300 cr this week. What should we pay?','Why has INV-KCP-2609 been flagged?','Which tariff applies to Sambal Solar for September 2026?','Will there be a shortage tomorrow?',"What is the cheapest way to cover tomorrow's shortage?",'Which bills should we pay first?','What is our LPS exposure?','Why did power purchase cost rise in April and May?','Does the new fuel adjustment notice affect any bills?'];
 const DATAEV={'SLDC schedule':'Kalinga Captive, Sep 2026: 25.19 MU scheduled (SLDC final schedule R12).','SLDC availability certificate':'Brahmani Thermal, Sep 2026: PAF 82.4% certified by SLDC on 3 Oct.','SLDC energy account':'Ex-bus energy per SLDC monthly account, Sep 2026.','Joint meter reading':'Coast Wind, Sep 2026: 60.9 MU at interconnection point (JMR signed 2 Oct).','JMR September':'Sambal Solar, Sep 2026: 44.6 MU (JMR).','RPC regional energy account':'REA weeks 36–39: Central Station A 1,612.0 MU.','SLDC declared capability':'Declared capability for 16 Oct, revision 3, received 10:05.','DAM indicative prices 10:30':'Day-ahead indicative curve, 16 Oct, peak ₹10.00/kWh at 19:00.','Demand forecast model v3.2':'Ensemble on weather, calendar and 3 years of load; 30-day MAPE 2.6%.','Cost ledger Oct 2025–Sep 2026':'Monthly power purchase cost by source from the payments ledger.'};
 function findInvoice(q){ const m=q.match(/inv-[a-z]+-\d{4}/i); if(m) return S.invoices.find(i=>i.id.toLowerCase()===m[0].toLowerCase()); const k={kalinga:'KCP',captive:'KCP',brahmani:'BTPC',solar:'SSP',sambal:'SSP',wind:'ECW',baitarani:'BPL',hydro:'MBH',mahanadi:'MBH',central:'CSA'}; for(const [w,v] of Object.entries(k)) if(q.includes(w)) return S.invoices.filter(i=>i.sup===v&&i.status!=='inbox').sort((a,b)=>b.presented.localeCompare(a.presented))[0]; return null; }
 function answer(raw){
@@ -1021,7 +1054,7 @@ function vAssistant(){
 }
 function ask(q){
   S.chat=S.chat||[]; S.chat.push({role:'user',text:q});
-  const a=answer(q)||{agent:'analytics',steps:[],html:'<p>That is outside the records loaded in this demo. Ask about a bill, a tariff for a month, tomorrow\'s position, payment priority, LPS or cost trends.</p>',cites:[]};
+  const a=answerX(q)||answer(q)||{agent:'analytics',steps:[],html:'<p>That is outside the records loaded in this demo. Ask about a bill, a tariff for a month, tomorrow\'s position, payment priority, LPS or cost trends.</p>',cites:[]};
   S.chat.push({role:'ai',...a}); S.evSel=S.chat.length-1; save();
 }
 
@@ -1030,7 +1063,7 @@ function vApprovals(){
   const all=tasks(), list=S.taskFilter==='mine'?all.filter(t=>t.role===S.role):all;
   return `<div class="phead"><div><h1>Approvals</h1><div class="sub">Maker–checker queue and time-stamped audit trail</div></div><div class="seg"><button data-action="tfilter" data-id="mine" aria-pressed="${S.taskFilter==='mine'}">Mine (${all.filter(t=>t.role===S.role).length})</button><button data-action="tfilter" data-id="all" aria-pressed="${S.taskFilter==='all'}">Everyone (${all.length})</button></div></div>
   <div class="stats">${['maker','checker','director'].map(r=>stat(ROLENAME[r],all.filter(t=>t.role===r).length,'open items')).join('')}${stat('Urgent',all.filter(t=>t.pri==='High').length,'deadline within 3 days or blocking',all.some(t=>t.pri==='High')?'neg':'')}</div>
-  ${panel('Queue','',`<div class="tw"><table><thead><tr><th>Item</th><th>Detail</th><th>Owner</th><th>At stake</th><th></th></tr></thead><tbody>${list.map(t=>`<tr class="rowlink" data-action="go" data-nav="${t.nav}"><td><span class="st ${t.pri==='High'?'bad':''}">${esc(t.title)}</span></td><td class="muted">${esc(t.sub)}</td><td>${ROLENAME[t.role]}</td><td class="${t.pri==='High'?'neg':''}">${esc(t.stake)}</td><td class="num"><button class="btn sm">Open</button></td></tr>`).join('')||`<tr><td colspan="5" class="empty">Nothing waiting for ${ROLENAME[S.role]}. Switch user at top right to see other queues.</td></tr>`}</tbody></table></div>`,true)}
+  ${panel('Queue','',`<div class="tw"><table><thead><tr><th>Item</th><th>Detail</th><th>Owner</th><th>At stake</th></tr></thead><tbody>${list.map(t=>`<tr class="rowlink" data-action="go" data-nav="${t.nav}"><td><span class="st ${t.pri==='High'?'bad':''}">${esc(t.title)}</span></td><td class="muted">${esc(t.sub)}</td><td>${ROLENAME[t.role]}</td><td class="${t.pri==='High'?'neg':''}">${esc(t.stake)}</td></tr>`).join('')||`<tr><td colspan="4" class="empty">Nothing waiting for ${ROLENAME[S.role]}. Switch user at top right to see other queues.</td></tr>`}</tbody></table></div>`,true)}
   ${panel('Audit trail',`<span class="note">${S.audit.length} events</span>`,`<div class="tw"><table><thead><tr><th>Time</th><th>By</th><th>Event</th><th>Record</th></tr></thead><tbody>${S.audit.map(a=>`<tr><td style="white-space:nowrap">${fmtStamp(a[0])}</td><td>${esc(a[1])}</td><td>${esc(a[2])}</td><td>${a[3]&&a[3].startsWith('INV')?`<button class="ref" data-action="go" data-nav="bill:${a[3]}">${a[3]}</button>`:`<span class="tag">${esc(a[3])}</span>`}</td></tr>`).join('')}</tbody></table></div>`,true)}`;
 }
 
@@ -1052,7 +1085,7 @@ function meritInsight(e,hh){
   const r=e.best.rows[hh]; if(r.gap<=0) return `At ${hrLabel(hh)} contracted power already covers demand.`;
   return `At ${hrLabel(hh)} the grid needs <b>${mw(r.gap)} MW</b> more. Options are lined up from cheapest to dearest and the plan buys from the left until the red line.${r.binding?` Imports are capped at ${mw(ATC)} MW, so dearer in-state options fill the rest.`:''}`;
 }
-const GLOSS={MW:'Megawatt: how much power is flowing at one moment.',MU:'Million units (million kWh): an amount of energy over a period. 1,000 MW for one hour is 1 MU.',LPS:'Late Payment Surcharge: interest charged when a bill is paid after its due date (45 days after it is presented).',PAF:'Plant Availability Factor: the share of the month a power plant was ready to generate.',NAPAF:'Normative availability: the PAF a plant must reach to earn its full fixed charge.',DSM:'Deviation Settlement Mechanism: charges for drawing more or less power than scheduled.',DAM:'Day-Ahead Market: the power exchange where tomorrow\'s electricity is bought hour by hour.',RTM:'Real-Time Market: exchange trading close to delivery; prices are less predictable.',OTC:'Over-the-counter: a direct deal with a seller at a fixed price, here a block for 17:00–23:00.',JMR:'Joint Meter Reading: the meter reading signed by buyer and seller; the figure that is billed.',SLDC:'State Load Despatch Centre: the grid operator that schedules power every 15 minutes.',REA:'Regional Energy Account: monthly statement of energy scheduled from central power stations.',PPA:'Power Purchase Agreement: the contract that sets the price and billing rules with a supplier.',EPM:'Energy Portfolio Management: deciding what power to buy, when, and at what cost.',ABT:'Availability-Based Tariff meters record energy in 15-minute blocks.',ECR:'Energy Charge Rate: the price per unit of energy in a two-part tariff.',rebate:'Discount for paying early: 1.5% if paid within 5 days of the bill, 1% within 30 days.'};
+const GLOSS={CERC:'Central Electricity Regulatory Commission: regulates central power stations and inter-state matters.',OERC:'Odisha Electricity Regulatory Commission: regulates tariffs and disputes inside Odisha.','Fixed charge':'Capacity charge: paid to a power plant every month for keeping capacity available, whether or not power is drawn.',MW:'Megawatt: how much power is flowing at one moment.',MU:'Million units (million kWh): an amount of energy over a period. 1,000 MW for one hour is 1 MU.',LPS:'Late Payment Surcharge: interest charged when a bill is paid after its due date (45 days after it is presented).',PAF:'Plant Availability Factor: the share of the month a power plant was ready to generate.',NAPAF:'Normative availability: the PAF a plant must reach to earn its full fixed charge.',DSM:'Deviation Settlement Mechanism: charges for drawing more or less power than scheduled.',DAM:'Day-Ahead Market: the power exchange where tomorrow\'s electricity is bought hour by hour.',RTM:'Real-Time Market: exchange trading close to delivery; prices are less predictable.',OTC:'Over-the-counter: a direct deal with a seller at a fixed price, here a block for 17:00–23:00.',JMR:'Joint Meter Reading: the meter reading signed by buyer and seller; the figure that is billed.',SLDC:'State Load Despatch Centre: the grid operator that schedules power every 15 minutes.',REA:'Regional Energy Account: monthly statement of energy scheduled from central power stations.',PPA:'Power Purchase Agreement: the contract that sets the price and billing rules with a supplier.',EPM:'Energy Portfolio Management: deciding what power to buy, when, and at what cost.',ABT:'Availability-Based Tariff meters record energy in 15-minute blocks.',ECR:'Energy Charge Rate: the price per unit of energy in a two-part tariff.',rebate:'Discount for paying early: 1.5% if paid within 5 days of the bill, 1% within 30 days.'};
 function glossWrap(root){
   const seen=new Set(), keys=Object.keys(GLOSS), re=new RegExp('\\b('+keys.filter(k=>k!=='rebate').join('|')+'|[Rr]ebate)\\b');
   const skip=n=>n.closest('svg,button,select,option,textarea,input,abbr,.mono,.id,.tag,.ref,.paper,.chip,.st,.flag,th,.legend,.steps,label');
@@ -1064,7 +1097,7 @@ function glossWrap(root){
 const chip=(label,attrs,go)=>`<button class="chip ${go?'go':''}" ${attrs}>${label}</button>`;
 const GUIDES={
   overview:()=>[`<b>The day at a glance.</b> How much electricity GRIDCO is short of tomorrow, what the cheapest way to buy it costs, which supplier bills are waiting, and how much money is at risk if they are paid late.`,
-    [chip('Start the demo guide','data-action="guide"',true),chip('Why did May cost more?','data-action="cost-month" data-id="7"'),chip('Bill most at risk','data-action="go" data-nav="bill:INV-ECW-2609"')]],
+    [chip('See value delivered','data-action="go" data-nav="value"',true),chip('Why did May cost more?','data-action="cost-month" data-id="7"'),chip('Bill most at risk','data-action="go" data-nav="bill:INV-ECW-2609"')]],
   data:()=>[`<b>Where every number comes from.</b> Eight source systems (grid schedules, meters, invoices, contracts, market prices, payments) are checked and linked into one record set. Every other page reads from it, so numbers always agree.`,
     [chip('Trace one bill end to end','data-action="lin-trace" data-id="kcp"'),chip('Fix the failed payments feed','data-action="dtab" data-id="sources"'),chip('Resolve a data issue','data-action="dtab" data-id="validation"')]],
   portfolio:()=>[`<b>Planning tomorrow's electricity purchases.</b> The system forecasts demand hour by hour, compares it with power already contracted, and picks the cheapest mix of extra purchases within contract and grid limits. A Director approves the plan.`,
@@ -1081,49 +1114,258 @@ const GUIDES={
     [chip("Show everyone's tasks",'data-action="tfilter" data-id="all"'),chip('Sign in as DGM Finance','data-action="role" data-id="checker"'),chip('Sign in as Director','data-action="role" data-id="director"')]],
 };
 function guideStrip(r){ const g=GUIDES[r]; if(!g) return ''; const [w,c]=g(); return `<div class="guide"><div class="what">${w}</div><div class="try"><span>Try</span>${c.join('')}</div></div>`; }
-const kcpInv=()=>S.invoices.find(i=>i.id==='INV-KCP-2609');
-const DEMO=[
-  {m:'Overview',t:"See tomorrow's shortfall and money at risk",h:'The four numbers at the top summarise the day.',done:()=>S.did.v_overview,go:'overview'},
-  {m:'Data hub',t:'Trace one bill through the data layer',h:'Pick INV-KCP-2609 above the map.',done:()=>S.did.trace,go:'data:lineage'},
-  {m:'Data hub',t:'Reconnect the failed payments feed',h:'Click Reconnect on Payments ledger (ERP).',done:()=>S.connectors.find(c=>c.id==='erp').status==='ok',go:'data:sources'},
-  {m:'Billing',t:'Import a new bill from the inbox',h:'Watch it get read, matched to its contract and recalculated.',done:()=>S.invoices.find(i=>i.id==='INV-BPL-2609').status!=='inbox',go:'billing'},
-  {m:'Billing',t:'Read why INV-KCP-2609 is ₹30 lakh too high',h:'Then open the Source document tab.',done:()=>S.did.doc,go:'bill:INV-KCP-2609'},
-  {m:'Billing',t:'Verify it as the Billing Officer',h:'Click "Verify ₹9.70 cr, dispute ₹30.0 lakh".',done:()=>['maker_ok','approved','paid'].includes(kcpInv().status),go:'bill:INV-KCP-2609',role:'maker'},
-  {m:'Billing',t:'Approve and pay it as DGM Finance',h:'The guide signs you in as DGM Finance. Paying today keeps the 1.5% rebate.',done:()=>kcpInv().status==='paid',go:'bill:INV-KCP-2609',role:'checker'},
-  {m:'Portfolio',t:'Inspect the 7 pm peak',h:'Click the 19:00 column to see why each option was bought.',done:()=>S.did.hour,go:'portfolio'},
-  {m:'Portfolio',t:'Simulate a heatwave and save it',h:'Use "Simulate a heatwave", then Save scenario.',done:()=>S.saved.length>0,go:'portfolio'},
-  {m:'Portfolio',t:'Submit the plan, approve it as Director',h:'Submit for approval, then press Go again to sign in as Director.',done:()=>S.proposals.some(p=>p.status==='approved'),go:'portfolio',role:()=>S.proposals.some(p=>p.status==='pending')?'director':null},
-  {m:'Regulations',t:'See which solar rate applied when',h:'Compare September with November.',done:()=>S.did.lib,go:'doc:PPA-SSP'},
-  {m:'Assistant',t:'Ask a question and check its sources',h:'Sources appear on the right.',done:()=>S.chat&&S.chat.length>2,go:'assistant'},
-  {m:'Approvals',t:'Review the audit trail of your actions',h:'Every action is recorded with name and time.',done:()=>S.did.v_approvals,go:'approvals'},
-];
-function renderDrawer(){
-  const done=DEMO.filter(d=>d.done()).length, nextK=DEMO.findIndex(d=>!d.done());
-  $('#guideProg').textContent=`${done}/${DEMO.length}`;
-  document.body.classList.toggle('drawer-open',!!S.guideOpen);
-  if(!S.guideOpen){ $('#drawerRoot').innerHTML=''; return; }
-  $('#drawerRoot').innerHTML=`<aside class="drawer" aria-label="Demo guide"><div class="dh"><div class="bar" style="justify-content:space-between"><h2>Demo guide</h2><button class="btn sm" data-action="guide">Close</button></div><div class="small muted" style="margin-top:4px">${DEMO.length} steps, about 5 minutes. Each <b>Go</b> opens the right page and user. Steps tick off as you do them.</div><div class="prog"><i style="width:${done/DEMO.length*100}%"></i></div></div>
-   <div class="dsteps">${DEMO.map((d,k)=>{ const ok=d.done(); return `<div class="dstep ${ok?'done':''} ${k===nextK?'next':''}"><span class="ck">${ok?'✓':''}</span><div><div class="m">${d.m}</div><div class="t">${esc(d.t)}</div>${ok?'':`<div class="h">${esc(d.h)}</div>`}</div>${ok?'':`<button class="btn sm ${k===nextK?'pri':''}" data-action="gstep" data-id="${k}">Go</button>`}</div>`; }).join('')}</div>
-   <div class="dfoot"><details><summary class="small" style="cursor:pointer">Terms used in this system</summary><div class="gloss">${Object.entries(GLOSS).map(([k,v])=>`<div><b>${k}</b> ${esc(v)}</div>`).join('')}</div></details>
-   <div class="bar" style="justify-content:space-between"><label class="ctl"><input type="checkbox" data-action="tips" ${S.tips!==false?'checked':''}> Show page tips</label><button class="btn sm" data-action="reset">Start over</button></div></div></aside>`;
+
+/* =========================================================
+   Value delivered, disputes, liabilities and fund allocation
+   ========================================================= */
+const lpsAccrued = i => { const o=daysBetween(dueDate(i),TODAY); return o>0&&OPEN.includes(i.status)?lpsPerDay(i)*o:0; };
+const overdueBills = () => openBills().filter(i=>daysBetween(dueDate(i),TODAY)>0);
+function statusPill(i){
+  if(i.status==='approved'&&daysBetween(dueDate(i),TODAY)>0) return '<span class="st bad">Overdue</span>';
+  const m={inbox:['','In inbox'],reconciled:['good','Matched'],discrepancy:['bad','Discrepancy'],maker_ok:['info','With checker'],approved:['warn','Approved, unpaid'],paid:['good','Paid'],returned:['','Returned to supplier']}[i.status];
+  return `<span class="st ${m[0]}">${m[1]}</span>`;
+}
+
+/* ---- disputes ---- */
+const DSTG=[['raised','Raised'],['notice','Notice sent'],['reconciliation','Joint reconciliation'],['escalated','With commission'],['settled','Settled']];
+const stageName = k => (DSTG.find(x=>x[0]===k)||[k,k])[1];
+const lastStep = d => d.hist[d.hist.length-1][0];
+function nextDue(d){ const add={raised:3,notice:30,reconciliation:30}[d.stage]; return add?addDaysLocal(lastStep(d),add):null; }
+const dExposure = d => d.amt + d.amt*LPS_PA/100*Math.max(0,daysBetween(d.due,TODAY))/365;
+const openDisp = () => S.disputes.filter(d=>d.stage!=='settled');
+const dispFor = i => S.disputes.find(d=>d.bill===i.id);
+function dispOwner(d){ return {raised:'Billing Officer',notice:'Supplier',reconciliation:'Billing Officer',escalated:'Commission'}[d.stage]||''; }
+function dispLink(i){ const d=dispFor(i); return d?`<div class="pb" style="border-top:1px solid var(--line2)"><span class="muted">Dispute</span> <button class="ref" data-action="go" data-nav="disp:${d.id}">${d.id}</button> ${money(d.amt)} · ${stageName(d.stage)}</div>`:''; }
+function makerAct(id,d){
+  const i=S.invoices.find(x=>x.id===id), note=($('#mNote')||{}).value||'';
+  if(d==='supplier'&&!note.trim()){ toast('Add a note explaining why the supplier figure is accepted'); $('#mNote').focus(); return; }
+  if(d==='return'){ i.status='returned'; i.returnedOn=TODAY; log(`Returned to supplier (${money(diffOf(i))} in question)${note?': '+note:''}`,id); toast(`${id} returned to supplier`); save(); render(true); return; }
+  i.decision=d; i.makerNote=note; i.status='maker_ok'; const df=diffOf(i); let nid='';
+  if(d==='system'&&Math.abs(df)>0.004&&!dispFor(i)){
+    nid='D-2026-0'+(17+S.disputes.filter(x=>x.raised>='2026-10-01').length);
+    const l=i.lines.find(x=>Math.abs(x.billed-x.sys)>0.004);
+    S.disputes.unshift({id:nid,sup:i.sup,bill:i.id,amt:+df.toFixed(2),reason:i.reason,cite:(l.cites.find(c=>!c.startsWith('DATA:'))||''),raised:TODAY,due:dueDate(i),stage:'raised',hist:[[TODAY,'raised',`Raised by ${ROLE[S.role].name}; undisputed ${money(sysTotal(i))} sent for approval`]]});
+    S.dispSel=nid;
+  }
+  log(d==='system'?`Verified ${money(sysTotal(i))}${nid?`; dispute ${nid} opened for ${money(df)}`:''}${note?': '+note:''}`:`Accepted supplier figure ${money(billedTotal(i))}: ${note}`,id);
+  toast(`${id} sent to checker${nid?`; dispute ${nid} opened`:''}`); save(); render(true);
+}
+function dispAct(id,act){
+  const d=S.disputes.find(x=>x.id===id);
+  const step=(stage,note)=>{ d.stage=stage; d.hist.push([TODAY,stage,note]); log(`${d.id}: ${note}`,d.bill); };
+  if(act==='notice') step('notice',`Dispute notice sent to ${SUP[d.sup].short}; reply due ${fmtD(addDaysLocal(TODAY,30))}`);
+  if(act==='accept'){ d.outcome='accepted'; d.recovered=d.amt; step('settled',`Supplier accepted; credit note for ${money(d.amt)}`); }
+  if(act==='contest') step('reconciliation','Supplier contested; joint reconciliation of meter and schedule data arranged');
+  if(act==='partial'){ d.outcome='partial'; d.recovered=+(d.amt/2).toFixed(2); step('settled',`Settled at ${money(d.recovered)} after joint reconciliation`); }
+  if(act==='lost'){ d.outcome='rejected'; d.recovered=0; d.lps=+(dExposure(d)-d.amt).toFixed(2); step('settled',`Supplier figure upheld; ${money(d.amt)} payable with ${money(d.lps)} surcharge`); }
+  if(act==='escalate') step('escalated','Petition filed before the commission');
+  if(act==='won'){ d.outcome='accepted'; d.recovered=d.amt; step('settled',`Commission ruled for GRIDCO; ${money(d.amt)} recovered`); }
+  save(); render(true); toast(`${d.id}: ${stageName(d.stage)}`);
+}
+function dispActions(d){
+  const b=(l,a,cls='')=>`<button class="btn ${cls}" data-action="dact" data-id="${d.id}" data-d="${a}">${l}</button>`, wait=t=>`<span class="muted">${t}</span>`;
+  if(d.stage==='raised') return S.role==='maker'?b('Send dispute notice','notice','pri'):wait('Billing Officer sends the notice.');
+  if(d.stage==='notice') return S.role==='maker'?b('Supplier accepted','accept','pri')+b('Supplier contested','contest'):wait('Waiting for the supplier to reply. Billing Officer records the reply.');
+  if(d.stage==='reconciliation') return S.role==='maker'?b('Supplier corrects bill','accept','pri')+b('Settle at half','partial')+b('Our figure was wrong','lost','dng')+wait('Escalation needs DGM Finance.'):S.role==='checker'?b('Escalate to commission','escalate','pri'):wait('Billing Officer leads the reconciliation.');
+  if(d.stage==='escalated') return S.role==='checker'?b('Order in our favour','won','pri')+b('Order against us','lost','dng'):wait('With the commission. DGM Finance records the order.');
+  return '';
+}
+function vDisputes(){
+  const all=S.disputes, open=openDisp(), f=S.dispStage||'open';
+  const list=all.filter(d=>f==='all'||(f==='open'?d.stage!=='settled':d.stage===f));
+  const sel=list.find(d=>d.id===S.dispSel)||list[0];
+  const rec=all.reduce((a,d)=>a+(d.recovered||0),0), held=open.reduce((a,d)=>a+d.amt,0), expo=open.reduce((a,d)=>a+dExposure(d),0), oldest=open.slice().sort((a,b)=>a.raised.localeCompare(b.raised))[0];
+  return `<div class="phead"><div><h1>Disputes</h1></div><div class="seg"><button data-action="dstage" data-id="open" aria-pressed="${f==='open'}">Open</button><button data-action="dstage" data-id="all" aria-pressed="${f==='all'}">All</button></div></div>
+  <div class="stats">${stat('Amount in dispute',money(held),`${open.length} open`)}${stat('Recovered this year',money(rec),'Credit notes and corrected bills','pos')}${stat('If every open dispute is lost',money(expo),'Disputed amount plus surcharge since due date','neg')}${stat('Oldest open',oldest?`${daysBetween(oldest.raised,TODAY)} <small>days</small>`:'—',oldest?`${oldest.id}, ${stageName(oldest.stage).toLowerCase()}`:'')}</div>
+  <div class="flow" role="group" aria-label="Stages">${DSTG.map(([k,l])=>{const ds=all.filter(d=>d.stage===k);return `<button data-action="dstage" data-id="${k}" aria-pressed="${f===k}"><span class="fl">${l}</span><b>${ds.length}</b><span class="fl">${ds.length?money(ds.reduce((a,d)=>a+d.amt,0)):"—"}</span></button>`;}).join('')}</div>
+  <div class="cols c12">
+   <section class="panel"><div class="tw"><table><thead><tr><th>Dispute</th><th class="num">Amount</th><th>Stage</th></tr></thead><tbody>${list.map(d=>`<tr class="rowlink ${sel&&sel.id===d.id?'on':''}" data-action="dsel" data-id="${d.id}"><td class="id">${d.id}<span class="s2" style="font-family:var(--f)">${SUP[d.sup].short} · ${d.bill}</span></td><td class="num">${money(d.amt)}</td><td><span class="st ${d.stage==='settled'?(d.outcome==='rejected'?'':'good'):d.stage==='escalated'?'bad':'warn'}">${stageName(d.stage)}</span></td></tr>`).join('')||'<tr><td colspan="3" class="empty">No disputes at this stage.</td></tr>'}</tbody></table></div></section>
+   ${sel?dispDetail(sel):''}
+  </div>`;
+}
+function dispDetail(d){
+  const nd=nextDue(d), hasBill=S.invoices.some(i=>i.id===d.bill), lost=d.outcome==='rejected';
+  return `<section class="panel"><div class="ph"><h2><span class="mono">${d.id}</span> · ${SUP[d.sup].name}</h2>${hasBill?`<button class="btn sm" data-action="go" data-nav="bill:${d.bill}">Open bill</button>`:''}</div>
+   <div class="facts"><div><span>Disputed</span><b>${money(d.amt)}</b></div><div><span>Raised</span><b>${fmtD(d.raised)}</b></div><div><span>Next step</span><b class="${nd&&nd<=addDaysLocal(TODAY,3)?'neg':''}">${nd?`${dispOwner(d)}, by ${fmtDs(nd)}`:d.stage==='escalated'?'Hearing 12 Nov':'Closed'}</b></div><div><span>${d.stage==='settled'?'Recovered':'If lost, GRIDCO pays'}</span><b class="${d.stage==='settled'?(lost?'':'pos'):'neg'}">${d.stage==='settled'?money(d.recovered||0):money(dExposure(d))}</b></div></div>
+   <div class="pb" style="display:grid;gap:12px;border-top:1px solid var(--line2)">
+    <div><span class="mono">${d.bill}</span> · ${esc(d.reason)} ${d.cite?citeBtn(d.cite):''}</div>
+    <table><tbody>${d.hist.map(h=>`<tr><td class="muted" style="white-space:nowrap;width:110px">${fmtD(h[0])}</td><td>${esc(h[2])}</td></tr>`).join('')}</tbody></table>
+    ${d.stage==='settled'?`<div class="callout ${lost?'warn':'good'}">${d.outcome==='accepted'?`Settled in GRIDCO's favour: ${money(d.recovered)} recovered.`:d.outcome==='partial'?`Settled at ${money(d.recovered)} of ${money(d.amt)}.`:`Supplier's figure upheld: ${money(d.amt)} paid${d.lps?` with ${money(d.lps)} surcharge`:''}.`}</div>`:`<div class="bar">${dispActions(d)}</div>`}
+   </div></section>`;
+}
+
+/* ---- liabilities & fund allocation ---- */
+const FIXED={BTPC:99.00, CSA:62.50, BPL:38.40};
+const LOAN={rate:9, days:15, max:200};
+function allocate(cash, borrow, mode){
+  const lc=LOAN.rate/100*LOAN.days/365;
+  const items=openBills().map(i=>{ const d=deadlineInfo(i), acc=lpsAccrued(i); let kind, rate=0, why;
+    if(acc>0){ kind='over'; rate=1; why=`Overdue ${daysBetween(dueDate(i),TODAY)} days; clears ${money(acc)} surcharge`; }
+    else if(d.kind==='rebate'){ kind='reb'; rate=d.pct/100; why=`${d.pct}% rebate ${d.left<=0?'ends today':'until '+fmtDs(d.until)}`; }
+    else if(d.left<=14){ kind='due'; rate=LPS_PA/100/12; why=`Due ${fmtDs(d.due)}; avoids a month of surcharge`; }
+    else { kind='defer'; why=`Due ${fmtDs(d.due)}; nothing gained by paying this week`; }
+    return {i, amt:payable(i)+acc, acc, rate, kind, why}; });
+  const order = mode==='fifo' ? items.slice().sort((a,b)=>a.i.presented.localeCompare(b.i.presented))
+    : [...items.filter(x=>x.kind==='over').sort((a,b)=>dueDate(a.i).localeCompare(dueDate(b.i))), ...items.filter(x=>x.kind!=='over').sort((a,b)=>b.rate-a.rate||deadlineInfo(a.i).left-deadlineInfo(b.i).left)];
+  let c=cash, loan=borrow&&mode!=='fifo'?LOAN.max:0; const R={rows:[],paid:0,loan:0,reb:0,lps:0,cost:0};
+  for(const x of order){
+    let pay=0, fromLoan=0;
+    if(mode==='fifo'||x.kind!=='defer'){ pay=Math.min(x.amt,c); c-=pay; if(pay<x.amt-1e-6&&loan>0&&x.kind!=='defer'&&x.rate>lc){ fromLoan=Math.min(x.amt-pay,loan); loan-=fromLoan; pay+=fromLoan; } }
+    const share=x.amt?pay/x.amt:0; let ben=0;
+    if(x.kind==='over'){ ben=lpsPerDay(x.i)*30*share; R.lps+=ben; } else if(x.kind==='reb'){ ben=x.rate*pay; R.reb+=ben; } else if(x.kind==='due'){ ben=x.rate*pay; R.lps+=ben; }
+    R.cost+=fromLoan*lc; R.loan+=fromLoan; R.paid+=pay; R.rows.push({...x,pay,fromLoan,ben});
+  }
+  R.left=c; R.net=R.reb+R.lps-R.cost; return R;
+}
+function releasePlan(){
+  if(S.role!=='checker'){ toast('Releasing payments needs DGM Finance'); return; }
+  const R=allocate(S.fund.cash,S.fund.borrow); let n=0, amt=0;
+  R.rows.forEach(r=>{ if(r.i.status==='approved'&&r.pay>=r.amt-0.01){ r.i.status='paid'; r.i.paidOn=TODAY; n++; amt+=r.pay; log(`Payment of ${money(r.pay)} released from fund plan${r.acc?`, including ${money(r.acc)} surcharge`:''}`,r.i.id); } });
+  save(); render(true); toast(n?`${n} payment${n>1?'s':''} released, ${money(amt)}`:'No approved bill is fully funded in this plan');
+}
+function fixedChart(){
+  const months=['Nov 26','Dec 26','Jan 27','Feb 27','Mar 27','Apr 27'], fx=Object.values(FIXED).reduce((a,b)=>a+b,0), en=months.map((m,k)=>Math.round(656*OUTLOOK.req[k]/2900));
+  const W=780,H=210,pad={l:40,r:10,t:22,b:24}, iw=W-pad.l-pad.r, ih=H-pad.t-pad.b, bw=iw/6, mx=1200, y=v=>pad.t+ih-v/mx*ih;
+  let g=''; for(let v=0;v<=mx;v+=300) g+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="#EDEFF2"/><text x="${pad.l-6}" y="${y(v)+4}" text-anchor="end">${v}</text>`;
+  months.forEach((m,k)=>{ const x0=pad.l+k*bw+bw*.22, w=bw*.56; g+=`<rect x="${x0}" y="${y(fx)}" width="${w}" height="${y(0)-y(fx)}" fill="#394150"/><rect x="${x0}" y="${y(fx+en[k])}" width="${w}" height="${y(fx)-y(fx+en[k])}" fill="#CBD1DA"/><text x="${x0+w/2}" y="${y(fx+en[k])-6}" text-anchor="middle" style="fill:var(--ink);font-weight:600">₹${mw(fx+en[k])}</text><text x="${x0+w/2}" y="${H-6}" text-anchor="middle">${m}</text><rect class="hit" x="${pad.l+k*bw}" y="${pad.t}" width="${bw}" height="${ih}" ${tipAttr([m,`Fixed charges ₹${fx.toFixed(1)} cr (committed)`,`Energy charges ≈ ₹${en[k]} cr (depends on power drawn)`])}/>`; });
+  return {svg:`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Committed payments by month">${g}</svg>`, fx, en};
+}
+function vPayments(){
+  const t=S.payTab||'alloc', open=openBills(), out=open.reduce((a,i)=>a+payable(i),0), ov=overdueBills(), acc=open.reduce((a,i)=>a+lpsAccrued(i),0), held=openDisp().reduce((a,d)=>a+d.amt,0), fx=Object.values(FIXED).reduce((a,b)=>a+b,0);
+  const head=`<div class="phead"><div><h1>Liabilities & payments</h1></div><div class="seg"><button data-action="paytab" data-id="alloc" aria-pressed="${t==='alloc'}">Fund allocation</button><button data-action="paytab" data-id="ledger" aria-pressed="${t==='ledger'}">Liabilities</button></div></div>
+  <div class="stats">${stat('Payable now',money(out),`${open.length} approved or in verification`)}${stat('Overdue',money(ov.reduce((a,i)=>a+payable(i),0)),`${ov.length} bill${ov.length===1?'':'s'}; ${money(acc)} surcharge accrued`,ov.length?'neg':'')}${stat('Held in dispute',money(held),`${openDisp().length} disputes`,'','disputes')}${stat('Fixed charges per month',money(fx),'Owed whether or not power is drawn')}</div>`;
+  if(t==='ledger'){
+    const rows=Object.entries(SUP).map(([k,s])=>{ const b=open.filter(i=>i.sup===k); return {k,s,fixed:FIXED[k]||0,out:b.reduce((a,i)=>a+payable(i),0),ov:b.filter(i=>lpsAccrued(i)>0).reduce((a,i)=>a+payable(i),0),disp:openDisp().filter(d=>d.sup===k).reduce((a,d)=>a+d.amt,0),lps:b.reduce((a,i)=>a+lpsAccrued(i),0)}; });
+    const T=k=>rows.reduce((a,r)=>a+r[k],0), F=fixedChart(), share=F.fx/(F.fx+F.en.reduce((a,b)=>a+b,0)/6);
+    const cell=(v,cls='')=>`<td class="num ${v>0?cls:'faint'}">${v>0?money(v):'—'}</td>`;
+    return head+`
+    ${panel('By supplier','',`<div class="tw"><table><thead><tr><th>Supplier</th><th class="num">Fixed charge / month</th><th class="num">Payable</th><th class="num">Overdue</th><th class="num">In dispute</th><th class="num">Surcharge accrued</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.s.name}<span class="s2">${r.s.tariff} tariff</span></td>${cell(r.fixed)}${cell(r.out)}${cell(r.ov,'neg')}${cell(r.disp)}${cell(r.lps,'neg')}</tr>`).join('')}</tbody><tfoot><tr><td>Total</td>${['fixed','out','ov','disp','lps'].map(k=>`<td class="num">${money(T(k))}</td>`).join('')}</tr></tfoot></table></div>`,true)}
+    ${panel('Committed payments, next six months, ₹ cr','',ins(`<b>${money(F.fx)}</b> a month is owed in fixed charges to Brahmani Thermal, Central Station A and Baitarani IPP even if no power is drawn. That is about <b>${Math.round(share*100)}%</b> of expected monthly payments, so backing a plant down only saves its energy charge.`)+F.svg+leg([['Fixed charges (committed)','#394150'],['Energy charges (expected)','#CBD1DA']]))}`;
+  }
+  const R=allocate(S.fund.cash,S.fund.borrow), B=allocate(S.fund.cash,false,'fifo'), gain=R.net-B.net;
+  const ctl=`<section class="panel"><div class="ctlbar"><label class="ctl" for="fundCash">Cash available this week<input id="fundCash" type="range" min="0" max="800" step="25" value="${S.fund.cash}"><output>${money(S.fund.cash)}</output></label><label class="ctl"><input id="fundBorrow" type="checkbox" ${S.fund.borrow?'checked':''}> Short-term loan at ${LOAN.rate}% a year, up to ${money(LOAN.max)}, repaid in ${LOAN.days} days</label></div></section>`;
+  const sum=`<div class="stats">${stat('Paid this week',money(R.paid),R.loan?`incl. ${money(R.loan)} loan`:`${money(R.left)} cash left over`)}${stat('Rebate kept',money(R.reb),'','pos')}${stat('Surcharge avoided',money(R.lps),'','pos')}${stat('Loan interest',money(R.cost),R.loan?`${LOAN.days} days at ${LOAN.rate}%`:'No loan used')}${stat('Gain over paying oldest first',money(gain),`Oldest-first saves ${money(B.net)}`,gain>0?'pos':'')}</div>`;
+  const rowsHtml=R.rows.filter(r=>r.pay>0||r.kind!=='defer').map((r,k)=>`<tr class="rowlink" data-action="go" data-nav="bill:${r.i.id}"><td class="num faint">${k+1}</td><td class="id">${r.i.id}<span class="s2" style="font-family:var(--f)">${SUP[r.i.sup].short}</span></td><td>${r.why}${r.kind==='over'?' <span class="flag bad">Required first</span>':''}</td><td class="num">${r.pay?money(r.pay):'—'}${r.fromLoan?`<span class="s2">${money(r.fromLoan)} from loan</span>`:''}${r.pay&&r.pay<r.amt-0.01?`<span class="s2">of ${money(r.amt)}</span>`:''}</td><td class="num ${r.ben?'pos':'faint'}">${r.ben?money(r.ben):'—'}</td><td>${r.i.status==='approved'?statusPill(r.i):`<span class="st warn">Needs sign-off</span>`}</td></tr>`).join('');
+  const deferred=R.rows.filter(r=>r.kind==='defer'&&!r.pay);
+  return head+ctl+sum+`
+  <section class="panel"><div class="ph"><h2>Recommended payment order</h2>${S.role==='checker'?`<button class="btn sm pri" data-action="release">Release approved payments</button>`:`<span class="muted small">DGM Finance releases payments</span>`}</div>
+   <div class="pb" style="padding-bottom:0">${ins(`Overdue amounts are cleared first, oldest first, as the LPS Rules require. The rest goes where each rupee saves most: 1.5% rebates, then bills about to fall due, then 1% rebates.${S.fund.borrow?` The loan is used only where the saving beats its ${(LOAN.rate*LOAN.days/365).toFixed(2)}% cost.`:''}`)}</div>
+   <div class="tw"><table><thead><tr><th class="num">#</th><th>Bill</th><th>Reason</th><th class="num">Pay now</th><th class="num">Saves</th><th>Status</th></tr></thead><tbody>${rowsHtml}</tbody></table></div>
+   ${deferred.length?`<div class="pb muted small" style="border-top:1px solid var(--line2)">Not needed this week: ${deferred.map(r=>`${r.i.id} (due ${fmtDs(dueDate(r.i))})`).join(', ')}</div>`:''}</section>`;
+}
+
+/* ---- value delivered ---- */
+const VAL={months:['Apr','May','Jun','Jul','Aug','Sep','Oct'], cats:[
+  {k:'proc',n:'Procurement optimisation',c:'var(--accent)',v:[3.8,5.6,4.9,2.1,1.6,1.9,0.9],how:'Each approved day-ahead plan against buying the same shortfall on the exchange only.'},
+  {k:'bill',n:'Overbilling caught',c:'var(--bad)',v:[1.2,0.4,2.8,1.9,0.6,1.5,0],how:'Supplier amount minus recalculated amount, on bills disputed or sent back for correction.'},
+  {k:'reb',n:'Rebates captured',c:'#2E9E62',v:[4.1,3.6,4.8,5.2,4.4,9.6,0],how:'Early-payment rebate earned on bills paid inside the 5-day or 30-day window.'},
+  {k:'lps',n:'Surcharge avoided',c:'var(--o-dam)',v:[0.8,0.5,0.9,0.4,0.6,0.7,0],how:'One month of LPS on bills paid before their due date that would previously have been paid late.'},
+  {k:'dsm',n:'Deviation charges reduced',c:'var(--o-bank)',v:[0.9,1.3,1.1,0.6,0.5,0.7,0.3],how:'DSM charges against the same month last year, adjusted for demand growth.'}]};
+const REB_LOST=[0.6,0.4,0.9,0.3,0.5,0.29];
+function valueSeries(){
+  const v=VAL.cats.map(c=>({...c,v:c.v.slice()})), oct=6, paid=S.invoices.filter(i=>i.status==='paid'&&i.paidOn>='2026-10-01');
+  v[0].v[oct]+=S.proposals.filter(p=>p.status==='approved').reduce((a,p)=>a+(p.saving||0),0);
+  v[1].v[oct]+=S.disputes.filter(d=>d.raised>='2026-10-01').reduce((a,d)=>a+d.amt,0)+S.invoices.filter(i=>i.status==='returned').reduce((a,i)=>a+Math.max(0,diffOf(i)),0);
+  v[2].v[oct]+=paid.reduce((a,i)=>a+payable(i)*rebateNow(i,i.paidOn).pct/100,0);
+  v[3].v[oct]+=paid.filter(i=>{const l=daysBetween(i.paidOn,dueDate(i));return l>=0&&l<=10;}).reduce((a,i)=>a+lpsPerDay(i)*30,0);
+  return v;
+}
+const valueTotal = () => valueSeries().reduce((a,c)=>a+c.v.reduce((x,y)=>x+y,0),0);
+function rebateLost(){ return REB_LOST.reduce((a,b)=>a+b,0)+S.invoices.filter(i=>i.status==='paid'&&i.paidOn>='2026-10-01').reduce((a,i)=>a+payable(i)*(REBATE_T1.pct-rebateNow(i,i.paidOn).pct)/100,0); }
+function anomalies(){
+  const A=[], bill=(id,aid,type)=>{ const i=S.invoices.find(x=>x.id===id); if(!i||i.status==='inbox') return; const d=dispFor(i), df=diffOf(i);
+    const st=d?(d.stage==='settled'?(d.outcome==='rejected'?['','False alarm']:['good','Confirmed, recovered']):['bad','Confirmed, in dispute']):i.status==='returned'?['bad','Confirmed, bill returned']:Math.abs(df)>0.004?['warn','Under review']:['good','Corrected'];
+    A.push({id:aid,type,rec:id,nav:'bill:'+id,amt:d?d.amt:Math.abs(df)>0.004?df:0,date:i.presented,st}); };
+  bill('INV-BPL-2609','A-119','Charge not allowed by contract'); bill('INV-KCP-2609','A-118','Energy billed above schedule'); bill('INV-ECW-2609','A-117','Billed at wrong meter point'); bill('INV-SSP-2609','A-116','Future tariff applied early'); bill('INV-BTPC-2609','A-115','Capacity charge above availability');
+  const gone=v=>!S.issues.some(x=>x.id===v);
+  A.push({id:'A-113',type:'Missing meter data',rec:'Meter ECW-02, 12 Sep',nav:'data:validation',amt:0,date:'2026-09-13',st:gone('V-301')?['good','Resolved']:['warn','Under review']});
+  A.push({id:'A-112',type:'Duplicate invoice',rec:'ECW/26/08/097-R',nav:null,amt:18.40,date:'2026-09-11',st:['good','Confirmed, blocked']});
+  A.push({id:'A-110',type:'Schedule revised after freeze',rec:'SLDC revision R14, 22 Sep',nav:'data:validation',amt:0,date:'2026-09-23',st:gone('V-303')?['good','Resolved']:['warn','Under review']});
+  A.push({id:'A-106',type:'Exchange price outlier',rec:'DAM 2 Sep, 19:15',nav:null,amt:0,date:'2026-09-02',st:['','False alarm']});
+  A.push({id:'A-098',type:'Rate escalation questioned',rec:'INV-MBH-2606',nav:'disp:D-2026-012',amt:0.42,date:'2026-07-15',st:['','False alarm']});
+  return A;
+}
+function valueChart(ser){
+  const W=780,H=230,pad={l:40,r:10,t:24,b:24}, n=7, iw=W-pad.l-pad.r, ih=H-pad.t-pad.b, bw=iw/n, tot=VAL.months.map((_,k)=>ser.reduce((a,c)=>a+c.v[k],0)), mx=Math.max(20,Math.ceil(Math.max(...tot)/5)*5), y=v=>pad.t+ih-v/mx*ih;
+  let g=''; for(let v=0;v<=mx;v+=5) g+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="#EDEFF2"/><text x="${pad.l-6}" y="${y(v)+4}" text-anchor="end">${v}</text>`;
+  VAL.months.forEach((m,k)=>{ const x0=pad.l+k*bw+bw*.22, w=bw*.56; let acc=0; ser.forEach(c=>{ const v=c.v[k]; if(v<=0) return; g+=`<rect x="${x0}" y="${y(acc+v)}" width="${w}" height="${y(acc)-y(acc+v)}" fill="${c.c}"/>`; acc+=v; });
+    g+=`<text x="${x0+w/2}" y="${y(tot[k])-6}" text-anchor="middle" style="fill:var(--ink);font-weight:600">₹${tot[k].toFixed(1)}</text><text x="${x0+w/2}" y="${H-6}" text-anchor="middle">${m}${k===6?' (to 15th)':''}</text><rect class="hit" x="${pad.l+k*bw}" y="${pad.t}" width="${bw}" height="${ih}" ${tipAttr([`${m} 2026: ₹${tot[k].toFixed(2)} cr`,...ser.map(c=>`${c.n}  ₹${c.v[k].toFixed(2)} cr`)])}/>`; });
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Value delivered by month">${g}</svg>`;
+}
+function vValue(){
+  const ser=valueSeries(), tot=ser.reduce((a,c)=>a+c.v.reduce((x,y)=>x+y,0),0), run=tot/6.5*12, sum=c=>c.v.reduce((a,b)=>a+b,0);
+  const reb=sum(ser.find(c=>c.k==='reb')), lost=rebateLost(), top=ser.slice().sort((a,b)=>sum(b)-sum(a));
+  const an=anomalies(), conf=an.filter(a=>a.st[1].startsWith('Confirmed')).length, fa=an.filter(a=>a.st[1]==='False alarm').length, rev=an.filter(a=>a.st[1]==='Under review').length;
+  return `<div class="phead"><div><h1>Value delivered</h1></div></div>
+  <div class="stats">${stat('FY 2026-27 to date',money(tot),'1 Apr to 15 Oct 2026','pos')}${stat('Full-year estimate',money(run),'If the current monthly rate holds')}${stat('Rebate capture rate',`${Math.round(reb/(reb+lost)*100)}%`,`${money(lost)} lost to slow processing`)}${stat('Anomalies confirmed',`${conf} of ${conf+fa}`,`${rev} still under review`)}</div>
+  ${panel('Value by month, ₹ cr','',ins(`The largest sources are <b>${top[0].n.toLowerCase()}</b> (${money(sum(top[0]))}) and <b>${top[1].n.toLowerCase()}</b> (${money(sum(top[1]))}). ${(()=>{const t=VAL.months.map((_,k)=>ser.reduce((a,c)=>a+c.v[k],0)), pk=t.indexOf(Math.max(...t)); return `The best month so far was <b>${VAL.months[pk]}</b> at ${money(t[pk])}.`;})()}`)+valueChart(ser)+leg(ser.map(c=>[c.n,c.c])))}
+  ${panel('How each figure is measured','',`<div class="tw"><table><thead><tr><th>Source of value</th><th class="num">FY to date</th><th class="num">October</th><th>Measured as</th></tr></thead><tbody>${ser.map(c=>`<tr><td><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${c.c};margin-right:8px"></i>${c.n}</td><td class="num">${money(sum(c))}</td><td class="num">${c.v[6]?money(c.v[6]):'—'}</td><td class="muted">${c.how}</td></tr>`).join('')}</tbody><tfoot><tr><td>Total</td><td class="num">${money(tot)}</td><td class="num">${money(ser.reduce((a,c)=>a+c.v[6],0))}</td><td></td></tr></tfoot></table></div>`,true)}
+  ${panel('Anomalies detected','',`<div class="tw"><table><thead><tr><th>ID</th><th>What was found</th><th>Record</th><th class="num">Amount</th><th>Found</th><th>Outcome</th></tr></thead><tbody>${an.map(a=>`<tr class="${a.nav?'rowlink':''}" ${a.nav?`data-action="go" data-nav="${a.nav}"`:''}><td class="id">${a.id}</td><td>${a.type}</td><td class="mono">${esc(a.rec)}</td><td class="num">${a.amt?money(a.amt):'—'}</td><td>${fmtDs(a.date)}</td><td><span class="st ${a.st[0]}">${a.st[1]}</span></td></tr>`).join('')}</tbody></table></div>`,true)}`;
+}
+
+/* ---- approvals queue incl. disputes and payments ---- */
+function tasks(){
+  const t=[];
+  S.invoices.forEach(i=>{ const s=stakeOf(i), stake=s?s.txt+(s.days<=0?(s.kind==='lps'&&s.days<0?' · overdue':' · today'):` · ${s.days}d`):'', P=s&&s.days<=3?'High':'Normal';
+    if(i.status==='discrepancy') t.push({role:'maker',ref:i.id,title:`Verify ${i.id}`,sub:`${SUP[i.sup].short} · ${money(diffOf(i))} in question`,stake,pri:P,nav:'bill:'+i.id,amt:s?s.amt:0});
+    if(i.status==='reconciled') t.push({role:'maker',ref:i.id,title:`Verify ${i.id}`,sub:`${SUP[i.sup].short} · matched`,stake,pri:P,nav:'bill:'+i.id,amt:s?s.amt:0});
+    if(i.status==='maker_ok') t.push({role:'checker',ref:i.id,title:`Approve ${i.id}`,sub:`${SUP[i.sup].short} · ${money(payable(i))}`,stake,pri:P,nav:'bill:'+i.id,amt:s?s.amt:0});
+    if(i.status==='approved') t.push({role:'checker',ref:i.id,title:`Release payment ${i.id}`,sub:`${SUP[i.sup].short} · ${money(payable(i))}`,stake,pri:P,nav:'payments',amt:s?s.amt:0});
+    if(i.status==='inbox') t.push({role:'maker',ref:i.id,title:'Import new bill',sub:`${SUP[i.sup].short} · in inbox`,stake:'Rebate clock running',pri:'Normal',nav:'billing',amt:0});
+  });
+  openDisp().forEach(d=>{ const nd=nextDue(d), P=nd&&nd<=addDaysLocal(TODAY,3)?'High':'Normal';
+    if(d.stage==='raised') t.push({role:'maker',ref:d.id,title:`Send notice ${d.id}`,sub:`${SUP[d.sup].short} · ${money(d.amt)}`,stake:`By ${fmtDs(nd)}`,pri:P,nav:'disp:'+d.id,amt:d.amt});
+    if(d.stage==='reconciliation') t.push({role:'maker',ref:d.id,title:`Close reconciliation ${d.id}`,sub:`${SUP[d.sup].short} · ${money(d.amt)}`,stake:`By ${fmtDs(nd)}`,pri:P,nav:'disp:'+d.id,amt:d.amt});
+    if(d.stage==='notice'&&nd<TODAY) t.push({role:'maker',ref:d.id,title:`Chase supplier ${d.id}`,sub:`Reply overdue since ${fmtDs(nd)}`,stake:money(d.amt),pri:'High',nav:'disp:'+d.id,amt:d.amt});
+  });
+  S.proposals.filter(p=>p.status==='pending').forEach(p=>t.push({role:'director',ref:p.id,title:`Approve ${p.id}`,sub:`Day-ahead plan · ${money(p.cost)}`,stake:'Bids close 12:00',pri:'High',nav:'portfolio',amt:p.cost}));
+  if(!S.regAck) t.push({role:'maker',ref:'NOTICE-FPA',title:'Review new notice',sub:'Fuel cost adjustment, thermal',stake:'Oct bills onward',pri:'Normal',nav:'doc:NOTICE-FPA',amt:0});
+  S.issues.forEach(v=>t.push({role:'maker',ref:v.id,title:`Data issue ${v.id}`,sub:v.text,stake:v.src,pri:v.sev==='bad'?'High':'Normal',nav:'data:validation',amt:0}));
+  return t.sort((a,b)=>(a.pri==='High'?0:1)-(b.pri==='High'?0:1)||b.amt-a.amt);
+}
+
+/* ---- page tips for the new pages ---- */
+Object.assign(GUIDES,{
+  value:()=>[`<b>What the system has saved GRIDCO this year.</b> Each figure comes from bills, plans and payments in the system, and the table below says exactly how it is measured.`,
+    [chip('Open a confirmed overbilling','data-action="go" data-nav="bill:INV-SSP-2609"'),chip('See open disputes','data-action="go" data-nav="disputes"')]],
+  disputes:()=>[`<b>Bill amounts GRIDCO has challenged.</b> The undisputed part is paid on time so the rebate is kept. The difference goes through a notice to the supplier, joint reconciliation and, if still unresolved, the commission.`,
+    [chip('Dispute due in 3 days','data-action="dsel" data-id="D-2026-014"'),chip('One with the commission','data-action="dsel" data-id="D-2026-009"'),chip('Settled disputes','data-action="dstage" data-id="settled"')]],
+  payments:()=>[`<b>What GRIDCO owes, and what to pay first.</b> Set the cash available. Overdue dues are cleared first as the law requires; every remaining rupee goes where it saves the most surcharge or earns the most rebate.`,
+    [chip('Only ₹150 cr this week','data-action="fundset" data-id="150"'),chip(S.fund&&S.fund.borrow?'Remove the loan':'Allow a short-term loan','data-action="fundloan"'),chip('Fixed charges owed','data-action="paytab" data-id="ledger"')]],
+});
+
+/* ---- assistant: disputes, funds, liabilities, value ---- */
+function answerX(raw){
+  const q=raw.toLowerCase();
+  if(/dispute|tied up|contest/.test(q)){ const o=openDisp(), held=o.reduce((a,d)=>a+d.amt,0), ex=o.reduce((a,d)=>a+dExposure(d),0);
+    return {agent:'billing',steps:['list_disputes','exposure_if_lost'],html:`<p>${o.length} disputes are open, holding <b>${money(held)}</b>. If all were lost GRIDCO would owe <b>${money(ex)}</b> including surcharge from the original due dates.</p><table><thead><tr><th>Dispute</th><th>Supplier</th><th class="num">Amount</th><th>Stage</th></tr></thead><tbody>${o.map(d=>`<tr><td class="id">${d.id}</td><td>${SUP[d.sup].short}</td><td class="num">${money(d.amt)}</td><td>${stageName(d.stage)}</td></tr>`).join('')}</tbody></table>`,cites:[...new Set(o.map(d=>d.cite).filter(Boolean)),'REG-LPS@Rate'],navs:[['Open disputes','disputes']]}; }
+  if(/cash|fund|allocat|borrow|loan|this week/.test(q)){ const m=q.match(/(\d[\d,]*)\s*(cr|crore)/), cash=m?+m[1].replace(/,/g,''):S.fund.cash, R=allocate(cash,S.fund.borrow), B=allocate(cash,false,'fifo');
+    return {agent:'billing',steps:['open_bills','lps_rules_order','rebate_windows','allocate(cash)'],html:`<p>With <b>${money(cash)}</b>: clear the overdue Central Station A balance first, as the LPS Rules require, then the bills whose 1.5% rebate ends soonest.</p><table><thead><tr><th>Bill</th><th class="num">Pay</th><th>Reason</th></tr></thead><tbody>${R.rows.filter(r=>r.pay>0).slice(0,6).map(r=>`<tr><td class="id">${r.i.id}</td><td class="num">${money(r.pay)}</td><td>${r.why}</td></tr>`).join('')}</tbody></table><p>This keeps <b>${money(R.reb)}</b> of rebate and avoids <b>${money(R.lps)}</b> of surcharge, <b>${money(R.net-B.net)}</b> more than paying the oldest bills first.</p>`,cites:['REG-LPS@Due date','PPA-BTPC@9.2'],navs:[['Open fund allocation','payments']]}; }
+  if(/liabilit|fixed charge|owe|outstanding|arrear/.test(q)){ const o=openBills(), fx=Object.values(FIXED).reduce((a,b)=>a+b,0), ov=overdueBills();
+    return {agent:'analytics',steps:['open_bills','fixed_charge_schedule','lps_accrued'],html:`<p>GRIDCO owes <b>${money(o.reduce((a,i)=>a+payable(i),0))}</b> on ${o.length} bills, of which <b>${money(ov.reduce((a,i)=>a+payable(i),0))}</b> is overdue with ${money(o.reduce((a,i)=>a+lpsAccrued(i),0))} surcharge accrued. A further <b>${money(fx)}</b> of fixed charges falls due every month whether or not power is drawn.</p>`,cites:['PPA-BTPC@7.3','REG-LPS@Rate'],navs:[['Open liabilities','paytab-ledger']]}; }
+  if(/value|saved|saving|delivered|benefit/.test(q)&&!/cheap/.test(q)){ const ser=valueSeries(), tot=ser.reduce((a,c)=>a+c.v.reduce((x,y)=>x+y,0),0);
+    return {agent:'analytics',steps:['value_ledger(FY 2026-27)'],html:`<p>Value delivered from 1 Apr to 15 Oct 2026 is <b>${money(tot)}</b>.</p><table><tbody>${ser.map(c=>`<tr><td>${c.n}</td><td class="num">${money(c.v.reduce((a,b)=>a+b,0))}</td></tr>`).join('')}</tbody></table><p class="small">Each figure is measured against what would have happened without the system; the method for each is on the Value delivered page.</p>`,cites:[],navs:[['Open value delivered','value']]}; }
+  return null;
 }
 
 /* =========================================================
    9. Router & actions
    ========================================================= */
-const VIEWS={overview:vOverview,data:vData,portfolio:vPortfolio,billing:vBilling,bill:vBill,library:vLibrary,assistant:vAssistant,approvals:vApprovals};
+const VIEWS={overview:vOverview,value:vValue,disputes:vDisputes,payments:vPayments,data:vData,portfolio:vPortfolio,billing:vBilling,bill:vBill,library:vLibrary,assistant:vAssistant,approvals:vApprovals};
 function render(keep){
-  const y=window.scrollY; S.did=S.did||{}; S.did['v_'+route]=true; if(S.guideOpen===undefined) S.guideOpen=innerWidth>=1280;
+  const y=window.scrollY; S.did=S.did||{};
   $('#roleSel').value=S.role; $('#avatar').textContent=ROLE[S.role].ini; hideTip(); renderNav();
   $('#view').innerHTML=VIEWS[route]();
   const ph=$('#view .phead')||$('#view .crumbs'); if(ph&&S.tips!==false) ph.insertAdjacentHTML('afterend',guideStrip(route));
-  glossWrap($('#view')); renderDrawer();
+  glossWrap($('#view'));
   const m=$('#msgs'); if(m) m.scrollTop=m.scrollHeight;
   if(keep) window.scrollTo(0,y); else window.scrollTo(0,0);
 }
 function go(nav){
   if(nav.startsWith('bill:')){ S.selInv=nav.slice(5); S.billTab='recon'; route='bill'; }
   else if(nav.startsWith('doc:')){ S.libSel=nav.slice(4); route='library'; }
+  else if(nav.startsWith('disp:')){ S.dispSel=nav.slice(5); S.dispStage='all'; route='disputes'; }
+  else if(nav==='paytab-ledger'){ S.payTab='ledger'; route='payments'; }
   else if(nav.startsWith('data:')){ S.dataTab=nav.slice(5); route='data'; }
   else if(nav==='portfolio-year'){ S.horizon='year'; route='portfolio'; }
   else if(nav==='regack'){ regAck(); route='library'; }
@@ -1141,12 +1383,16 @@ document.addEventListener('scroll',hideTip,true);
 document.addEventListener('click',ev=>{
   const el=ev.target.closest('[data-action]'); if(!el) return; const a=el.dataset.action, id=el.dataset.id;
   switch(a){
-    case 'guide': S.guideOpen=!S.guideOpen; save(); renderDrawer(); break;
-    case 'tips': S.tips=el.checked; save(); render(true); break;
-    case 'gstep': { const d=DEMO[+id]; const r=typeof d.role==='function'?d.role():d.role; if(r&&r!==S.role){ S.role=r; toast(`Signed in as ${ROLE[r].name}, ${ROLENAME[r]}`); } go(d.go); break; }
     case 'role': S.role=id; save(); render(true); toast(`Signed in as ${ROLE[id].name}, ${ROLENAME[id]}`); break;
     case 'heatwave': S.scen={...S.scen,demand:6,price:30}; S.horizon='day'; save(); render(true); toast('Heatwave: demand +6%, exchange price +30%. Press Save scenario to keep it.'); break;
     case 'libpick': S.libSel=el.dataset.doc; S.libDate=el.dataset.date; S.did.lib=true; route='library'; save(); render(true); break;
+    case 'dstage': S.dispStage=id; save(); render(true); break;
+    case 'dsel': S.dispSel=id; save(); render(true); break;
+    case 'dact': dispAct(id,el.dataset.d); break;
+    case 'paytab': S.payTab=id; route='payments'; save(); render(true); break;
+    case 'fundset': S.fund.cash=+id; S.payTab='alloc'; save(); render(true); break;
+    case 'fundloan': S.fund.borrow=!S.fund.borrow; S.payTab='alloc'; save(); render(true); break;
+    case 'release': releasePlan(); break;
     case 'go': go(el.dataset.nav); break;
     case 'reset': { const go2=S.guideOpen; S=seedState(); S.billTab='recon'; S.dataTab='lineage'; S.evSel=-1; S.guideOpen=go2; save(); route='overview'; render(); toast('Demo data reset'); break; }
     case 'dtab': S.dataTab=id; save(); render(true); break;
@@ -1169,7 +1415,7 @@ document.addEventListener('click',ev=>{
     case 'save-scen': { const e=epmRun(S.scen), sc=S.scen; const name=[sc.demand?`Demand ${sc.demand>0?'+':''}${sc.demand}%`:'',sc.price?`Price ${sc.price>0?'+':''}${sc.price}%`:'',sc.hydro!==100?`Hydro ${sc.hydro}%`:'',sc.outage?'Unit outage':''].filter(Boolean).join(', ')||'Base case'; S.saved.push({name,gap:e.peakGap,mu:e.byOpt.reduce((a,o)=>a+o.mu,0),cost:e.best.cost,unmet:e.best.unmet/1000}); save(); render(true); toast(`Saved: ${name}`); break; }
     case 'del-scen': S.saved.splice(+id,1); save(); render(true); break;
     case 'reset-scen': S.scen={demand:0,price:0,hydro:100,outage:false,sell:true}; save(); render(true); break;
-    case 'epm-submit': { const e=epmRun(S.scen); const p={id:'PLAN-'+(1016+S.proposals.length),status:'pending',mu:e.byOpt.reduce((a,o)=>a+o.mu,0),cost:e.best.cost,by:ROLE[S.role].name}; S.proposals=S.proposals.filter(x=>x.status!=='pending'); S.proposals.push(p); log(`Submitted ${p.id} for ${fmtD(TOMORROW)}: ${p.mu.toFixed(2)} MU, ${money(p.cost)}`,p.id); save(); render(true); toast(`${p.id} sent to Director (Commercial)`); break; }
+    case 'epm-submit': { const e=epmRun(S.scen); const p={id:'PLAN-'+(1016+S.proposals.length),status:'pending',mu:e.byOpt.reduce((a,o)=>a+o.mu,0),cost:e.best.cost,saving:e.base.cost-e.best.cost,by:ROLE[S.role].name}; S.proposals=S.proposals.filter(x=>x.status!=='pending'); S.proposals.push(p); log(`Submitted ${p.id} for ${fmtD(TOMORROW)}: ${p.mu.toFixed(2)} MU, ${money(p.cost)}`,p.id); save(); render(true); toast(`${p.id} sent to Director (Commercial)`); break; }
     case 'epm-approve': { const p=S.proposals.find(x=>x.status==='pending'); p.status='approved'; p.by=ROLE.director.name; log(`Approved ${p.id}; bids to be placed before 12:00`,p.id); save(); render(true); toast(`${p.id} approved`); break; }
     case 'epm-reject': { const p=S.proposals.find(x=>x.status==='pending'); p.status='returned'; log(`Returned ${p.id} for revision`,p.id); save(); render(true); toast(`${p.id} returned`); break; }
     case 'open-doc': { const keep=el.dataset.keep; S.libSel=el.dataset.doc; route='library'; try{history.replaceState(null,'','#library');}catch(e){} save(); render(!!keep); break; }
@@ -1190,16 +1436,19 @@ function makerAct(id,d){
 }
 document.addEventListener('input',ev=>{ const t=ev.target;
   if(t.dataset.scen&&t.type==='range'){ S.scen[t.dataset.scen]=+t.value; save(); const id=t.id; render(true); const n=document.getElementById(id); if(n) n.focus(); }
+  if(t.id==='fundCash'){ S.fund.cash=+t.value; save(); render(true); const n=$('#fundCash'); if(n) n.focus(); }
   if(t.id==='libQ'){ S.libQ=t.value; const p=t.selectionStart; render(true); const n=$('#libQ'); n.focus(); n.setSelectionRange(p,p); } });
 document.addEventListener('change',ev=>{ const t=ev.target;
   if(t.dataset.scen&&t.type==='checkbox'){ S.scen[t.dataset.scen]=t.checked; save(); render(true); }
   if(t.id==='libT'){ S.libType=t.value; render(true); }
+  if(t.id==='fundBorrow'){ S.fund.borrow=t.checked; save(); render(true); }
   if(t.id==='libD'&&t.value){ S.libDate=t.value; S.did.lib=true; save(); render(true); }
+  if(t.id==='roleSel'&&t.value==='__reset'){ S=seedState(); S.billTab='recon'; S.dataTab='lineage'; S.evSel=-1; save(); route='overview'; render(); toast('Demo data reset'); return; }
   if(t.id==='roleSel'){ S.role=t.value; save(); render(true); toast(`Signed in as ${ROLE[S.role].name}, ${ROLENAME[S.role]}`); } });
 document.addEventListener('submit',ev=>{ ev.preventDefault();
   if(ev.target.id==='chatForm'){ const v=$('#chatIn').value.trim(); if(!v) return; ask(v); render(true); $('#chatIn').focus(); }
   if(ev.target.id==='topAsk'){ const inp=$('#topAskIn'), v=inp.value.trim(); if(!v) return; inp.value=''; inp.blur(); route='assistant'; try{history.replaceState(null,'','#assistant');}catch(e){} if(!S.chat) S.chat=[]; ask(v); render(); } });
-document.addEventListener('keydown',ev=>{ if(ev.key==='Enter'&&ev.target.classList&&ev.target.classList.contains('n')) ev.target.dispatchEvent(new MouseEvent('click',{bubbles:true})); if(ev.key==='Escape') $('#modalRoot').innerHTML=''; if(ev.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){ ev.preventDefault(); $('#topAskIn').focus(); } });
+document.addEventListener('keydown',ev=>{ if(ev.key==='Enter'&&ev.target.classList&&ev.target.classList.contains('n')) ev.target.dispatchEvent(new MouseEvent('click',{bubbles:true})); if(ev.key==='Escape') $('#modalRoot').innerHTML=''; });
 
 function openIngest(){
   const i=S.invoices.find(x=>x.status==='inbox'); if(!i){ toast('Inbox is empty'); return; }
@@ -1216,8 +1465,6 @@ function openIngest(){
 
 (function(){
   const h=(location.hash||'').slice(1); if(VIEWS[h]&&h!=='bill') route=h;
-  const tick=()=>{ const d=nowSim(); $('#clock').textContent=`${fmtD(TODAY)}, ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')} IST`; };
-  tick(); setInterval(tick,20000);
   window.addEventListener('hashchange',()=>{ const h=location.hash.slice(1); if(VIEWS[h]&&h!==route&&!(h==='billing'&&route==='bill')){ route=h; render(); } });
   render();
 })();
