@@ -1,0 +1,1085 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GRIDCO Power Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: working operations software. White top bar and side nav, flat bordered panels on a pale grey canvas, one blue accent, colour reserved for meaning. Light-only. */
+:root{
+  color-scheme:light;
+  --bg:#F3F4F6; --panel:#FFFFFF; --sub:#F8F9FA; --ink:#14171C; --ink2:#394150; --muted:#6B7280; --faint:#9CA3AF; --line:#E1E4E8; --line2:#EDEFF2;
+  --accent:#1E4FD8; --accent-d:#173FAF; --accent-soft:#EEF3FF;
+  --bad:#B42318; --bad-bg:#FEF3F2; --warn:#B54708; --warn-bg:#FFF8EB; --good:#067647; --good-bg:#ECFDF3;
+  --supply:#CBD1DA; --supply-l:#8C96A5; --surplus:#D9F0E1;
+  --o-otc:#1E4FD8; --o-bank:#6E56CF; --o-dam:#E07B24; --o-rtm:#C4421A; --o-dr:#0E8A7E; --o-peak:#B83280;
+  --f:"IBM Plex Sans","Segoe UI",system-ui,sans-serif; --fm:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:13.5px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.005em}
+h1{font-size:20px} h2{font-size:14px} h3{font-size:13px}
+p{margin:0}
+a{color:var(--accent)}
+.mono{font-family:var(--fm);font-size:12.5px}
+.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)} .faint{color:var(--faint)} .small{font-size:12px}
+.neg{color:var(--bad)} .pos{color:var(--good)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+
+/* top bar */
+.top{height:48px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 16px;position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.logo{display:flex;align-items:center;gap:9px;white-space:nowrap}
+.logo i{width:22px;height:22px;border-radius:4px;background:var(--ink);display:grid;place-items:center}
+.logo b{font-weight:600}
+.logo span{color:var(--muted)}
+.gsearch{flex:1;max-width:460px;display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:6px;padding:0 10px;height:32px;background:var(--sub);color:var(--muted)}
+.gsearch input{border:0;outline:0;background:transparent;flex:1;min-width:0;color:var(--ink)}
+.gsearch kbd{font-family:var(--fm);font-size:11px;border:1px solid var(--line);border-radius:3px;padding:0 5px;background:#fff}
+.top-r{margin-left:auto;display:flex;align-items:center;gap:14px;white-space:nowrap}
+.env{font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--warn);border:1px solid #F5D9A8;background:var(--warn-bg);border-radius:4px;padding:1px 6px}
+.clock{color:var(--muted);font-variant-numeric:tabular-nums}
+.user{display:flex;align-items:center;gap:8px}
+.user .av{width:26px;height:26px;border-radius:50%;background:var(--ink2);color:#fff;font-size:11px;font-weight:600;display:grid;place-items:center}
+.user select{border:0;background:transparent;font-weight:500;cursor:pointer;max-width:230px}
+
+.shell{display:grid;grid-template-columns:212px minmax(0,1fr);min-height:calc(100% - 48px)}
+.side{background:var(--panel);border-right:1px solid var(--line);padding:12px 8px;position:sticky;top:48px;height:calc(100vh - 48px);overflow:auto;display:flex;flex-direction:column}
+.side button{all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:5px;color:var(--ink2);font-weight:500}
+.side button:hover{background:var(--sub)}
+.side button[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+.side button:focus-visible{outline:2px solid var(--accent)}
+.side svg{flex:none;color:var(--faint)}
+.side button[aria-current="page"] svg{color:var(--accent)}
+.side .cnt{margin-left:auto;font-size:11px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.side .cnt.hot{color:var(--bad)}
+.side .sep{height:1px;background:var(--line2);margin:8px 6px}
+.side-foot{margin-top:auto;padding:10px;font-size:11.5px;color:var(--muted);display:grid;gap:6px}
+.side-foot button{all:unset;cursor:pointer;color:var(--accent);font-size:12px;padding:0}
+
+.main{min-width:0}
+.content{padding:18px 22px 48px;display:flex;flex-direction:column;gap:14px;min-width:0;max-width:1400px}
+.crumbs{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.crumbs button{all:unset;cursor:pointer;color:var(--accent)}
+.phead{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px}
+.phead .sub{color:var(--muted);margin-top:2px}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;min-width:0}
+.ph{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--line2);min-height:44px}
+.ph .note{color:var(--muted);font-size:12px}
+.pb{padding:14px}
+.pb.flush{padding:0}
+.cols{display:grid;gap:14px}
+.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.c21{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}
+.c12{grid-template-columns:minmax(0,1fr) minmax(0,1.35fr)}
+
+/* stat strip */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));background:var(--panel);border:1px solid var(--line);border-radius:6px}
+.stat{padding:12px 16px;border-left:1px solid var(--line2);min-width:0}
+.stat:first-child{border-left:0}
+.stat-l{font-size:12px;color:var(--muted)}
+.stat-v{font-size:21px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px;white-space:nowrap}
+.stat-v small{font-size:13px;font-weight:500;color:var(--muted)}
+.stat-c{font-size:12px;color:var(--muted);margin-top:1px}
+button.stat{all:unset;box-sizing:border-box;padding:12px 16px;border-left:1px solid var(--line2);cursor:pointer;min-width:0}
+button.stat:first-child{border-left:0}
+button.stat:hover{background:var(--sub)}
+
+/* status text */
+.st{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font-size:12.5px}
+.st::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--faint);flex:none}
+.st.bad::before{background:var(--bad)} .st.warn::before{background:#E09A2C} .st.good::before{background:#2E9E62} .st.info::before{background:var(--accent)}
+.tag{font-family:var(--fm);font-size:11px;color:var(--ink2);background:var(--sub);border:1px solid var(--line);border-radius:3px;padding:0 5px;white-space:nowrap}
+.flag{font-size:11.5px;font-weight:600;border-radius:3px;padding:1px 6px;white-space:nowrap}
+.flag.bad{background:var(--bad-bg);color:var(--bad)} .flag.warn{background:var(--warn-bg);color:var(--warn)} .flag.good{background:var(--good-bg);color:var(--good)} .flag.info{background:var(--accent-soft);color:var(--accent)}
+
+.btn{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:1px solid var(--line);background:var(--panel);border-radius:5px;cursor:pointer;font-weight:500;white-space:nowrap;color:var(--ink2)}
+.btn:hover{background:var(--sub);border-color:#CDD2D9}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.pri:hover{background:var(--accent-d)}
+.btn.dng{color:var(--bad)}
+.btn.sm{height:26px;padding:0 9px;font-size:12px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:5px;overflow:hidden;background:var(--panel)}
+.seg button{all:unset;cursor:pointer;padding:5px 11px;font-size:12.5px;color:var(--ink2);border-left:1px solid var(--line)}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.seg button:focus-visible{outline:2px solid var(--accent)}
+.tabs{display:flex;gap:18px;border-bottom:1px solid var(--line);padding:0 14px;overflow-x:auto}
+.tabs button{all:unset;cursor:pointer;padding:10px 0;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.tabs button:focus-visible{outline:2px solid var(--accent)}
+
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%}
+th{font-size:11.5px;font-weight:500;color:var(--muted);text-align:left;padding:7px 12px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--sub)}
+td{padding:8px 12px;border-bottom:1px solid var(--line2);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tr.rowlink{cursor:pointer}
+tr.rowlink:hover td{background:#F6F8FB}
+tr.on td{background:var(--accent-soft)}
+td .s2{display:block;font-size:12px;color:var(--muted)}
+tfoot td{font-weight:600;border-top:1px solid var(--line);background:var(--sub)}
+td.id{font-family:var(--fm);font-size:12.5px;white-space:nowrap}
+
+.kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px}
+.kv dt{color:var(--muted)} .kv dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;font-weight:500}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:0;border-top:1px solid var(--line2)}
+.facts div{padding:10px 14px;border-left:1px solid var(--line2)}
+.facts div:first-child{border-left:0}
+.facts span{display:block;font-size:12px;color:var(--muted)}
+.facts b{font-weight:600;font-variant-numeric:tabular-nums}
+.callout{border-left:3px solid var(--line);background:var(--sub);padding:9px 12px;font-size:13px;border-radius:0 4px 4px 0}
+.callout.bad{border-color:var(--bad);background:var(--bad-bg)} .callout.warn{border-color:#E09A2C;background:var(--warn-bg)} .callout.good{border-color:#2E9E62;background:var(--good-bg)} .callout.info{border-color:var(--accent);background:var(--accent-soft)}
+.ref{all:unset;cursor:pointer;font-family:var(--fm);font-size:11.5px;color:var(--accent);margin-right:8px;white-space:nowrap}
+.ref:hover{text-decoration:underline}
+.lbl{display:grid;gap:4px;font-size:12px;color:var(--muted)}
+textarea,input[type=search],input[type=date],select.in,input.in{width:100%;border:1px solid var(--line);background:var(--panel);border-radius:5px;padding:6px 9px;color:var(--ink)}
+textarea{min-height:56px;resize:vertical}
+textarea:focus,input.in:focus,input[type=search]:focus,input[type=date]:focus,select.in:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.ctl{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink2);white-space:nowrap}
+.ctl input[type=range]{width:110px;accent-color:var(--accent)}
+.ctl output{font-variant-numeric:tabular-nums;min-width:38px;font-weight:600}
+.ctl input[type=checkbox]{accent-color:var(--accent)}
+.empty{padding:22px;color:var(--muted);text-align:center}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:-1px;border-radius:2px}
+
+/* charts */
+svg text{font-family:var(--f);font-size:11px;fill:var(--muted)}
+.chart{width:100%;height:auto;display:block}
+.hit{fill:transparent;cursor:pointer}
+.hit:hover{fill:rgba(30,79,216,.06)}
+.hit.on{fill:rgba(30,79,216,.09)}
+#tip{position:fixed;z-index:80;pointer-events:none;background:var(--ink);color:#fff;border-radius:4px;padding:7px 9px;font-size:12px;line-height:1.5;white-space:pre-line;max-width:300px;opacity:0;left:0;top:0;font-variant-numeric:tabular-nums}
+#tip.on{opacity:1}
+
+/* list rows */
+.act{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:start;padding:9px 14px;border-bottom:1px solid var(--line2);cursor:pointer}
+.act:last-child{border-bottom:0}
+.act:hover{background:#F6F8FB}
+.act .who{font-size:12px;color:var(--muted)}
+.act .amt{font-variant-numeric:tabular-nums;text-align:right;font-weight:500;white-space:nowrap}
+
+/* document viewer */
+.docv{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+.paper{background:#fff;border:1px solid var(--line);box-shadow:0 1px 2px rgba(0,0,0,.06);padding:20px;font-size:11.5px;color:#262B33;position:relative}
+.paper .lh{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:1.5px solid #262B33;padding-bottom:8px;margin-bottom:10px}
+.paper table{font-size:11px} .paper th{background:#F2F3F5;color:#4B5260} .paper td{padding:5px 8px}
+.paper .wm{position:absolute;right:16px;bottom:12px;color:#C4C8CF;font-size:10px;letter-spacing:.12em;font-weight:600}
+.fx{background:rgba(224,154,44,.18);outline:1px solid rgba(224,154,44,.55)}
+.fx.badfx{background:rgba(180,35,24,.10);outline-color:rgba(180,35,24,.55)}
+.fx.hi{background:rgba(30,79,216,.15);outline:2px solid var(--accent)}
+.xf{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1px 10px;padding:7px 10px;border-bottom:1px solid var(--line2)}
+.xf:hover{background:var(--accent-soft)}
+.xf .k{font-size:12px;color:var(--muted)} .xf .v{font-weight:500} .xf .c{font-family:var(--fm);font-size:11px;color:var(--faint)} .xf .r{grid-column:1/-1;font-size:12px}
+
+/* lineage */
+.linw{overflow-x:auto}
+.lin{min-width:960px;width:100%;height:auto;display:block}
+.lin .e{fill:none;stroke:#C9CED6;stroke-width:1.3}
+.lin .e.hot{stroke:var(--accent);stroke-width:2}
+.lin .e.dim{opacity:.25}
+.lin .e.err{stroke:var(--bad);stroke-dasharray:4 4}
+.lin .n{cursor:pointer}
+.lin .n rect{fill:#fff;stroke:#D5D9DF}
+.lin .n:hover rect{stroke:#9AA3AF}
+.lin .n.on rect{stroke:var(--accent);stroke-width:2}
+.lin .n.dim{opacity:.35}
+.lin .n text{fill:var(--ink)}
+.lin .n .t1{font-size:12.5px;font-weight:500}
+.lin .n .t2{font-size:11px;fill:var(--muted)}
+.lin .colh{font-size:11px;font-weight:600;fill:var(--muted);letter-spacing:.06em}
+
+/* assistant */
+.chatw{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:14px;align-items:stretch}
+.conv{display:grid;grid-template-rows:minmax(0,1fr) auto;height:calc(100vh - 178px);min-height:520px}
+.msgs{overflow:auto;padding:14px;display:flex;flex-direction:column;gap:14px}
+.m-q{align-self:flex-end;background:var(--sub);border:1px solid var(--line);border-radius:6px;padding:7px 11px;max-width:80%}
+.m-a{display:grid;gap:8px;padding-left:12px;border-left:2px solid var(--line);cursor:pointer}
+.m-a.on{border-left-color:var(--accent)}
+.m-a .hd{font-size:12px;color:var(--muted)}
+.m-a .hd b{color:var(--ink);font-weight:600}
+.m-a table{font-size:12.5px;border:1px solid var(--line2)}
+.steps{font-family:var(--fm);font-size:11px;color:var(--faint)}
+.composer{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--line)}
+.composer input{flex:1;min-width:0}
+.sugg{display:flex;flex-direction:column}
+.sugg button{all:unset;cursor:pointer;padding:7px 14px;border-bottom:1px solid var(--line2);color:var(--ink2)}
+.sugg button:hover{background:var(--sub);color:var(--accent)}
+.ev{padding:12px 14px;border-bottom:1px solid var(--line2)}
+.ev .h{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted);margin-bottom:4px}
+.ev blockquote{margin:0;padding:6px 10px;border-left:2px solid var(--accent);background:var(--accent-soft);font-size:13px}
+
+/* modal, toast */
+.mbg{position:fixed;inset:0;background:rgba(20,23,28,.4);display:grid;place-items:center;z-index:50;padding:16px}
+.modal{background:#fff;border-radius:6px;max-width:720px;width:100%;max-height:calc(100vh - 32px);overflow:auto;border:1px solid var(--line)}
+.pipe{display:grid}
+.pstep{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;padding:9px 16px;border-bottom:1px solid var(--line2);color:var(--faint)}
+.pstep.on{color:var(--ink)}
+.pstep .d{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:10px;margin-top:1px}
+.pstep.on .d{background:var(--good);border-color:var(--good);color:#fff}
+.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 14px;border-radius:5px;font-size:13px;z-index:60;max-width:calc(100% - 32px)}
+
+@media (max-width:1180px){.c21,.c12,.chatw,.docv{grid-template-columns:minmax(0,1fr)}.conv{height:auto;max-height:none}}
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .side{position:static;height:auto;flex-direction:row;overflow-x:auto;padding:6px;border-right:0;border-bottom:1px solid var(--line)}
+  .side button{width:auto;white-space:nowrap}
+  .side .sep,.side-foot{display:none}
+  .top{position:static;flex-wrap:wrap;height:auto;padding:8px 16px}
+  .gsearch{order:3;max-width:none;flex-basis:100%}
+  .c2{grid-template-columns:minmax(0,1fr)}
+  .stat{border-left:0;border-top:1px solid var(--line2)}
+}
+@media (max-width:560px){
+  .content{padding:14px 16px 40px}
+  .logo span,.clock{display:none}
+  .top-r{gap:8px}
+  .user select{max-width:150px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+</head>
+<body>
+<header class="top">
+  <div class="logo"><i><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></i><b>GRIDCO</b><span>Power Purchase Intelligence</span></div>
+  <form class="gsearch" id="topAsk" role="search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="topAskIn" type="text" placeholder="Ask about a bill, tariff, tomorrow's position…" aria-label="Ask the assistant" autocomplete="off"><kbd>/</kbd></form>
+  <div class="top-r">
+    <span class="env" title="All figures are illustrative">DEMO DATA</span>
+    <span class="clock" id="clock"></span>
+    <label class="user" for="roleSel"><span class="av" id="avatar">SP</span>
+      <select id="roleSel" aria-label="Signed in as">
+        <option value="maker">S. Panda · Billing Officer</option>
+        <option value="checker">R. Mishra · DGM Finance</option>
+        <option value="director">A. Das · Director (Commercial)</option>
+      </select></label>
+  </div>
+</header>
+<div class="shell">
+  <nav class="side" id="nav" aria-label="Modules"></nav>
+  <main class="main"><div class="content" id="view"></div></main>
+</div>
+<div id="modalRoot"></div>
+<div id="toastRoot"></div>
+<div id="tip" role="tooltip"></div>
+
+<script>
+/* =========================================================
+   1. Reference data (illustrative)
+   ========================================================= */
+const TODAY = '2026-10-15';
+const TOMORROW = '2026-10-16';
+const REBATE_T1 = {days:5, pct:1.5}, REBATE_T2 = {days:30, pct:1.0}, DUE_DAYS = 45, LPS_PA = 13.5;
+
+const SUP = {
+  BTPC:{name:'Brahmani Thermal Power Co.', short:'Brahmani Thermal', type:'State thermal', cap:1320, tariff:'Two-part', docs:['PPA-BTPC','TO-BTPC']},
+  CSA: {name:'Central Sector Station A (allocated share)', short:'Central Station A', type:'Central thermal', cap:1600, tariff:'Two-part', docs:['ALLOC-CSA','REG-TARIFF']},
+  MBH: {name:'Mahanadi Basin Hydro Group', short:'Mahanadi Hydro', type:'State hydro', cap:780, tariff:'Single-part', docs:['PPA-MBH']},
+  SSP: {name:'Sambal Solar Park Pvt. Ltd.', short:'Sambal Solar', type:'Solar', cap:300, tariff:'Single-part', docs:['PPA-SSP']},
+  ECW: {name:'Eastern Coast Wind Farms Ltd.', short:'Coast Wind', type:'Wind', cap:200, tariff:'Single-part', docs:['PPA-ECW']},
+  KCP: {name:'Kalinga Captive Power Ltd.', short:'Kalinga Captive', type:'Captive surplus (short-term)', cap:150, tariff:'Single-part', docs:['PPA-KCP']},
+  BPL: {name:'Baitarani Power Ltd. (IPP)', short:'Baitarani IPP', type:'IPP thermal', cap:500, tariff:'Two-part', docs:['PPA-BPL','TO-BTPC']},
+};
+
+const DOCS = [
+  {id:'TO-BTPC', title:'Tariff Order — Brahmani Thermal Power Co.', type:'Tariff order', issuer:'State Commission', tags:['BTPC','BPL','capacity charge','energy charge'],
+   versions:[
+    {v:'FY 2025-26 order', from:'2025-04-01', to:'2026-03-31', clauses:[['Sch. 1','Annual fixed cost ₹1,152 cr; normative availability (NAPAF) 85%.'],['Sch. 2','Energy charge rate ₹2.240/kWh ex-bus.']]},
+    {v:'FY 2026-27 order', from:'2026-04-01', to:'2027-03-31', clauses:[['Sch. 1','Annual fixed cost ₹1,188 cr (₹99.00 cr per month); NAPAF 85%.'],['Sch. 2','Energy charge rate ₹2.312/kWh ex-bus, before monthly fuel adjustment.'],['Para 14','Baitarani IPP energy charge rate ₹2.78/kWh; monthly fixed cost ₹38.40 cr at NAPAF 85%.']]}
+   ]},
+  {id:'PPA-BTPC', title:'Power Purchase Agreement — Brahmani Thermal Power Co.', type:'PPA', issuer:'GRIDCO & BTPC', tags:['BTPC','rebate','LPS','availability'],
+   versions:[
+    {v:'Original (2010)', from:'2010-04-01', to:'2021-03-31', clauses:[['7.3','Capacity charge payable in full if plant availability meets the normative level.']]},
+    {v:'Amendment 1 (2021)', from:'2021-04-01', to:'2099-12-31', clauses:[['7.3','If monthly plant availability (PAF) falls below NAPAF, capacity charge is recovered pro-rata: AFC × PAF ÷ NAPAF.'],['8.1','Bill to be presented by the 5th working day of the following month with SLDC-certified availability.'],['9.2','Rebate of 1.5% if paid within 5 days of presentation; 1% if paid within 30 days.'],['9.4','Late payment surcharge applies after the due date as per the LPS Rules, 2022.']]}
+   ]},
+  {id:'PPA-SSP', title:'Power Purchase Agreement — Sambal Solar Park', type:'PPA', issuer:'GRIDCO & SSP', tags:['SSP','solar','tariff'],
+   versions:[
+    {v:'Original (2019)', from:'2019-10-01', to:'2026-10-31', clauses:[['5.1','Tariff ₹2.62/kWh, fixed for the term unless amended.'],['5.4','Energy measured at the delivery point by the ABT meter; joint meter reading (JMR) is final.']]},
+    {v:'Amendment 1 (signed 20 Sep 2026)', from:'2026-11-01', to:'2044-09-30', clauses:[['5.1','Tariff revised to ₹2.71/kWh for energy supplied on or after 1 November 2026.'],['5.1A','The revision does not apply retrospectively to earlier billing periods.']]}
+   ]},
+  {id:'PPA-ECW', title:'Power Purchase Agreement — Eastern Coast Wind Farms', type:'PPA', issuer:'GRIDCO & ECW', tags:['ECW','wind','JMR'],
+   versions:[{v:'Original (2017)', from:'2017-06-01', to:'2042-05-31', clauses:[['4.1','Tariff ₹2.94/kWh.'],['6.2','Billable energy is the quantity recorded in the joint meter reading at the interconnection point, not at the generator terminal.']]}]},
+  {id:'PPA-KCP', title:'Short-term PPA — Kalinga Captive Power', type:'PPA', issuer:'GRIDCO & KCP', tags:['KCP','short-term','schedule'],
+   versions:[{v:'Apr–Dec 2026 agreement', from:'2026-04-01', to:'2026-12-31', clauses:[['3.1','Contracted capacity up to 150 MW round-the-clock at ₹3.85/kWh.'],['4.2','Payment is on the lower of SLDC-scheduled energy and actual injection.']]}]},
+  {id:'PPA-BPL', title:'Power Purchase Agreement — Baitarani Power Ltd.', type:'PPA', issuer:'GRIDCO & BPL', tags:['BPL','transmission','delivery point'],
+   versions:[{v:'Original (2014)', from:'2014-01-01', to:'2039-12-31', clauses:[['3.1','Delivery point is the generator switchyard bus bar.'],['3.4','Transmission charges beyond the delivery point are paid by the procurer directly to the transmission licensee and are not billable by the seller.'],['7.1','Two-part tariff as determined by the Commission.']]}]},
+  {id:'PPA-MBH', title:'Power Purchase Agreement — Mahanadi Basin Hydro Group', type:'PPA', issuer:'GRIDCO & MBH', tags:['MBH','hydro'],
+   versions:[{v:'FY 2026-27 tariff schedule', from:'2026-04-01', to:'2027-03-31', clauses:[['2.1','Single-part rate ₹1.05/kWh on ex-bus energy per SLDC energy account.']]}]},
+  {id:'ALLOC-CSA', title:'Allocation Order — Central Sector Station A', type:'Allocation order', issuer:'Ministry of Power', tags:['CSA','allocation','central'],
+   versions:[{v:'2023 allocation', from:'2023-04-01', to:'2099-12-31', clauses:[['1','State share 1,600 MW of station capacity.'],['3','Billing per CERC-approved tariff and RPC regional energy account (REA).']]}]},
+  {id:'REG-TARIFF', title:'CERC (Terms and Conditions of Tariff) Regulations, 2024', type:'Regulation', issuer:'CERC', tags:['rebate','capacity charge','central'],
+   versions:[{v:'2024 Regulations', from:'2024-04-01', to:'2029-03-31', clauses:[['Rebate','Rebate for prompt payment of bills (summary): higher rebate for payment within 5 days, lower rebate within 30 days.'],['Capacity charge','Capacity charge recovery linked to plant availability against the normative level.']]}]},
+  {id:'REG-LPS', title:'Electricity (Late Payment Surcharge and Related Matters) Rules, 2022', type:'Rules', issuer:'Ministry of Power', tags:['LPS','due date'],
+   versions:[{v:'2022 Rules (as amended)', from:'2022-06-03', to:'2099-12-31', clauses:[['Due date','Payment is due by the date in the PPA, and in any case within 45 days of bill presentation (summary).'],['Rate','LPS accrues on the outstanding amount from the due date at the base rate plus a step-up for each month of delay (summary). Prototype uses 13.5% p.a. for estimates.']]}]},
+  {id:'REG-DSM', title:'CERC (Deviation Settlement Mechanism) Regulations, 2024', type:'Regulation', issuer:'CERC', tags:['DSM','deviation','scheduling'],
+   versions:[{v:'2024 Regulations', from:'2024-09-16', to:'2099-12-31', clauses:[['Charges','Deviation from schedule is settled per 15-minute block at a reference charge linked to market prices (summary).']]}]},
+  {id:'NOTICE-FPA', title:'Notice — Revised monthly fuel cost adjustment method for state thermal stations', type:'Notice', issuer:'State Commission', tags:['BTPC','BPL','fuel adjustment','new'], isNew:true,
+   versions:[{v:'Notice dated 12 Oct 2026', from:'2026-10-01', to:'2099-12-31', clauses:[['2','Fuel cost adjustment to be computed on landed coal cost of the billing month, not the preceding month.'],['4','Applies to bills for energy supplied from 1 October 2026 onward.']]}]},
+];
+
+function L(label, billed, sys, basis, cites){return {label, billed, sys, basis, cites:cites||[]};}
+function seedInvoices(){ return [
+  {id:'INV-BTPC-2609', sup:'BTPC', period:'Sep 2026', periodDate:'2026-09-15', presented:'2026-10-05', status:'discrepancy', source:'Supplier portal', supplierRef:'BTPC/COM/2026-27/0611',
+   qty:{billedMU:702.6, schedMU:702.6, meterMU:703.1, paf:82.4, napaf:85}, qtyCheck:'sched',
+   lines:[L('Capacity charge',99.00,95.97,'PAF 82.4% < NAPAF 85% → ₹99.00 cr × 82.4 ÷ 85',['PPA-BTPC@7.3','TO-BTPC@Sch. 1','DATA:SLDC availability certificate']),
+          L('Energy charge (702.6 MU × ₹2.312)',162.44,162.44,'Scheduled ex-bus energy × applicable ECR',['TO-BTPC@Sch. 2','DATA:SLDC energy account'])],
+   reason:'Capacity charge billed in full, but SLDC-certified availability for September was 82.4%, below the 85% normative level. Clause 7.3 allows only pro-rata recovery.'},
+  {id:'INV-CSA-2609', sup:'CSA', period:'Sep 2026', periodDate:'2026-09-15', presented:'2026-10-03', status:'maker_ok', source:'RPC / email', supplierRef:'CSA/ER/BILL/09-26',
+   qty:{billedMU:1612.0, schedMU:1612.0, meterMU:1612.0, paf:91.0, napaf:85}, qtyCheck:'sched',
+   lines:[L('Capacity charge (state share)',62.50,62.50,'PAF 91.0% ≥ NAPAF; full recovery',['ALLOC-CSA@3','DATA:RPC regional energy account']),
+          L('Energy charge (1,612.0 MU × ₹1.98)',319.18,319.18,'REA scheduled energy × CERC ECR',['REG-TARIFF@Capacity charge','DATA:RPC regional energy account'])],
+   reason:'All lines match within tolerance.', makerNote:'Matched with REA week 36–39. Recommend full payment.'},
+  {id:'INV-MBH-2609', sup:'MBH', period:'Sep 2026', periodDate:'2026-09-15', presented:'2026-10-12', status:'reconciled', source:'Email inbox', supplierRef:'MBH/FIN/2609',
+   qty:{billedMU:488.0, schedMU:488.0, meterMU:488.3}, qtyCheck:'sched',
+   lines:[L('Energy charge (488.0 MU × ₹1.05)',51.24,51.24,'Ex-bus energy per SLDC account × single-part rate',['PPA-MBH@2.1','DATA:SLDC energy account'])],
+   reason:'All lines match within tolerance.'},
+  {id:'INV-SSP-2609', sup:'SSP', period:'Sep 2026', periodDate:'2026-09-15', presented:'2026-10-08', status:'discrepancy', source:'Email inbox', supplierRef:'SSP-INV-0926',
+   qty:{billedMU:44.6, schedMU:44.6, meterMU:44.6}, qtyCheck:'meter',
+   lines:[L('Energy charge (44.6 MU)',12.09,11.69,'Billed at ₹2.71; applicable rate for Sep 2026 is ₹2.62',['PPA-SSP@5.1','PPA-SSP@5.1A','DATA:JMR September'])],
+   reason:'Supplier applied the ₹2.71 tariff from Amendment 1, which only takes effect on 1 November 2026. The September bill should use ₹2.62.'},
+  {id:'INV-ECW-2609', sup:'ECW', period:'Sep 2026', periodDate:'2026-09-15', presented:'2026-10-10', status:'discrepancy', source:'Email inbox', supplierRef:'ECW/26/09/118',
+   qty:{billedMU:61.8, schedMU:61.2, meterMU:61.8, jmrMU:60.9}, qtyCheck:'jmr',
+   lines:[L('Energy charge (₹2.94/kWh)',18.17,17.90,'Billed 61.8 MU (generator terminal); JMR at interconnection 60.9 MU',['PPA-ECW@6.2','DATA:Joint meter reading'])],
+   reason:'Energy billed at generator-terminal reading (61.8 MU). Clause 6.2 makes the joint meter reading at the interconnection point (60.9 MU) billable.'},
+  {id:'INV-KCP-2609', sup:'KCP', period:'Sep 2026', periodDate:'2026-09-15', presented:'2026-10-13', status:'discrepancy', source:'Supplier portal', supplierRef:'KCPL/GRIDCO/092026',
+   qty:{billedMU:25.97, schedMU:25.19, meterMU:25.97}, qtyCheck:'sched',
+   lines:[L('Energy charge (₹3.85/kWh)',10.00,9.70,'Billed on actual injection 25.97 MU; payable on scheduled 25.19 MU',['PPA-KCP@4.2','DATA:SLDC schedule'])],
+   reason:'Supplier billed 25.97 MU of actual injection. Clause 4.2 pays the lower of scheduled (25.19 MU) and actual energy, so ₹30 lakh is in question.'},
+  {id:'INV-BPL-2609', sup:'BPL', period:'Sep 2026', periodDate:'2026-09-15', presented:'2026-10-14', status:'inbox', source:'Email inbox', supplierRef:'BPL/COMM/SEP26/44',
+   qty:{billedMU:301.5, schedMU:301.5, meterMU:302.2, paf:88.0, napaf:85}, qtyCheck:'sched',
+   lines:[L('Capacity charge',38.40,38.40,'PAF 88.0% ≥ NAPAF; full recovery',['TO-BTPC@Para 14','DATA:SLDC availability certificate']),
+          L('Energy charge (301.5 MU × ₹2.78)',83.82,83.82,'Scheduled energy × ECR',['TO-BTPC@Para 14','DATA:SLDC energy account']),
+          L('Transmission charges',1.42,0,'Not billable by the seller; delivery point is the bus bar',['PPA-BPL@3.1','PPA-BPL@3.4'])],
+   reason:'Bill includes ₹1.42 cr of transmission charges. Under clauses 3.1 and 3.4, these are paid directly to the transmission licensee, not to the generator.'},
+  {id:'INV-BPL-2608', sup:'BPL', period:'Aug 2026', periodDate:'2026-08-15', presented:'2026-09-03', status:'approved', source:'Email inbox', supplierRef:'BPL/COMM/AUG26/39', approvedAmt:121.95, decision:'system',
+   qty:{billedMU:298.0, schedMU:298.0, meterMU:298.4, paf:87.1, napaf:85}, qtyCheck:'sched',
+   lines:[L('Capacity charge',38.40,38.40,'Full recovery',['TO-BTPC@Para 14']),L('Energy charge (298.0 MU × ₹2.78)',82.84,82.84,'Scheduled energy × ECR',['TO-BTPC@Para 14']),L('Supplementary (coal grade correction)',0.71,0.71,'Accepted on documentary evidence',[])],
+   reason:'Approved 21 Sep 2026. Payment held for fund availability.'},
+  {id:'INV-BTPC-2608', sup:'BTPC', period:'Aug 2026', periodDate:'2026-08-15', presented:'2026-09-04', status:'paid', paidOn:'2026-09-08', approvedAmt:255.80, decision:'system', source:'Supplier portal', supplierRef:'BTPC/COM/2026-27/0544',
+   qty:{billedMU:690.1, schedMU:690.1, meterMU:690.4, paf:86.2, napaf:85}, qtyCheck:'sched', lines:[L('Capacity charge',99.00,99.00,'',[]),L('Energy charge',156.80,156.80,'',[])], reason:'Paid within 5 days.'},
+  {id:'INV-CSA-2608', sup:'CSA', period:'Aug 2026', periodDate:'2026-08-15', presented:'2026-09-02', status:'paid', paidOn:'2026-09-06', approvedAmt:378.20, decision:'system', source:'RPC / email', supplierRef:'CSA/ER/BILL/08-26',
+   qty:{billedMU:1598.0, schedMU:1598.0, meterMU:1598.0}, qtyCheck:'sched', lines:[L('Capacity charge',62.50,62.50,'',[]),L('Energy charge',315.70,315.70,'',[])], reason:'Paid within 5 days.'},
+  {id:'INV-MBH-2608', sup:'MBH', period:'Aug 2026', periodDate:'2026-08-15', presented:'2026-09-10', status:'paid', paidOn:'2026-09-29', approvedAmt:58.60, decision:'system', source:'Email inbox', supplierRef:'MBH/FIN/2608',
+   qty:{billedMU:558.1, schedMU:558.1, meterMU:558.1}, qtyCheck:'sched', lines:[L('Energy charge',58.60,58.60,'',[])], reason:'Paid on day 19; 1.5% rebate window missed while awaiting checker sign-off.'},
+];}
+
+/* EPM inputs for 16 Oct 2026 (hourly MW) */
+const H24 = [...Array(24).keys()];
+const DEMAND = [4720,4610,4560,4540,4600,4820,5250,5520,5480,5420,5390,5350,5330,5310,5300,5360,5520,5880,6120,6180,6090,5840,5420,5010];
+const HYDRO  = [300,300,300,300,300,350,550,650,550,400,300,250,250,250,250,300,450,650,750,750,700,600,450,350];
+const SOLARF = [0,0,0,0,0,0,.05,.2,.45,.65,.8,.9,.92,.9,.8,.62,.4,.15,.02,0,0,0,0,0];
+const WINDF  = [.7,.7,.7,.7,.68,.62,.55,.48,.45,.45,.45,.45,.45,.45,.47,.5,.55,.58,.6,.6,.64,.68,.7,.7];
+const DAMP   = [3.1,2.9,2.8,2.8,2.9,3.4,4.6,5.8,5.2,4.4,3.6,3.0,2.8,2.7,2.8,3.3,4.8,7.6,9.4,10.0,9.2,7.4,5.1,3.8];
+const ATC = 1200, EXPORT_LIM = 500, VOLL = 20;
+const OUTLOOK = { months:['Nov 26','Dec 26','Jan 27','Feb 27','Mar 27','Apr 27','May 27','Jun 27','Jul 27','Aug 27','Sep 27','Oct 27'],
+  req:[2650,2700,2780,2620,3050,3300,3520,3380,3150,3100,3050,3000], con:[2700,2760,2750,2600,2900,3050,3150,3200,3250,3300,3180,3020]};
+const COST = { months:['Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26','Apr 26','May 26','Jun 26','Jul 26','Aug 26','Sep 26'],
+  series:[
+   {name:'Central sector',c:'--c-central',v:[372,365,380,392,360,398,415,428,410,395,388,381]},
+   {name:'State thermal',c:'--c-state',v:[255,250,262,266,240,270,276,281,272,262,258,258]},
+   {name:'IPP',c:'--c-ipp',v:[118,116,121,123,112,125,128,130,126,120,119,122]},
+   {name:'Hydro',c:'--c-hydro',v:[58,45,38,32,28,30,34,40,62,78,74,51]},
+   {name:'Renewables',c:'--c-re',v:[40,38,36,38,42,48,50,47,38,34,36,42]},
+   {name:'Market purchases',c:'--c-mkt',v:[22,18,24,30,26,64,98,112,58,22,15,20]}]};
+
+/* =========================================================
+   2. State (kept in this browser only)
+   ========================================================= */
+const STORE_KEY = 'gridco-proto-v3';
+const T0 = Date.now();
+function seedState(){ return {
+  role:'maker', invoices:seedInvoices(), selInv:'INV-KCP-2609', billFilter:'open', invTab:'recon',
+  connectors:[
+    {id:'sldc', name:'SLDC schedules & revisions', kind:'API pull', freq:'Every 15 min', last:'15 Oct 10:30', status:'ok', recs:'96 blocks × 41 entities'},
+    {id:'wbes', name:'WBES / RPC regional energy accounts', kind:'Portal + file', freq:'Weekly', last:'14 Oct 18:00', status:'ok', recs:'REA weeks 36–40'},
+    {id:'meter', name:'Meter data (ABT / SEM)', kind:'SFTP', freq:'Daily', last:'15 Oct 06:10', status:'warn', recs:'212 meters', note:'2 meters with missing blocks'},
+    {id:'inbox', name:'Invoice inbox (email & supplier portal)', kind:'Mailbox + OCR', freq:'Continuous', last:'14 Oct 19:42', status:'ok', recs:'1 new bill waiting'},
+    {id:'ppa', name:'Contract repository (PPAs, amendments)', kind:'Document store', freq:'On change', last:'20 Sep 16:05', status:'ok', recs:'64 contracts'},
+    {id:'reg', name:'Regulatory feed (CERC, State Commission, MoP)', kind:'Crawler', freq:'Hourly', last:'15 Oct 10:00', status:'ok', recs:'1 new notice'},
+    {id:'mkt', name:'Market prices (DAM / RTM)', kind:'API pull', freq:'Every 15 min', last:'15 Oct 10:30', status:'ok', recs:'96 blocks'},
+    {id:'erp', name:'Payments ledger (ERP)', kind:'Database link', freq:'Hourly', last:'14 Oct 23:00', status:'err', recs:'—', note:'Sign-in token expired'},
+  ],
+  issues:[
+    {id:'V-301', sev:'warn', src:'Meter data', text:'Meter ECW-02: blocks 37–40 missing on 12 Sep.', fix:'Fill from check meter'},
+    {id:'V-302', sev:'warn', src:'Invoice inbox', text:'Supplier name "Kalinga Captive Pvt Ltd" does not match master record "Kalinga Captive Power Ltd."', fix:'Map to master record'},
+    {id:'V-303', sev:'info', src:'SLDC schedules', text:'Schedule revision R14 for 22 Sep arrived after the energy account was frozen.', fix:'Accept revision'},
+    {id:'V-304', sev:'bad', src:'Payments ledger', text:'September payment entries cannot be loaded until the ERP link is restored.', fix:'Retry after reconnect', needs:'erp'},
+  ],
+  imports:[
+    ['15 Oct 10:30','SLDC schedules','96 blocks','Loaded'],['15 Oct 10:30','Market prices DAM','96 blocks','Loaded'],['15 Oct 10:00','Regulatory feed','1 document','Loaded'],
+    ['15 Oct 06:10','Meter data','212 meters','Loaded with warnings'],['14 Oct 23:00','Payments ledger','—','Failed'],['14 Oct 19:42','Invoice inbox','1 invoice','Waiting to process'],['14 Oct 18:00','RPC energy account','Week 40','Loaded']],
+  scen:{demand:0, price:0, hydro:100, outage:false, sell:true}, horizon:'day', saved:[], proposals:[], epmHour:19, costSel:11,
+  regAck:false, libSel:'PPA-SSP', libDate:'2026-09-15', libQ:'', libType:'All',
+  linSel:'e-inv', linTrace:'none',
+  chat:null, agent:'auto', taskFilter:'mine',
+  audit:[
+    ['2026-10-15T10:31','System','Market prices for 16 Oct loaded (96 blocks)','DATA'],
+    ['2026-10-15T10:02','System','New notice ingested: revised fuel cost adjustment method','NOTICE-FPA'],
+    ['2026-10-14T16:20','S. Panda','Verified INV-CSA-2609, forwarded to checker','INV-CSA-2609'],
+    ['2026-10-13T11:05','System','INV-KCP-2609 reconciled: ₹30.0 lakh difference flagged','INV-KCP-2609'],
+    ['2026-10-10T15:44','System','INV-ECW-2609 reconciled: ₹26.5 lakh difference flagged','INV-ECW-2609'],
+    ['2026-10-08T12:10','System','INV-SSP-2609 reconciled: tariff version mismatch flagged','INV-SSP-2609'],
+    ['2026-10-05T17:30','System','INV-BTPC-2609 reconciled: capacity charge difference ₹3.03 cr','INV-BTPC-2609'],
+    ['2026-09-21T14:12','R. Mishra','Approved INV-BPL-2608 for ₹121.95 cr; payment held for funds','INV-BPL-2608'],
+  ],
+};}
+let S;
+try{ S = JSON.parse(localStorage.getItem(STORE_KEY)) || seedState(); }catch(e){ S = seedState(); }
+if(!S || !S.invoices) S = seedState();
+if(S.chat) S.chat=S.chat.filter(m=>!m.pending);
+function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){} }
+
+/* =========================================================
+   3. Helpers
+   ========================================================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const d2 = s => new Date(s+'T00:00:00');
+const fmtD = s => { const d=d2(s); return `${d.getDate()} ${MON[d.getMonth()]} ${d.getFullYear()}`; };
+const fmtDs = s => { const d=d2(s); return `${d.getDate()} ${MON[d.getMonth()]}`; };
+function addDaysLocal(s,n){ const d=d2(s); d.setDate(d.getDate()+n); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+const daysBetween = (a,b) => Math.round((d2(b)-d2(a))/86400000);
+const inr = (x,dp=2) => Number(x).toLocaleString('en-IN',{minimumFractionDigits:dp,maximumFractionDigits:dp});
+function money(cr){ const a=Math.abs(cr); if(a>0 && a<1) return `₹${inr(cr*100,1)} lakh`; return `₹${inr(cr)} cr`; }
+const mw = x => Math.round(x).toLocaleString('en-IN');
+function nowSim(){ const base = new Date('2026-10-15T10:42:00'); return new Date(base.getTime() + (Date.now()-T0)); }
+function stamp(){ const d=nowSim(); return `${TODAY}T${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
+function fmtStamp(s){ const [d,t]=s.split('T'); return `${fmtDs(d)} ${t}`; }
+const ROLE = {maker:{name:'S. Panda',title:'Billing Officer (Maker)',ini:'SP'}, checker:{name:'R. Mishra',title:'DGM Finance (Checker)',ini:'RM'}, director:{name:'A. Das',title:'Director Commercial',ini:'AD'}};
+function log(text, ref){ S.audit.unshift([stamp(), ROLE[S.role].name, text, ref||'']); }
+function toast(msg){ const r=$('#toastRoot'); r.innerHTML=`<div class="toast" role="status">${esc(msg)}</div>`; clearTimeout(toast.t); toast.t=setTimeout(()=>r.innerHTML='',3400); }
+const I = (p,s=16,sw=2) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const IC = {
+  alert:'<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>', doc:'<path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/>',
+  plug:'<path d="M9 2v6M15 2v6M6 8h12v4a6 6 0 0 1-12 0zM12 18v4"/>', check:'<path d="M20 6 9 17l-5-5"/>', db:'<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+  rupee:'<path d="M6 4h12M6 9h12M14 20 6 13h3a4 4 0 0 0 0-8"/>',
+};
+
+/* invoice maths */
+const billedTotal = i => i.lines.reduce((a,l)=>a+l.billed,0);
+const sysTotal = i => i.lines.reduce((a,l)=>a+l.sys,0);
+const diffOf = i => billedTotal(i)-sysTotal(i);
+const isMatch = i => Math.abs(diffOf(i)) <= billedTotal(i)*0.001;
+const payable = i => i.approvedAmt ?? (i.decision==='supplier' ? billedTotal(i) : sysTotal(i));
+const dueDate = i => addDaysLocal(i.presented, DUE_DAYS);
+function rebateNow(i, onDate=TODAY){ const d=daysBetween(i.presented,onDate); if(d<=REBATE_T1.days) return {pct:REBATE_T1.pct, until:addDaysLocal(i.presented,REBATE_T1.days)}; if(d<=REBATE_T2.days) return {pct:REBATE_T2.pct, until:addDaysLocal(i.presented,REBATE_T2.days)}; return {pct:0, until:null}; }
+const lpsPerDay = i => payable(i)*LPS_PA/100/365;
+const OPEN = ['reconciled','discrepancy','maker_ok','approved'];
+const STAGES = ['Received','Read','Reconciled','Maker verified','Checker approved','Paid'];
+function statusPill(i){
+  const m={inbox:['p-neutral','In inbox'],reconciled:['p-good','Matched · awaiting maker'],discrepancy:['p-bad','Discrepancy · awaiting maker'],maker_ok:['p-info','Awaiting checker'],approved:['p-warn','Approved · awaiting payment'],paid:['p-good','Paid'],returned:['p-neutral','Returned to supplier']}[i.status];
+  return `<span class="pill ${m[0]}">${m[1]}</span>`;
+}
+function stageIndex(st){ return {inbox:0,reconciled:2,discrepancy:2,returned:2,maker_ok:3,approved:4,paid:5}[st]; }
+function deadlineInfo(i){
+  if(i.status==='paid'||i.status==='returned'||i.status==='inbox') return null;
+  const r=rebateNow(i), due=dueDate(i), dl=daysBetween(TODAY,due);
+  if(r.pct>0){ const left=daysBetween(TODAY,r.until); return {kind:'rebate', pct:r.pct, until:r.until, left, amt:payable(i)*r.pct/100, due, dueLeft:dl}; }
+  return {kind:'lps', due, left:dl, perDay:lpsPerDay(i)};
+}
+function deadlinePill(i){
+  const d=deadlineInfo(i); if(!d) return '<span class="muted small">—</span>';
+  if(d.kind==='rebate'){ const cls=d.left<=0?'p-bad':d.left<=2?'p-warn':'p-neutral'; return `<span class="pill ${cls}">${d.pct}% rebate ${d.left<=0?'ends today':`· ${d.left}d left`}</span>`; }
+  const cls=d.left<=3?'p-bad':d.left<=10?'p-warn':'p-neutral'; return `<span class="pill ${cls}">${d.left<0?`LPS accruing`:`Due in ${d.left}d`}</span>`;
+}
+function citeBtn(c){
+  if(c.startsWith('DATA:')) return `<button class="cite" data-action="nav" data-to="lineage">${esc(c.slice(5))}</button>`;
+  const [doc,cl]=c.split('@'); return `<button class="cite" data-action="open-doc" data-doc="${doc}">${doc}${cl?` § ${esc(cl)}`:''}</button>`;
+}
+function applicableVersion(doc, date){ return doc.versions.find(v=>v.from<=date && date<=v.to) || null; }
+
+/* =========================================================
+   4. EPM engine — hourly merit-order dispatch with block contract & corridor limit
+   ========================================================= */
+function epmRun(sc){
+  const dem = DEMAND.map(d=>Math.round(d*(1+sc.demand/100)));
+  const sup = {
+    thermal: H24.map(()=>2400 + (sc.outage?594:1188) + 440 + 150),
+    hydro: HYDRO.map(v=>Math.round(v*sc.hydro/100)),
+    solar: SOLARF.map(f=>Math.round(1200*f)),
+    wind: WINDF.map(f=>Math.round(350*f)),
+  };
+  const avail = H24.map(h=>sup.thermal[h]+sup.hydro[h]+sup.solar[h]+sup.wind[h]);
+  const dam = DAMP.map(p=>+(p*(1+sc.price/100)).toFixed(2));
+  const OPTS = [
+    {id:'otc', name:'OTC peak block (bilateral, 17–23 h)', short:'OTC block', price:()=>6.20, lim:500, hrs:[17,18,19,20,21,22], imp:true, color:'--c-otc'},
+    {id:'bank', name:'Banking return from partner state', short:'Banking', price:()=>3.40, lim:250, hrs:[18,19,20,21], imp:true, color:'--c-bank'},
+    {id:'dam', name:'Day-ahead market purchase', short:'Exchange DAM', price:h=>dam[h], lim:800, imp:true, color:'--c-dam'},
+    {id:'rtm', name:'Real-time market (risk-adjusted)', short:'Exchange RTM', price:h=>+(dam[h]*1.04).toFixed(2), lim:300, imp:true, color:'--c-rtm'},
+    {id:'dr', name:'Industrial demand response', short:'Demand response', price:()=>7.00, lim:150, imp:false, color:'--c-dr'},
+    {id:'peak', name:'Standby gas unit (in-state)', short:'Standby gas', price:()=>8.40, lim:200, imp:false, color:'--c-peak'},
+  ];
+  function dispatch(otcMW, allow){
+    const rows = H24.map(h=>{
+      let need = dem[h]-avail[h], imp=0, cost=0, alloc={}, binding=false;
+      const o = OPTS[0];
+      if(allow.otc && o.hrs.includes(h) && otcMW>0){ alloc.otc=otcMW; imp+=otcMW; cost+=otcMW*o.price(h)/1e4; need-=otcMW; }
+      const rest = OPTS.slice(1).filter(x=>allow[x.id] && (!x.hrs||x.hrs.includes(h))).sort((a,b)=>a.price(h)-b.price(h));
+      for(const x of rest){ if(need<=0) break; let cap=Math.min(x.lim, need); if(x.imp){ const room=ATC-imp; if(room<cap){ cap=Math.max(0,room); binding=true; } } if(cap<=0) continue; alloc[x.id]=cap; if(x.imp) imp+=cap; cost+=cap*x.price(h)/1e4; need-=cap; }
+      const unmet=Math.max(0,need); let sold=0, rev=0;
+      if(need<0 && sc.sell){ sold=Math.min(-need, EXPORT_LIM); rev=sold*dam[h]*0.97/1e4; }
+      return {h, dem:dem[h], avail:avail[h], gap:dem[h]-avail[h], alloc, cost, unmet, sold, rev, binding, imp};
+    });
+    const cost=rows.reduce((a,r)=>a+r.cost,0), rev=rows.reduce((a,r)=>a+r.rev,0), unmet=rows.reduce((a,r)=>a+r.unmet,0);
+    return {rows, cost, rev, unmet, net:cost-rev, obj:cost-rev+unmet*VOLL/1e4};
+  }
+  const all={otc:1,bank:1,dam:1,rtm:1,dr:1,peak:1};
+  let best=null;
+  for(let m=0;m<=500;m+=50){ const r=dispatch(m,all); r.otcMW=m; if(!best||r.obj<best.obj-1e-9) best=r; }
+  const base=dispatch(0,{dam:1,rtm:1,dr:1,peak:1}); base.otcMW=0;
+  const byOpt = OPTS.map(o=>{ let mwh=0,c=0,peak=0; best.rows.forEach(r=>{ const v=r.alloc[o.id]||0; mwh+=v; c+=v*o.price(r.h)/1e4; peak=Math.max(peak,v); }); return {...o, mu:mwh/1000, cost:c, avg: mwh? c*1e4/mwh:0, peak}; });
+  const defHours = best.rows.filter(r=>r.gap>0).map(r=>r.h);
+  return {dem, sup, avail, dam, opts:OPTS, best, base, byOpt, defHours,
+    peakDem:Math.max(...dem), peakGap:Math.max(0,...best.rows.map(r=>r.gap)), defMU:best.rows.reduce((a,r)=>a+Math.max(0,r.gap),0)/1000,
+    surplusMU:best.rows.reduce((a,r)=>a+Math.max(0,-r.gap),0)/1000, bindingHrs:best.rows.filter(r=>r.binding).map(r=>r.h)};
+}
+const hrLabel = h => `${String(h).padStart(2,'0')}:00`;
+function hourRanges(hs){ if(!hs.length) return 'none'; const out=[]; let s=hs[0],p=hs[0]; for(const h of hs.slice(1)){ if(h===p+1){p=h;continue;} out.push([s,p]); s=p=h; } out.push([s,p]); return out.map(([a,b])=>`${String(a).padStart(2,'0')}–${String(b+1).padStart(2,'0')} h`).join(', '); }
+
+/* =========================================================
+   5. Presentation helpers
+   ========================================================= */
+S.billTab = S.billTab || 'recon'; S.dataTab = S.dataTab || 'lineage'; S.evSel = S.evSel ?? -1;
+const OPTC = {otc:'var(--o-otc)',bank:'var(--o-bank)',dam:'var(--o-dam)',rtm:'var(--o-rtm)',dr:'var(--o-dr)',peak:'var(--o-peak)'};
+function statusPill(i){
+  const m={inbox:['','In inbox'],reconciled:['good','Matched'],discrepancy:['bad','Discrepancy'],maker_ok:['info','With checker'],approved:['warn','Approved, unpaid'],paid:['good','Paid'],returned:['','Returned to supplier']}[i.status];
+  return `<span class="st ${m[0]}">${m[1]}</span>`;
+}
+function stageOwner(i){ return {inbox:'Billing Officer',reconciled:'Billing Officer',discrepancy:'Billing Officer',maker_ok:'DGM Finance',approved:'DGM Finance',paid:'—',returned:'Supplier'}[i.status]; }
+function deadlinePill(i){
+  const d=deadlineInfo(i); if(!d) return '<span class="faint">—</span>';
+  if(d.kind==='rebate') return `<span class="flag ${d.left<=0?'bad':d.left<=2?'warn':''}">${d.pct}% rebate · ${d.left<=0?'ends today':d.left+'d'}</span>`;
+  return `<span class="flag ${d.left<=3?'bad':d.left<=10?'warn':''}">Due ${d.left<0?'passed':'in '+d.left+'d'}</span>`;
+}
+function citeBtn(c){
+  if(c.startsWith('DATA:')) return `<button class="ref" data-action="go" data-nav="data:lineage">${esc(c.slice(5))}</button>`;
+  const [doc,cl]=c.split('@'); return `<button class="ref" data-action="open-doc" data-doc="${doc}">${doc}${cl?` §${esc(cl)}`:''}</button>`;
+}
+const stat=(l,v,c='',tone='',nav='')=> nav?`<button class="stat" data-action="go" data-nav="${nav}"><div class="stat-l">${l}</div><div class="stat-v ${tone}">${v}</div><div class="stat-c">${c}</div></button>`:`<div class="stat"><div class="stat-l">${l}</div><div class="stat-v ${tone}">${v}</div><div class="stat-c">${c}</div></div>`;
+const panel=(title,tools,body,flush)=>`<section class="panel">${title!==null?`<div class="ph"><h2>${title}</h2>${tools||''}</div>`:''}<div class="pb ${flush?'flush':''}">${body}</div></section>`;
+const tipAttr = lines => `data-tip="${esc(lines.join('\n'))}"`;
+const leg = items => `<div class="legend">${items.map(([n,c])=>`<span><i style="background:${c}"></i>${esc(n)}</span>`).join('')}</div>`;
+function crumbs(parts){ return `<div class="crumbs">${parts.map(([l,nav],k)=>nav?`<button data-action="go" data-nav="${nav}">${l}</button><span class="faint">/</span>`:`<span>${l}</span>`).join('')}</div>`; }
+function openBills(){ return S.invoices.filter(i=>OPEN.includes(i.status)); }
+function stakeOf(i){ const d=deadlineInfo(i); if(!d) return null; return d.kind==='rebate'?{amt:d.amt,txt:`${money(d.amt)} rebate`,days:d.left,kind:'rebate'}:{amt:d.perDay*30,txt:`${money(d.perDay*30)}/mo LPS`,days:d.left,kind:'lps'}; }
+
+/* =========================================================
+   6. Charts — each one answers one question
+   ========================================================= */
+// Q: Where is tomorrow short, and what fills the gap? (blockwise step chart)
+function posChart(e, {h=300, sel=-1, purchases=true, action=null, labels=true}={}){
+  const b=e.best, W=780, pad={l:46,r:labels?92:14,t:26,b:24}, iw=W-pad.l-pad.r, ih=h-pad.t-pad.b;
+  const dem=e.dem, av=e.avail, cover=b.rows.map(r=>r.avail+(purchases?Object.values(r.alloc).reduce((a,v)=>a+v,0):0));
+  const lo=Math.floor((Math.min(...dem,...av)-300)/500)*500, hi=Math.ceil((Math.max(...dem,...cover)+250)/500)*500;
+  const x=t=>pad.l+t/24*iw, y=v=>pad.t+ih-(v-lo)/(hi-lo)*ih;
+  const step=vals=>vals.map((v,i)=>`${i?'L':'M'}${x(i)},${y(v)}L${x(i+1)},${y(v)}`).join('');
+  const band=(lower,upper)=>{ let p=upper.map((v,i)=>`${i?'L':'M'}${x(i)},${y(v)}L${x(i+1)},${y(v)}`).join(''); for(let i=lower.length-1;i>=0;i--) p+=`L${x(i+1)},${y(lower[i])}L${x(i)},${y(lower[i])}`; return p+'Z'; };
+  let g=`<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#FEE4E2"/><line x1="0" y1="0" x2="0" y2="6" stroke="#B42318" stroke-width="1.6"/></pattern></defs>`;
+  for(let v=lo; v<=hi; v+=500){ g+=`<line x1="${pad.l}" x2="${pad.l+iw}" y1="${y(v)}" y2="${y(v)}" stroke="#EDEFF2"/>${(v%1000===0)?`<text x="${pad.l-6}" y="${y(v)+4}" text-anchor="end">${mw(v)}</text>`:''}`; }
+  for(let t=0;t<=24;t+=3) g+=`<text x="${x(t)}" y="${h-6}" text-anchor="middle">${String(t).padStart(2,'0')}:00</text>`;
+  if(sel>=0) g+=`<rect x="${x(sel)}" y="${pad.t}" width="${iw/24}" height="${ih}" fill="rgba(30,79,216,.07)"/>`;
+  g+=`<path d="${band(av.map(()=>lo),av)}" fill="#EEF0F3"/>`;
+  g+=`<path d="${band(dem.map((d,i)=>Math.min(d,av[i])),av)}" fill="var(--surplus)"/>`;
+  if(purchases){ let cum=av.slice(); e.opts.forEach(o=>{ const add=b.rows.map(r=>r.alloc[o.id]||0); if(!add.some(v=>v)) return; const up=cum.map((c,i)=>c+add[i]); g+=`<path d="${band(cum,up)}" fill="${OPTC[o.id]}" opacity=".85"/>`; cum=up; });
+    g+=`<path d="${band(cover,cover.map((c,i)=>Math.max(c,dem[i])))}" fill="url(#hatch)"/>`; }
+  else g+=`<path d="${band(av,av.map((a,i)=>Math.max(a,dem[i])))}" fill="url(#hatch)"/>`;
+  g+=`<path d="${step(av)}" fill="none" stroke="var(--supply-l)" stroke-width="1.5"/>`;
+  g+=`<path d="${step(dem)}" fill="none" stroke="var(--ink)" stroke-width="2"/>`;
+  const gi=b.rows.reduce((m,r,i)=>r.gap>b.rows[m].gap?i:m,0), gv=b.rows[gi].gap;
+  if(gv>0){ const cx=x(gi)+iw/48; g+=`<line x1="${cx}" x2="${cx}" y1="${y(dem[gi])}" y2="${y(av[gi])}" stroke="var(--bad)" stroke-width="1.5" marker-start="" /><line x1="${cx-5}" x2="${cx+5}" y1="${y(dem[gi])}" y2="${y(dem[gi])}" stroke="var(--bad)" stroke-width="1.5"/><line x1="${cx-5}" x2="${cx+5}" y1="${y(av[gi])}" y2="${y(av[gi])}" stroke="var(--bad)" stroke-width="1.5"/><rect x="${cx-96}" y="${(y(dem[gi])+y(av[gi]))/2-9}" width="86" height="18" rx="3" fill="#fff" stroke="var(--bad)"/><text x="${cx-53}" y="${(y(dem[gi])+y(av[gi]))/2+4}" text-anchor="middle" style="fill:var(--bad);font-weight:600">${mw(gv)} MW short</text>`; }
+  if(labels){ g+=`<text x="${pad.l+iw+6}" y="${y(dem[23])+4}" style="fill:var(--ink);font-weight:600">Demand</text><text x="${pad.l+iw+6}" y="${y(av[23])+(Math.abs(y(av[23])-y(dem[23]))<14?16:4)}">Contracted</text>`; }
+  b.rows.forEach((r,i)=>{ const L=[`${hrLabel(i)}–${hrLabel((i+1)%24)}`,`Demand  ${mw(r.dem)} MW`,`Contracted  ${mw(r.avail)} MW`, r.gap>0?`Short  ${mw(r.gap)} MW`:`Surplus  ${mw(-r.gap)} MW`]; if(purchases) Object.entries(r.alloc).forEach(([k,v])=>L.push(`+ ${e.opts.find(o=>o.id===k).short}  ${mw(v)} MW`)); if(r.unmet) L.push(`Unserved  ${mw(r.unmet)} MW`); g+=`<rect class="hit" x="${x(i)}" y="${pad.t}" width="${iw/24}" height="${ih}" ${tipAttr(L)} ${action?`data-action="${action}" data-id="${i}"`:''}/>`; });
+  return `<svg class="chart" viewBox="0 0 ${W} ${h}" role="img" aria-label="Hourly demand against contracted supply">${g}</svg>`;
+}
+// Q: At this hour, why were these options chosen? (merit order / supply stack)
+function meritChart(e, hh){
+  const r=e.best.rows[hh], need=r.gap;
+  if(need<=0) return `<div class="callout good">Contracted supply exceeds demand by ${mw(-need)} MW at ${hrLabel(hh)}. No purchase needed${r.sold?`; ${mw(r.sold)} MW offered on the exchange at ₹${(e.dam[hh]*0.97).toFixed(2)}/kWh net`:''}.</div>`;
+  const os=e.opts.filter(o=>!o.hrs||o.hrs.includes(hh)).map(o=>({...o,p:o.price(hh),used:r.alloc[o.id]||0})).sort((a,b)=>a.p-b.p);
+  const W=440,H=230,pad={l:40,r:10,t:18,b:30}, iw=W-pad.l-pad.r, ih=H-pad.t-pad.b, tot=os.reduce((a,o)=>a+o.lim,0), mp=Math.ceil(Math.max(...os.map(o=>o.p))*1.15);
+  const x=v=>pad.l+v/tot*iw, y=v=>pad.t+ih-v/mp*ih;
+  let g=''; for(let v=0;v<=mp;v+=2) g+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="#EDEFF2"/><text x="${pad.l-6}" y="${y(v)+4}" text-anchor="end">₹${v}</text>`;
+  let c=0; os.forEach(o=>{ g+=`<rect x="${x(c)}" y="${y(o.p)}" width="${Math.max(1,x(c+o.lim)-x(c)-1)}" height="${y(0)-y(o.p)}" fill="#E7EAEE"/>`; if(o.used) g+=`<rect x="${x(c)}" y="${y(o.p)}" width="${Math.max(1,x(c+o.used)-x(c)-1)}" height="${y(0)-y(o.p)}" fill="${OPTC[o.id]}"/>`; g+=`<text x="${(x(c)+x(c+o.lim))/2}" y="${y(o.p)-4}" text-anchor="middle" style="fill:var(--ink2);font-size:10.5px">₹${o.p.toFixed(2)}</text><rect class="hit" x="${x(c)}" y="${pad.t}" width="${x(c+o.lim)-x(c)}" height="${ih}" ${tipAttr([o.name,`Price ₹${o.p.toFixed(2)}/kWh`,`Available ${mw(o.lim)} MW${o.imp?' (import)':' (in-state)'}`,`Bought ${mw(o.used)} MW`])}/>`; c+=o.lim; });
+  g+=`<line x1="${x(Math.min(need,tot))}" x2="${x(Math.min(need,tot))}" y1="${pad.t-6}" y2="${y(0)}" stroke="var(--bad)" stroke-dasharray="4 3" stroke-width="1.5"/><text x="${x(Math.min(need,tot))+4}" y="${pad.t+4}" style="fill:var(--bad);font-weight:600">need ${mw(need)} MW</text>`;
+  g+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y(0)}" y2="${y(0)}" stroke="#C9CED6"/><text x="${pad.l}" y="${H-8}">0</text><text x="${W-pad.r}" y="${H-8}" text-anchor="end">${mw(tot)} MW available, cheapest first</text>`;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Options ranked by price">${g}</svg>`;
+}
+// Q: How do we get from the supplier's figure to ours? (waterfall)
+function waterfall(i){
+  const bt=billedTotal(i), st=sysTotal(i), steps=i.lines.filter(l=>Math.abs(l.billed-l.sys)>0.004);
+  if(!steps.length) return '';
+  const rng=bt-st, lo=st-rng*0.9, hi=bt+rng*0.3, W=560, H=210, pad={l:12,r:12,t:22,b:40}, n=steps.length+2, bw=(W-pad.l-pad.r)/n;
+  const y=v=>pad.t+(H-pad.t-pad.b)*(1-(v-lo)/(hi-lo));
+  let g='', cur=bt;
+  const bar=(k,a,b2,fill,label,val,brk)=>{ const x0=pad.l+k*bw+bw*.2, w=bw*.6; g+=`<rect x="${x0}" y="${y(Math.max(a,b2))}" width="${w}" height="${Math.abs(y(a)-y(b2))}" fill="${fill}"/><text x="${x0+w/2}" y="${y(Math.max(a,b2))-6}" text-anchor="middle" style="fill:var(--ink);font-weight:600">${val}</text><text x="${x0+w/2}" y="${H-22}" text-anchor="middle">${esc(label)}</text>${brk?`<path d="M${x0-2},${y(lo)-6} l6,-4 l6,4 l6,-4 l6,4 l6,-4 l6,4 l${w-36+4},0" stroke="#fff" stroke-width="3" fill="none"/>`:''}`; };
+  bar(0,lo,bt,'#9AA3AF','Supplier bill',money(bt),true);
+  steps.forEach((l,k)=>{ const d=l.billed-l.sys; if(k<steps.length) g+=`<line x1="${pad.l+k*bw+bw*.8}" x2="${pad.l+(k+1)*bw+bw*.2}" y1="${y(cur)}" y2="${y(cur)}" stroke="#9AA3AF" stroke-dasharray="2 2"/>`; bar(k+1,cur-d,cur,'var(--bad)',l.label.split(' (')[0],'−'+money(d)); cur-=d; });
+  g+=`<line x1="${pad.l+(n-2)*bw+bw*.8}" x2="${pad.l+(n-1)*bw+bw*.2}" y1="${y(cur)}" y2="${y(cur)}" stroke="#9AA3AF" stroke-dasharray="2 2"/>`;
+  bar(n-1,lo,st,'var(--accent)','Payable (system)',money(st),true);
+  g+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y(lo)}" y2="${y(lo)}" stroke="#C9CED6"/><text x="${pad.l}" y="${H-6}" style="font-size:10.5px">Axis starts at ${money(lo)} to make the adjustment visible</text>`;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="From supplier bill to payable amount">${g}</svg>`;
+}
+// Q: Which bills lose money if we wait, and when? (payment calendar)
+function payCalendar(bills, {from='2026-09-01', to='2026-12-05', compact=false}={}){
+  if(!bills.length) return '<div class="empty">No open bills.</div>';
+  const W=980, lw=compact?10:230, rw=compact?10:150, rh=28, top=24, H=top+bills.length*rh+8, span=daysBetween(from,to), iw=W-lw-rw;
+  const x=d=>lw+Math.max(0,Math.min(span,daysBetween(from,d)))/span*iw;
+  let g='';
+  ['2026-09-01','2026-10-01','2026-11-01','2026-12-01'].filter(d=>d>=from&&d<=to).forEach(d=>{ g+=`<line x1="${x(d)}" x2="${x(d)}" y1="${top-4}" y2="${H}" stroke="#EDEFF2"/><text x="${x(d)+3}" y="${top-8}">${fmtDs(d)}</text>`; });
+  bills.forEach((i,k)=>{ const p=i.presented, yy=top+k*rh+5, hh=rh-12, segs=[[p,addDaysLocal(p,5),'#2E9E62'],[addDaysLocal(p,5),addDaysLocal(p,30),'#A8DDBD'],[addDaysLocal(p,30),addDaysLocal(p,45),'#E3E6EA'],[addDaysLocal(p,45),to,'#F6B8AD']];
+    segs.forEach(([a,b2,c])=>{ if(b2<=from||a>=to) return; g+=`<rect x="${x(a)}" y="${yy}" width="${Math.max(0,x(b2)-x(a))}" height="${hh}" fill="${c}"/>`; });
+    const s=stakeOf(i);
+    if(!compact) g+=`<text x="0" y="${yy+hh-3}" style="fill:var(--ink);font-family:var(--fm);font-size:11.5px">${i.id}</text><text x="128" y="${yy+hh-3}">${money(payable(i))}</text><text x="${W}" y="${yy+hh-3}" text-anchor="end" style="fill:${s&&s.days<=3?'var(--bad)':'var(--ink2)'};font-weight:${s&&s.days<=3?600:400}">${s?s.txt:''}</text>`;
+    g+=`<rect class="hit" x="0" y="${yy-4}" width="${W}" height="${rh}" data-action="go" data-nav="bill:${i.id}" ${tipAttr([`${i.id} · ${SUP[i.sup].short}`,`Presented ${fmtD(p)}`,`1.5% rebate to ${fmtDs(addDaysLocal(p,5))} · 1% to ${fmtDs(addDaysLocal(p,30))}`,`Due ${fmtD(addDaysLocal(p,45))}, LPS after`,`Stage: ${statusPill(i).replace(/<[^>]+>/g,'')}`])}/>`; });
+  g+=`<line x1="${x(TODAY)}" x2="${x(TODAY)}" y1="${top-14}" y2="${H}" stroke="var(--ink)" stroke-width="1.5"/><text x="${x(TODAY)}" y="${top-14}" text-anchor="middle" style="fill:var(--ink);font-weight:600" dy="-2">Today</text>`;
+  return `<svg class="chart" viewBox="0 -12 ${W} ${H+12}" role="img" aria-label="Payment calendar">${g}</svg>`+(compact?'':leg([['1.5% rebate window','#2E9E62'],['1% rebate window','#A8DDBD'],['No rebate, before due date','#E3E6EA'],['Late payment surcharge','#F6B8AD']]));
+}
+// Q: What are we spending, and what drove the change?
+function costChart(sel){
+  const W=780,H=230,pad={l:40,r:10,t:26,b:24}, n=12, iw=W-pad.l-pad.r, ih=H-pad.t-pad.b, bw=iw/n;
+  const mk=COST.series.find(s=>s.name==='Market purchases').v, tot=COST.months.map((_,k)=>COST.series.reduce((a,s)=>a+s.v[k],0)), con=tot.map((t,k)=>t-mk[k]);
+  const mx=1200, y=v=>pad.t+ih-v/mx*ih;
+  let g=''; for(let v=0;v<=mx;v+=300) g+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="#EDEFF2"/><text x="${pad.l-6}" y="${y(v)+4}" text-anchor="end">${v}</text>`;
+  COST.months.forEach((m,k)=>{ const x0=pad.l+k*bw+bw*.18, w=bw*.64; g+=`<rect x="${x0}" y="${y(con[k])}" width="${w}" height="${y(0)-y(con[k])}" fill="${k===sel?'#8C96A5':'#CBD1DA'}"/><rect x="${x0}" y="${y(tot[k])}" width="${w}" height="${y(con[k])-y(tot[k])}" fill="var(--o-dam)" opacity="${k===sel?1:.75}"/><text x="${x0+w/2}" y="${H-6}" text-anchor="middle" style="${k===sel?'fill:var(--ink);font-weight:600':''}">${m}</text>${k===sel?`<text x="${x0+w/2}" y="${y(tot[k])-6}" text-anchor="middle" style="fill:var(--ink);font-weight:600">₹${mw(tot[k])}</text>`:''}<rect class="hit ${k===sel?'on':''}" x="${pad.l+k*bw}" y="${pad.t}" width="${bw}" height="${ih}" data-action="cost-month" data-id="${k}" ${tipAttr([`${m}: ₹${mw(tot[k])} cr`,`Contracted sources ₹${mw(con[k])} cr`,`Market purchases ₹${mk[k]} cr (${(mk[k]/tot[k]*100).toFixed(1)}%)`])}/>`; });
+  const pk=mk.indexOf(Math.max(...mk)), px=pad.l+pk*bw+bw/2;
+  g+=`<path d="M${px-bw*1.1},${y(tot[pk])-16} H${px+bw*.4}" stroke="var(--o-dam)" stroke-width="1"/><text x="${px-bw*1.1}" y="${y(tot[pk])-20}" style="fill:var(--o-dam);font-weight:600">Summer market buying</text>`;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly power purchase cost">${g}</svg>`;
+}
+function outlookChart(){
+  const vals=OUTLOOK.con.map((c,i)=>c-OUTLOOK.req[i]), W=780,H=220,pad={l:46,r:10,t:16,b:26}, n=12, iw=W-pad.l-pad.r, ih=H-pad.t-pad.b, bw=iw/n, m=400, y=v=>pad.t+ih/2-v/m*(ih/2);
+  let g=''; [-400,-200,0,200,400].forEach(v=>g+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="${v?'#EDEFF2':'#9AA3AF'}"/><text x="${pad.l-6}" y="${y(v)+4}" text-anchor="end">${v>0?'+':''}${v}</text>`);
+  vals.forEach((v,i)=>{ const x0=pad.l+i*bw+bw*.22,w=bw*.56; g+=`<rect x="${x0}" y="${Math.min(y(v),y(0))}" width="${w}" height="${Math.abs(y(v)-y(0))}" fill="${v<0?'var(--bad)':'#2E9E62'}" opacity=".85"/><text x="${x0+w/2}" y="${v<0?y(v)+13:y(v)-5}" text-anchor="middle" style="fill:var(--ink2)">${v>0?'+':''}${v}</text><text x="${x0+w/2}" y="${H-6}" text-anchor="middle">${OUTLOOK.months[i]}</text><rect class="hit" x="${pad.l+i*bw}" y="${pad.t}" width="${bw}" height="${ih}" ${tipAttr([OUTLOOK.months[i],`Requirement ${mw(OUTLOOK.req[i])} MU`,`Contracted ${mw(OUTLOOK.con[i])} MU`,`Balance ${v>0?'+':''}${v} MU`])}/>`; });
+  g+=`<rect x="${pad.l+4*bw}" y="${pad.t}" width="${4*bw}" height="${ih}" fill="none" stroke="var(--bad)" stroke-dasharray="3 3"/><text x="${pad.l+4*bw+4}" y="${pad.t+12}" style="fill:var(--bad);font-weight:600">Summer gap</text>`;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly surplus and deficit">${g}</svg>`;
+}
+
+/* =========================================================
+   7. Work items
+   ========================================================= */
+function tasks(){
+  const t=[];
+  S.invoices.forEach(i=>{ const s=stakeOf(i), stake=s?s.txt+(s.days<=0?' · today':` · ${s.days}d`):'';
+    const P=s&&s.days<=3?'High':'Normal';
+    if(i.status==='discrepancy') t.push({role:'maker',ref:i.id,title:`Verify ${i.id}`,sub:`${SUP[i.sup].short} · ${money(diffOf(i))} in question`,stake,pri:P,nav:'bill:'+i.id,amt:s?s.amt:0});
+    if(i.status==='reconciled') t.push({role:'maker',ref:i.id,title:`Verify ${i.id}`,sub:`${SUP[i.sup].short} · matched`,stake,pri:P,nav:'bill:'+i.id,amt:s?s.amt:0});
+    if(i.status==='maker_ok') t.push({role:'checker',ref:i.id,title:`Approve ${i.id}`,sub:`${SUP[i.sup].short} · ${money(payable(i))}`,stake,pri:P,nav:'bill:'+i.id,amt:s?s.amt:0});
+    if(i.status==='approved') t.push({role:'checker',ref:i.id,title:`Release payment ${i.id}`,sub:`${SUP[i.sup].short} · ${money(payable(i))}`,stake,pri:P,nav:'bill:'+i.id,amt:s?s.amt:0});
+    if(i.status==='inbox') t.push({role:'maker',ref:i.id,title:`Import new bill`,sub:`${SUP[i.sup].short} · in inbox`,stake:'Rebate clock running',pri:'Normal',nav:'billing',amt:0});
+  });
+  S.proposals.filter(p=>p.status==='pending').forEach(p=>t.push({role:'director',ref:p.id,title:`Approve ${p.id}`,sub:`Day-ahead plan · ${money(p.cost)}`,stake:'Bids close 12:00',pri:'High',nav:'portfolio',amt:p.cost}));
+  if(!S.regAck) t.push({role:'maker',ref:'NOTICE-FPA',title:'Review new notice',sub:'Fuel cost adjustment, thermal',stake:'Oct bills onward',pri:'Normal',nav:'doc:NOTICE-FPA',amt:0});
+  S.issues.forEach(v=>t.push({role:'maker',ref:v.id,title:`Data issue ${v.id}`,sub:v.text,stake:v.src,pri:v.sev==='bad'?'High':'Normal',nav:'data:validation',amt:0}));
+  return t.sort((a,b)=>(a.pri==='High'?0:1)-(b.pri==='High'?0:1)||b.amt-a.amt);
+}
+const ROLENAME={maker:'Billing Officer',checker:'DGM Finance',director:'Director (Commercial)'};
+
+/* =========================================================
+   8. Pages
+   ========================================================= */
+const NAV=[['overview','Overview','<path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/>'],
+  ['data','Data hub','<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>'],null,
+  ['portfolio','Portfolio (EPM)','<path d="M3 3v18h18"/><path d="m7 15 4-5 4 3 5-7"/>'],
+  ['billing','Billing','<path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h8M9 17h5"/>'],
+  ['library','Regulations & contracts','<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/>'],null,
+  ['assistant','Assistant','<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'],
+  ['approvals','Approvals','<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>']];
+let route='overview';
+function renderNav(){
+  const mine=tasks().filter(t=>t.role===S.role), hot=mine.some(t=>t.pri==='High'), active=route==='bill'?'billing':route;
+  const flagged=S.invoices.filter(i=>i.status==='discrepancy').length;
+  $('#nav').innerHTML=NAV.map(n=>!n?'<div class="sep"></div>':`<button type="button" data-action="go" data-nav="${n[0]}" ${active===n[0]?'aria-current="page"':''}>${I(n[2],16,1.8)}<span>${n[1]}</span>${n[0]==='approvals'&&mine.length?`<span class="cnt ${hot?'hot':''}">${mine.length}</span>`:n[0]==='billing'&&flagged?`<span class="cnt">${flagged}</span>`:''}</button>`).join('')+`<div class="side-foot"><div>Figures are illustrative. Actions are saved in this browser only.</div><button data-action="reset">Reset demo</button></div>`;
+}
+
+/* ---- Overview ---- */
+function vOverview(){
+  const e=epmRun(S.scen), open=openBills(), pend=open.reduce((a,i)=>a+payable(i),0), disp=S.invoices.filter(i=>i.status==='discrepancy').reduce((a,i)=>a+diffOf(i),0);
+  const risk=open.map(stakeOf).filter(s=>s&&s.days<=7), riskAmt=risk.reduce((a,s)=>a+s.amt,0);
+  const k=S.costSel, prev=k-1, tot=COST.months.map((_,j)=>COST.series.reduce((a,s)=>a+s.v[j],0));
+  const mine=tasks().slice(0,6);
+  const ok=S.connectors.filter(c=>c.status==='ok').length;
+  const cal=open.slice().sort((a,b)=>(stakeOf(a).days-stakeOf(b).days));
+  return `
+  <div class="phead"><div><h1>Overview</h1><div class="sub">${fmtD(TODAY)} · position for ${fmtD(TOMORROW)} and open payables</div></div></div>
+  <div class="stats">
+    ${stat("Tomorrow's peak shortfall",`${mw(e.peakGap)} <small>MW</small>`,`${e.defMU.toFixed(2)} MU to buy · peak demand ${mw(e.peakDem)} MW`,'','portfolio')}
+    ${stat('Recommended purchase cost',money(e.best.cost),`${money(e.base.cost-e.best.cost)} less than buying on the exchange only`,'','portfolio')}
+    ${stat('Open payables',money(pend),`${open.length} bills · ${money(disp)} under dispute`,'','billing')}
+    ${stat('Money at risk in 7 days',money(riskAmt),`${risk.length} bills with a rebate or due date this week`,riskAmt?'neg':'','billing')}
+  </div>
+  <div class="cols c21">
+    ${panel(`Tomorrow, ${fmtDs(TOMORROW)}: demand against contracted supply`,`<button class="btn sm" data-action="go" data-nav="portfolio">Open plan</button>`, posChart(e,{h:260,purchases:false})+leg([['Contracted supply','#EEF0F3'],['Surplus','#D9F0E1'],['Shortfall to buy','#F6B8AD']]))}
+    ${panel('Needs action',`<span class="note">${ROLENAME[S.role]} and others</span>`, mine.map(t=>`<div class="act" data-action="go" data-nav="${t.nav}"><span class="st ${t.pri==='High'?'bad':''}"></span><div><div>${esc(t.title)}</div><div class="who">${esc(t.sub)} · ${ROLENAME[t.role]}</div></div><div class="amt small ${t.pri==='High'?'neg':''}">${esc(t.stake)}</div></div>`).join(''),true)}
+  </div>
+  ${panel('Payment calendar',`<span class="note">Each bar runs from presentation; what each open bill is worth if paid today</span>`, payCalendar(cal))}
+  <div class="cols c21">
+    ${panel('Power purchase cost, ₹ cr per month',`<span class="note">Click a month</span>`, costChart(k)+leg([['Contracted sources','#CBD1DA'],['Market purchases','var(--o-dam)']]))}
+    ${panel(`${COST.months[k]} by source`,`<span class="note">vs ${COST.months[Math.max(0,prev)]}</span>`,`<div class="tw"><table><thead><tr><th>Source</th><th class="num">₹ cr</th><th class="num">Change</th></tr></thead><tbody>${COST.series.map(s=>{const dd=prev>=0?s.v[k]-s.v[prev]:0;return `<tr><td>${s.name}</td><td class="num">${s.v[k]}</td><td class="num ${dd>0?'neg':dd<0?'pos':'faint'}">${dd>0?'+':''}${dd||'0'}</td></tr>`;}).join('')}</tbody><tfoot><tr><td>Total</td><td class="num">${mw(tot[k])}</td><td class="num">${prev>=0?((tot[k]-tot[prev])>0?'+':'')+(tot[k]-tot[prev]):''}</td></tr></tfoot></table></div>`,true)}
+  </div>
+  ${panel('Data feeds',`<button class="btn sm" data-action="go" data-nav="data:sources">Data hub</button>`,`<div class="tw"><table><tbody>${S.connectors.map(c=>`<tr><td>${esc(c.name)}</td><td class="muted">${c.last}</td><td><span class="st ${c.status==='ok'?'good':c.status==='warn'?'warn':'bad'}">${c.status==='ok'?'Current':c.status==='warn'?(c.note||'Warnings'):(c.note||'Failed')}</span></td></tr>`).join('')}</tbody></table></div>`,true).replace('<h2>Data feeds</h2>',`<h2>Data feeds <span class="muted" style="font-weight:400">· ${ok} of ${S.connectors.length} current</span></h2>`)}`;
+}
+
+/* ---- Data hub ---- */
+const LIN={
+  src:[['sldc','SLDC schedules','every 15 min'],['wbes','WBES / RPC accounts','weekly'],['meter','Meter data (ABT)','daily'],['inbox','Invoice inbox','continuous'],['ppa','Contract repository','on change'],['reg','Regulatory feed','hourly'],['mkt','Market prices','every 15 min'],['erp','Payments ledger (ERP)','hourly']],
+  ent:[['e-sch','Schedules','1.21 M blocks',['sldc'],99.6],['e-rea','Energy accounts','2,140 lines',['wbes'],99.9],['e-met','Meter readings','584 k blocks',['meter'],98.1],['e-inv','Invoices','1,906 bills',['inbox'],99.2],['e-con','Contracts & versions','64 contracts, 148 versions',['ppa'],100],['e-reg','Tariffs & regulations','3,412 documents',['reg'],99.8],['e-mkt','Market prices','35 k blocks',['mkt'],100],['e-pay','Payments','1,874 entries',['erp'],96.4]],
+  app:[['a-epm','Portfolio (EPM)','portfolio'],['a-bill','Billing','billing'],['a-reg','Regulations','library'],['a-ai','Assistant','assistant'],['a-ov','Overview','overview']],
+  use:{'e-sch':['a-epm','a-bill','a-ov'],'e-rea':['a-bill'],'e-met':['a-bill','a-epm'],'e-inv':['a-bill','a-ov','a-ai'],'e-con':['a-bill','a-epm','a-reg','a-ai'],'e-reg':['a-bill','a-reg','a-ai'],'e-mkt':['a-epm','a-ov','a-ai'],'e-pay':['a-bill','a-ov']},
+  tr:{kcp:{l:'INV-KCP-2609',n:['inbox','sldc','meter','ppa','e-inv','e-sch','e-met','e-con','a-bill','a-ai','a-ov'],t:'Read from the invoice inbox, matched to PPA-KCP §4.2, checked against the SLDC schedule (25.19 MU) and ABT meter (25.97 MU). Billing, the assistant and the overview all read this one result.'},
+      ssp:{l:'INV-SSP-2609',n:['inbox','ppa','reg','meter','e-inv','e-con','e-reg','e-met','a-bill','a-reg','a-ai'],t:'Matched to the PPA version in force for September (₹2.62). Billing and the regulations library use the same versioned contract, so they cannot disagree.'},
+      plan:{l:"Tomorrow's plan",n:['sldc','mkt','ppa','meter','e-sch','e-mkt','e-con','e-met','a-epm','a-ov','a-ai'],t:'Declared capability and schedules, contract terms, DSM history from meters, and 15-minute market prices.'}},
+};
+function lineage(){
+  const W=1040, cx=[0,380,760], nw=[240,250,220], nh=44, gap=10, top=28, pos={};
+  LIN.src.forEach((s,i)=>pos[s[0]]={x:cx[0],y:top+i*(nh+gap),w:nw[0]}); LIN.ent.forEach((s,i)=>pos[s[0]]={x:cx[1],y:top+i*(nh+gap),w:nw[1]}); LIN.app.forEach((s,i)=>pos[s[0]]={x:cx[2],y:top+(i+1.5)*(nh+gap),w:nw[2]});
+  const H=top+8*(nh+gap), tr=S.linTrace&&S.linTrace!=='none'?LIN.tr[S.linTrace]:null, sel=S.linSel;
+  let hot=null;
+  if(tr) hot=new Set(tr.n); else if(sel){ hot=new Set([sel]); const en=LIN.ent.find(x=>x[0]===sel), sr=LIN.src.find(x=>x[0]===sel), ap=LIN.app.find(x=>x[0]===sel);
+    if(en){ en[3].forEach(v=>hot.add(v)); LIN.use[sel].forEach(v=>hot.add(v)); }
+    if(sr){ const e2=LIN.ent.find(x=>x[3].includes(sel)); hot.add(e2[0]); LIN.use[e2[0]].forEach(v=>hot.add(v)); }
+    if(ap) Object.entries(LIN.use).forEach(([k,v])=>{ if(v.includes(sel)){ hot.add(k); LIN.ent.find(x=>x[0]===k)[3].forEach(z=>hot.add(z)); } }); }
+  const edge=(a,b,err)=>{ const p=pos[a],q=pos[b],x1=p.x+p.w,y1=p.y+nh/2,x2=q.x,y2=q.y+nh/2,m=(x1+x2)/2; return `<path class="e ${err?'err':hot&&hot.has(a)&&hot.has(b)?'hot':hot?'dim':''}" d="M${x1},${y1}C${m},${y1} ${m},${y2} ${x2},${y2}"/>`; };
+  let g='';
+  LIN.ent.forEach(en=>{ en[3].forEach(s=>g+=edge(s,en[0],S.connectors.find(c=>c.id===s).status==='err')); LIN.use[en[0]].forEach(a=>g+=edge(en[0],a)); });
+  const node=(id,t1,t2,dot)=>{ const p=pos[id]; return `<g class="n ${sel===id&&!tr?'on':''} ${hot&&!hot.has(id)?'dim':''}" data-action="lin-node" data-id="${id}" tabindex="0" role="button" aria-label="${esc(t1)}"><rect x="${p.x}" y="${p.y}" width="${p.w}" height="${nh}" rx="4"/>${dot?`<circle cx="${p.x+14}" cy="${p.y+nh/2}" r="4" fill="${dot}"/>`:''}<text class="t1" x="${p.x+(dot?26:12)}" y="${p.y+19}">${esc(t1)}</text><text class="t2" x="${p.x+(dot?26:12)}" y="${p.y+34}">${esc(t2)}</text></g>`; };
+  LIN.src.forEach(s=>{ const c=S.connectors.find(z=>z.id===s[0]); g+=node(s[0],s[1],s[2],c.status==='ok'?'#2E9E62':c.status==='warn'?'#E09A2C':'#B42318'); });
+  LIN.ent.forEach(en=>g+=node(en[0],en[1],`${en[2]} · ${en[4]}% valid`));
+  LIN.app.forEach(a=>g+=node(a[0],a[1],'reads verified layer'));
+  g+=`<text class="colh" x="0" y="14">SOURCE SYSTEMS</text><text class="colh" x="${cx[1]}" y="14">VERIFIED DATA LAYER</text><text class="colh" x="${cx[2]}" y="14">APPLICATIONS</text>`;
+  let info='';
+  if(!tr && sel){ const sr=LIN.src.find(x=>x[0]===sel), en=LIN.ent.find(x=>x[0]===sel), ap=LIN.app.find(x=>x[0]===sel);
+    const ex={'e-inv':'INV-KCP-2609 → PPA-KCP §4.2 → SLDC schedule 25.19 MU → meter 25.97 MU','e-con':'PPA-SSP: Original to 31 Oct 2026, Amendment 1 from 1 Nov 2026','e-sch':'16 Oct, block 77 (19:00–19:15): Brahmani Thermal 1,188 MW','e-met':'Meter ECW-02, 12 Sep: blocks 37–40 missing','e-reg':'NOTICE-FPA effective 1 Oct 2026, affects BTPC and BPL energy charge','e-mkt':'DAM 16 Oct 19:00 indicative ₹10.00/kWh','e-rea':'REA week 39: Central Station A 1,612.0 MU','e-pay':'INV-BTPC-2608 paid 8 Sep with 1.5% rebate'};
+    if(sr){ const c=S.connectors.find(z=>z.id===sel); info=`<dl class="kv"><dt>Source</dt><dd>${esc(c.name)}</dd><dt>Method</dt><dd>${c.kind}</dd><dt>Frequency</dt><dd>${c.freq}</dd><dt>Last sync</dt><dd>${c.last}</dd><dt>Coverage</dt><dd>${c.recs}</dd><dt>Status</dt><dd><span class="st ${c.status==='ok'?'good':c.status==='warn'?'warn':'bad'}">${c.status==='ok'?'Current':c.note}</span></dd></dl>${c.status==='err'?`<div style="margin-top:10px"><button class="btn sm pri" data-action="reconnect" data-id="${c.id}">Reconnect</button></div>`:''}`; }
+    if(en) info=`<dl class="kv"><dt>Entity</dt><dd>${en[1]}</dd><dt>Records</dt><dd>${en[2]}</dd><dt>Passing validation</dt><dd>${en[4]}%</dd><dt>Fed by</dt><dd>${en[3].map(s=>LIN.src.find(x=>x[0]===s)[1]).join(', ')}</dd><dt>Used by</dt><dd>${LIN.use[sel].map(a=>LIN.app.find(x=>x[0]===a)[1]).join(', ')}</dd></dl><div class="small muted" style="margin:10px 0 4px">Example linked record</div><div class="mono" style="font-size:12px">${esc(ex[sel])}</div>`;
+    if(ap) info=`<dl class="kv"><dt>Application</dt><dd>${ap[1]}</dd><dt>Reads</dt><dd>${Object.entries(LIN.use).filter(([k,v])=>v.includes(sel)).map(([k])=>LIN.ent.find(x=>x[0]===k)[1]).join(', ')}</dd></dl><div style="margin-top:10px"><button class="btn sm" data-action="go" data-nav="${ap[2]}">Open ${ap[1]}</button></div>`; }
+  return `<div class="ph" style="border-top:0"><div class="bar"><span class="muted small">Trace</span><div class="seg">${[['none','Explore'],['kcp','INV-KCP-2609'],['ssp','INV-SSP-2609'],['plan',"Tomorrow's plan"]].map(([k,l])=>`<button data-action="lin-trace" data-id="${k}" aria-pressed="${(S.linTrace||'none')===k}">${l}</button>`).join('')}</div></div><span class="note">Click any box to follow its data</span></div>
+    <div class="cols" style="padding:14px"><div class="linw"><svg class="lin" viewBox="0 0 ${W} ${H}" role="img" aria-label="Data lineage">${g}</svg></div><div style="max-width:620px">${tr?`<div class="callout info"><b>${tr.l}.</b> ${tr.t}</div>`:info||'<div class="muted">Select a box.</div>'}</div></div>`;
+}
+function vData(){
+  const t=S.dataTab, q=Math.max(90,100-S.issues.length*0.7-S.connectors.filter(c=>c.status!=='ok').length*0.6);
+  const tabs=[['lineage','Lineage'],['sources','Sources'],['validation',`Validation (${S.issues.length})`],['master','Master data'],['log','Import log']];
+  let body='';
+  if(t==='lineage') body=lineage();
+  if(t==='sources') body=`<div class="tw"><table><thead><tr><th>Source</th><th>Method</th><th>Frequency</th><th>Last sync</th><th>Coverage</th><th>Status</th><th></th></tr></thead><tbody>${S.connectors.map(c=>`<tr><td>${esc(c.name)}</td><td>${c.kind}</td><td>${c.freq}</td><td>${c.last}</td><td>${c.recs}</td><td><span class="st ${c.status==='ok'?'good':c.status==='warn'?'warn':'bad'}">${c.status==='ok'?'Current':c.note||'Warnings'}</span></td><td class="num">${c.status==='err'?`<button class="btn sm pri" data-action="reconnect" data-id="${c.id}">Reconnect</button>`:c.id==='inbox'&&S.invoices.some(i=>i.status==='inbox')?`<button class="btn sm" data-action="ingest">Import 1 bill</button>`:''}</td></tr>`).join('')}</tbody></table></div>`;
+  if(t==='validation') body=S.issues.length?`<div class="tw"><table><thead><tr><th>ID</th><th>Source</th><th>Issue</th><th>Severity</th><th></th></tr></thead><tbody>${S.issues.map(v=>`<tr><td class="id">${v.id}</td><td>${v.src}</td><td>${esc(v.text)}</td><td><span class="st ${v.sev==='bad'?'bad':v.sev==='warn'?'warn':'info'}">${v.sev==='bad'?'Blocking':v.sev==='warn'?'Warning':'Info'}</span></td><td class="num"><button class="btn sm" data-action="resolve" data-id="${v.id}" ${v.needs&&S.connectors.find(c=>c.id===v.needs).status!=='ok'?'disabled title="Reconnect the source first"':''}>${esc(v.fix)}</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No open validation issues.</div>';
+  if(t==='master'){ const sel=S.supSel&&SUP[S.supSel]?S.supSel:null;
+    body=`<div class="tw"><table><thead><tr><th>Code</th><th>Supplier</th><th>Type</th><th class="num">MW</th><th>Tariff</th><th>Contracts</th><th class="num">Bills</th></tr></thead><tbody>${Object.entries(SUP).map(([k,s])=>`<tr class="rowlink ${sel===k?'on':''}" data-action="sup" data-id="${k}"><td class="id">${k}</td><td>${s.name}</td><td>${s.type}</td><td class="num">${mw(s.cap)}</td><td>${s.tariff}</td><td>${s.docs.map(d=>`<span class="tag">${d}</span>`).join(' ')}</td><td class="num">${S.invoices.filter(i=>i.sup===k).length}</td></tr>`).join('')}</tbody></table></div>${sel?sup360(sel):''}`; }
+  if(t==='log') body=`<div class="tw"><table><thead><tr><th>Time</th><th>Feed</th><th>Volume</th><th>Result</th></tr></thead><tbody>${S.imports.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="st ${r[3]==='Loaded'?'good':r[3]==='Failed'?'bad':r[3].startsWith('Waiting')?'info':'warn'}">${r[3]}</span></td></tr>`).join('')}</tbody></table></div>`;
+  return `<div class="phead"><div><h1>Data hub</h1><div class="sub">One validated, versioned record set behind every screen</div></div></div>
+  <div class="stats">${stat('Sources current',`${S.connectors.filter(c=>c.status==='ok').length} / ${S.connectors.length}`,S.connectors.filter(c=>c.status==='err').map(c=>c.name.split(' (')[0]+' failed').join('')||'All feeds running')}${stat('Records passing validation',q.toFixed(1)+'%','Across 1.84 M linked records')}${stat('Open issues',S.issues.length,`${S.issues.filter(i=>i.sev==='bad').length} blocking`,S.issues.some(i=>i.sev==='bad')?'neg':'','data:validation')}${stat('Bills waiting in inbox',S.invoices.filter(i=>i.status==='inbox').length,'Rebate clock runs from presentation')}</div>
+  <section class="panel"><div class="tabs" role="tablist">${tabs.map(([k,l])=>`<button role="tab" aria-selected="${t===k}" data-action="dtab" data-id="${k}">${l}</button>`).join('')}</div>${t==='lineage'?body:`<div>${body}</div>`}</section>`;
+}
+function sup360(k){
+  const s=SUP[k], inv=S.invoices.filter(i=>i.sup===k), cur=inv.find(i=>i.period==='Sep 2026');
+  return `<div class="cols c2" style="padding:14px;border-top:1px solid var(--line)">
+   <div><h3 style="margin-bottom:8px">${s.name}</h3><dl class="kv"><dt>Contracts</dt><dd>${s.docs.map(d=>`<button class="ref" data-action="open-doc" data-doc="${d}">${d}</button>`).join('')}</dd>${cur?`<dt>Sep billed</dt><dd>${cur.qty.billedMU} MU</dd><dt>Sep scheduled</dt><dd>${cur.qty.schedMU} MU</dd><dt>Sep metered</dt><dd>${cur.qty.meterMU} MU</dd>${cur.qty.paf?`<dt>Availability</dt><dd>${cur.qty.paf}%</dd>`:''}`:''}</dl></div>
+   <div><h3 style="margin-bottom:8px">Bills and payments</h3><table><tbody>${inv.map(i=>`<tr class="rowlink" data-action="go" data-nav="bill:${i.id}"><td class="id">${i.id}</td><td>${statusPill(i)}</td><td class="num">${money(payable(i))}</td></tr>`).join('')}</tbody></table></div></div>`;
+}
+
+/* ---- Portfolio (EPM) ---- */
+function vPortfolio(){
+  const sc=S.scen, e=epmRun(sc), b=e.best, hh=S.epmHour, used=e.byOpt.filter(o=>o.mu>0);
+  const pending=S.proposals.find(p=>p.status==='pending'), approved=S.proposals.filter(p=>p.status==='approved').slice(-1)[0];
+  const tabs=`<div class="seg"><button data-action="horizon" data-id="day" aria-pressed="${S.horizon==='day'}">Day-ahead</button><button data-action="horizon" data-id="year" aria-pressed="${S.horizon==='year'}">12-month outlook</button></div>`;
+  if(S.horizon==='year'){ const v=OUTLOOK.con.map((c,i)=>c-OUTLOOK.req[i]), gap=v.filter(x=>x<0).reduce((a,x)=>a-x,0);
+    return `<div class="phead"><div><h1>Portfolio · 12-month outlook</h1><div class="sub">Contracted energy against forecast requirement, Nov 2026 to Oct 2027</div></div>${tabs}</div>
+    <div class="stats">${stat('Deficit months','4','Mar to Jun 2027','neg')}${stat('Energy short',`${mw(gap)} <small>MU</small>`,'Peak 370 MU in May')}${stat('Surplus Jul–Sep',`${v.slice(8,11).reduce((a,x)=>a+Math.max(0,x),0)} <small>MU</small>`,'Can repay a banking arrangement')}${stat('Exposure if bought on exchange',`≈ ${money(gap*6.1/10)}`,'At ₹6.10/kWh summer average')}</div>
+    ${panel('Monthly balance, MU','<span class="note">Contracted minus requirement</span>',outlookChart())}
+    ${panel('Options to close the summer gap',null,`<div class="tw"><table><thead><tr><th>Option</th><th>Volume</th><th class="num">Est. ₹/kWh</th><th class="num">Est. cost</th><th>Notes</th></tr></thead><tbody><tr><td>Round-the-clock tender, Mar–May</td><td>3 × 250 MW</td><td class="num">5.40</td><td class="num">${money(540*5.4/10)}</td><td class="muted">Needs 60-day lead time; start by 1 Jan</td></tr><tr><td>Banking with winter-peaking state</td><td>200 MW, Apr–Jun</td><td class="num">3.40</td><td class="num">${money(430*3.4/10)}</td><td class="muted">Return 105% in Jul–Sep surplus</td></tr><tr><td>Term-ahead market</td><td>Residual</td><td class="num">6.10</td><td class="num">${money(80*6.1/10)}</td><td class="muted">Price risk; buy monthly</td></tr></tbody></table></div>`,true)}`; }
+  const ctl=(id,label,min,max,st,val,unit)=>`<label class="ctl" for="${id}">${label}<input id="${id}" type="range" min="${min}" max="${max}" step="${st}" value="${val}" data-scen="${id.slice(1).toLowerCase()}"><output>${val>0&&unit==='%'&&id!=='sHydro'?'+':''}${val}${unit}</output></label>`;
+  const rowsUsed=e.opts.filter(o=>b.rows.some(r=>r.alloc[o.id]));
+  return `<div class="phead"><div><h1>Portfolio · Day-ahead plan</h1><div class="sub">Delivery ${fmtD(TOMORROW)} · exchange bids close 12:00 today</div></div>${tabs}</div>
+  <section class="panel"><div class="ph" style="border:0"><div class="bar" style="gap:18px">
+    ${ctl('sDemand','Demand',-5,10,1,sc.demand,'%')}${ctl('sPrice','Exchange price',-20,50,5,sc.price,'%')}${ctl('sHydro','Hydro availability',50,110,5,sc.hydro,'%')}
+    <label class="ctl"><input type="checkbox" data-scen="outage" ${sc.outage?'checked':''}> Brahmani unit outage (660 MW)</label>
+    <label class="ctl"><input type="checkbox" data-scen="sell" ${sc.sell?'checked':''}> Sell surplus</label></div>
+    <div class="bar"><button class="btn sm" data-action="save-scen">Save scenario</button><button class="btn sm" data-action="reset-scen">Base case</button></div></div></section>
+  <div class="stats">${stat('Peak demand',`${mw(e.peakDem)} <small>MW</small>`,`at ${hrLabel(e.dem.indexOf(e.peakDem))} · forecast error ±2.8%`)}${stat('Shortfall',`${e.defMU.toFixed(2)} <small>MU</small>`,`peak ${mw(e.peakGap)} MW · ${hourRanges(e.defHours)}`,e.peakGap>0?'neg':'')}${stat('Plan cost',money(b.cost),`exchange only: ${money(e.base.cost)}`)}${stat('Saving',money(e.base.cost-b.cost),`${e.base.cost?Math.round((e.base.cost-b.cost)/e.base.cost*100):0}% of exchange-only cost`,'pos')}${stat('Unserved',`${(b.unmet/1000).toFixed(2)} <small>MU</small>`,b.unmet?'Load relief needed':'Fully covered',b.unmet?'neg':'')}</div>
+  <div class="cols c21">
+    ${panel('Hourly position with planned purchases, MW','<span class="note">Click an hour to see how it is filled</span>', posChart(e,{sel:hh,action:'epm-hour'})+leg([['Contracted','#EEF0F3'],['Surplus','#D9F0E1'],...rowsUsed.map(o=>[o.short,OPTC[o.id]]),['Unserved','#F6B8AD']]))}
+    ${panel(`${hrLabel(hh)}–${hrLabel((hh+1)%24)}: options by price`,'',meritChart(e,hh)+`<dl class="kv" style="margin-top:10px"><dt>Demand / contracted</dt><dd>${mw(b.rows[hh].dem)} / ${mw(b.rows[hh].avail)} MW</dd><dt>Import corridor used</dt><dd>${mw(b.rows[hh].imp)} of ${mw(ATC)} MW</dd>${b.rows[hh].binding?'<dt class="neg">Corridor limit reached</dt><dd class="neg">in-state options used</dd>':''}</dl>`)}
+  </div>
+  <section class="panel"><div class="ph"><h2>Recommended plan</h2><div class="bar">${approved?`<span class="st good">${approved.id} approved by ${approved.by}</span>`:pending?`<span class="st info">${pending.id} awaiting Director</span>`:'<span class="st">Draft</span>'}
+    ${S.role==='director'&&pending?`<button class="btn sm dng" data-action="epm-reject">Return</button><button class="btn sm pri" data-action="epm-approve">Approve ${pending.id}</button>`:!pending?`<button class="btn sm pri" data-action="epm-submit" ${used.length?'':'disabled'}>Submit for approval</button>`:''}</div></div>
+    <div class="tw"><table><thead><tr><th>Option</th><th>Hours used</th><th class="num">Peak MW</th><th class="num">Energy MU</th><th class="num">Avg ₹/kWh</th><th class="num">Cost</th><th>Why</th></tr></thead><tbody>
+    ${used.map(o=>{const hrs=b.rows.filter(r=>r.alloc[o.id]).map(r=>r.h); const why={otc:`Fixed ₹6.20 beats evening exchange (up to ₹${Math.max(...e.dam).toFixed(2)}); take-or-pay block`,bank:'Cheapest; repaid from summer surplus',dam:'Fills hours where it is cheapest',rtm:'Above DAM limit; priced with risk margin',dr:'In-state; used when corridor or price makes imports dearer',peak:'Last resort in-state; corridor limit or price'}[o.id];return `<tr><td><i style="display:inline-block;width:9px;height:9px;background:${OPTC[o.id]};margin-right:7px;border-radius:2px"></i>${o.name}</td><td>${hourRanges(hrs)}</td><td class="num">${mw(o.peak)}</td><td class="num">${o.mu.toFixed(2)}</td><td class="num">${o.avg.toFixed(2)}</td><td class="num">${money(o.cost)}</td><td class="muted small">${why}</td></tr>`;}).join('')||'<tr><td colspan="7" class="empty">No purchase needed.</td></tr>'}
+    </tbody><tfoot><tr><td colspan="3">Total</td><td class="num">${used.reduce((a,o)=>a+o.mu,0).toFixed(2)}</td><td></td><td class="num">${money(b.cost)}</td><td class="muted small">${b.rev?`Less ${money(b.rev)} from selling ${(b.rows.reduce((a,r)=>a+r.sold,0)/1000).toFixed(2)} MU midday surplus`:''}</td></tr></tfoot></table></div></section>
+  <div class="cols c2">
+    ${panel('Saved scenarios','',S.saved.length?`<div class="tw"><table><thead><tr><th>Scenario</th><th class="num">Peak short</th><th class="num">Buy MU</th><th class="num">Cost</th><th class="num">Unserved</th><th></th></tr></thead><tbody>${S.saved.map((s,i)=>`<tr><td>${esc(s.name)}</td><td class="num">${mw(s.gap)}</td><td class="num">${s.mu.toFixed(2)}</td><td class="num">${money(s.cost)}</td><td class="num">${s.unmet.toFixed(2)}</td><td class="num"><button class="btn sm" data-action="del-scen" data-id="${i}">Remove</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Change the controls above and save to compare. Try +6% demand and +30% price.</div>',true)}
+    ${panel(`Deviation settlement, ${fmtD('2026-10-14')}`,'',`<dl class="kv"><dt>Over-drawal</dt><dd>3.84 MU</dd><dt>Under-drawal</dt><dd>1.12 MU</dd><dt>Net DSM charge</dt><dd class="neg">${money(1.36)}</dd><dt>Blocks outside ±10%</dt><dd>7 of 96</dd><dt>Worst block</dt><dd>19:15–19:30, +212 MW</dd></dl><div class="callout warn" style="margin-top:10px">Evening demand ran 3.1% above schedule. Keep RTM headroom for 18:45–20:00.</div>`)}
+  </div>`;
+}
+
+/* ---- Billing ---- */
+function vBilling(){
+  const f=S.billFilter, inbox=S.invoices.filter(i=>i.status==='inbox');
+  const list=S.invoices.filter(i=>i.status!=='inbox' && (f==='all'||(f==='open'&&(OPEN.includes(i.status)||i.status==='returned'))||(f==='disc'&&i.status==='discrepancy')||(f==='paid'&&i.status==='paid')));
+  const open=openBills(), disc=S.invoices.filter(i=>i.status==='discrepancy'), proc=S.invoices.filter(i=>i.status!=='inbox');
+  const paid=S.invoices.filter(i=>i.status==='paid'), lost=paid.reduce((a,i)=>a+payable(i)*(REBATE_T1.pct-rebateNow(i,i.paidOn).pct)/100,0);
+  return `<div class="phead"><div><h1>Billing</h1><div class="sub">Power purchase bills, recalculated against contract, tariff version, schedules and meters</div></div><div class="bar">${inbox.length?`<button class="btn pri" data-action="ingest">Import from inbox (${inbox.length})</button>`:''}</div></div>
+  <div class="stats">${stat('Open bills',`${open.length}`,`${money(open.reduce((a,i)=>a+payable(i),0))} payable`)}${stat('Under dispute',money(disc.reduce((a,i)=>a+diffOf(i),0)),`${disc.length} bills, supplier figure above ours`,disc.length?'neg':'')}${stat('Matched without change',`${proc.filter(isMatch).length} of ${proc.length}`,'No manual recalculation')}${stat('Rebate lost to delay',money(lost),'Paid bills, last 30 days',lost?'neg':'')}</div>
+  ${panel('Payment calendar','<span class="note">Pay before a window closes to keep the rebate; after 45 days LPS accrues</span>',payCalendar(open.slice().sort((a,b)=>stakeOf(a).days-stakeOf(b).days)))}
+  <section class="panel"><div class="ph"><h2>Bills</h2><div class="seg">${[['open','Open'],['disc','Discrepancy'],['paid','Paid'],['all','All']].map(([k,l])=>`<button data-action="bfilter" data-id="${k}" aria-pressed="${f===k}">${l}</button>`).join('')}</div></div>
+  <div class="tw"><table><thead><tr><th>Bill</th><th>Supplier</th><th>Period</th><th class="num">Billed</th><th class="num">Calculated</th><th class="num">Difference</th><th>Status</th><th>With</th><th>Deadline</th></tr></thead><tbody>
+  ${list.map(i=>{const df=diffOf(i);return `<tr class="rowlink" data-action="go" data-nav="bill:${i.id}"><td class="id">${i.id}</td><td>${SUP[i.sup].short}</td><td>${i.period}</td><td class="num">${money(billedTotal(i))}</td><td class="num">${money(sysTotal(i))}</td><td class="num ${Math.abs(df)>0.004?'neg':'faint'}">${Math.abs(df)>0.004?money(df):'—'}</td><td>${statusPill(i)}</td><td class="muted">${stageOwner(i)}</td><td>${deadlinePill(i)}</td></tr>`;}).join('')||'<tr><td colspan="9" class="empty">No bills.</td></tr>'}
+  </tbody></table></div></section>`;
+}
+function vBill(){
+  const i=S.invoices.find(x=>x.id===S.selInv); if(!i) { route='billing'; return vBilling(); }
+  const s=SUP[i.sup], bt=billedTotal(i), st=sysTotal(i), df=bt-st, d=deadlineInfo(i), fl=Math.abs(df)>bt*0.001;
+  const ver=applicableVersion(DOCS.find(x=>x.id===s.docs[0]),i.periodDate);
+  let act='';
+  if(['reconciled','discrepancy'].includes(i.status)) act = S.role==='maker'?`<div class="pb" style="border-top:1px solid var(--line2);display:grid;gap:8px"><label class="lbl" for="mNote">Officer note, saved to the audit trail<textarea id="mNote" placeholder="${fl?'e.g. Checked against SLDC final schedule R12; dispute raised for the difference.':'e.g. Agrees with REA and meter data.'}"></textarea></label><div class="bar">${fl?`<button class="btn pri" data-action="maker" data-id="${i.id}" data-d="system">Verify ${money(st)}, dispute ${money(df)}</button><button class="btn" data-action="maker" data-id="${i.id}" data-d="supplier">Accept supplier figure</button><button class="btn dng" data-action="maker" data-id="${i.id}" data-d="return">Return to supplier</button>`:`<button class="btn pri" data-action="maker" data-id="${i.id}" data-d="system">Verify and send to checker</button>`}</div></div>`:`<div class="pb muted" style="border-top:1px solid var(--line2)">Waiting for the Billing Officer to verify.</div>`;
+  else if(i.status==='maker_ok') act = S.role==='checker'?`<div class="pb" style="border-top:1px solid var(--line2);display:grid;gap:8px"><div class="small"><span class="muted">Maker note:</span> ${esc(i.makerNote||'—')}</div><div class="bar"><button class="btn pri" data-action="checker" data-id="${i.id}" data-d="approve">Approve ${money(payable(i))}</button><button class="btn" data-action="checker" data-id="${i.id}" data-d="back">Send back</button></div></div>`:`<div class="pb muted" style="border-top:1px solid var(--line2)">Verified by maker. Waiting for DGM Finance.</div>`;
+  else if(i.status==='approved') act = S.role==='checker'?`<div class="pb" style="border-top:1px solid var(--line2)"><button class="btn pri" data-action="pay" data-id="${i.id}">Release payment ${money(payable(i))}</button></div>`:`<div class="pb muted" style="border-top:1px solid var(--line2)">Approved. Payment release sits with DGM Finance.</div>`;
+  else if(i.status==='returned') act=`<div class="pb" style="border-top:1px solid var(--line2)"><div class="bar"><span class="muted">Returned ${fmtD(i.returnedOn)}. Rebate clock restarts on the corrected bill.</span><button class="btn sm" data-action="corrected" data-id="${i.id}" ${S.role==='maker'?'':'disabled'}>Record corrected bill</button></div></div>`;
+  else if(i.status==='paid'){ const r=rebateNow(i,i.paidOn); act=`<div class="pb" style="border-top:1px solid var(--line2)"><div class="callout ${r.pct<REBATE_T1.pct?'warn':'good'}">Paid ${fmtD(i.paidOn)}, day ${daysBetween(i.presented,i.paidOn)}. Rebate ${r.pct}% = ${money(payable(i)*r.pct/100)}${r.pct<REBATE_T1.pct?`; ${money(payable(i)*(REBATE_T1.pct-r.pct)/100)} lost to processing time`:''}.</div></div>`; }
+  const tabs=[['recon','Reconciliation'],['doc','Source document'],['dead','Deadlines'],['hist','History']];
+  let body='';
+  if(S.billTab==='recon'){
+    const q=i.qty, ref={sched:['SLDC schedule',q.schedMU],meter:['ABT meter',q.meterMU],jmr:['Joint meter reading',q.jmrMU]}[i.qtyCheck||'sched'];
+    body=`<div class="cols ${fl?'c12':''}" style="padding:14px">
+      ${fl?`<div><h3 style="margin-bottom:6px">From supplier's figure to payable</h3>${waterfall(i)}</div>`:''}
+      <div style="display:grid;gap:10px;align-content:start">${fl?`<div class="callout bad">${esc(i.reason)}</div>`:`<div class="callout good">Every line agrees with the contract, tariff version and supporting records.</div>`}
+       <dl class="kv"><dt>Energy billed</dt><dd>${q.billedMU} MU</dd><dt>SLDC / REA scheduled</dt><dd>${q.schedMU} MU</dd><dt>ABT meter</dt><dd>${q.meterMU} MU</dd>${q.jmrMU?`<dt>Joint meter reading</dt><dd>${q.jmrMU} MU</dd>`:''}${q.paf?`<dt>Availability (PAF / NAPAF)</dt><dd>${q.paf}% / ${q.napaf}%</dd>`:''}<dt>Billable basis</dt><dd>${ref[0]}</dd><dt>Contract version for ${i.period}</dt><dd>${ver?esc(ver.v):'—'}</dd></dl></div></div>
+     <div class="tw"><table><thead><tr><th>Charge</th><th>Basis</th><th class="num">Billed</th><th class="num">Calculated</th><th class="num">Difference</th></tr></thead><tbody>${i.lines.map(l=>{const dd=l.billed-l.sys;return `<tr><td>${esc(l.label)}</td><td><div class="small">${esc(l.basis)}</div><div>${l.cites.map(citeBtn).join('')}</div></td><td class="num">${money(l.billed)}</td><td class="num">${money(l.sys)}</td><td class="num ${Math.abs(dd)>0.004?'neg':'faint'}">${Math.abs(dd)>0.004?money(dd):'—'}</td></tr>`;}).join('')}</tbody><tfoot><tr><td colspan="2">Total</td><td class="num">${money(bt)}</td><td class="num">${money(st)}</td><td class="num ${fl?'neg':''}">${fl?money(df):'—'}</td></tr></tfoot></table></div>`;
+  }
+  if(S.billTab==='doc') body=`<div style="padding:14px">${docViewer(i)}</div>`;
+  if(S.billTab==='dead') body=`<div style="padding:14px;display:grid;gap:12px">${['paid','returned','inbox'].includes(i.status)?'<div class="muted">No open deadline for this bill.</div>':payCalendar([i],{from:addDaysLocal(i.presented,-2),to:addDaysLocal(i.presented,60)})}
+    ${d?`<dl class="kv" style="max-width:520px"><dt>Presented</dt><dd>${fmtD(i.presented)}</dd><dt>1.5% rebate until</dt><dd>${fmtD(addDaysLocal(i.presented,5))} · ${money(payable(i)*0.015)}</dd><dt>1% rebate until</dt><dd>${fmtD(addDaysLocal(i.presented,30))} · ${money(payable(i)*0.01)}</dd><dt>Due date</dt><dd>${fmtD(dueDate(i))}</dd><dt>LPS after due date</dt><dd>${money(lpsPerDay(i))} per day</dd></dl>${fl&&d.kind==='rebate'?`<div class="callout info">Paying the undisputed ${money(st)} by ${fmtDs(d.until)} keeps ${money(d.amt)} of rebate while the ${money(df)} difference is settled.</div>`:''}`:''}</div>`;
+  if(S.billTab==='hist'){ const h=S.audit.filter(a=>a[3]===i.id).slice().reverse(); body=`<div class="tw"><table><thead><tr><th>Time</th><th>By</th><th>Event</th></tr></thead><tbody>${h.map(a=>`<tr><td>${fmtStamp(a[0])}</td><td>${esc(a[1])}</td><td>${esc(a[2])}</td></tr>`).join('')||'<tr><td colspan="3" class="empty">No events.</td></tr>'}</tbody></table></div>`; }
+  return `${crumbs([['Billing','billing'],[i.id]])}
+  <section class="panel"><div class="ph"><div><h1 style="font-size:18px"><span class="mono" style="font-size:17px">${i.id}</span></h1><div class="muted">${s.name} · ${i.period} · ref ${esc(i.supplierRef)} · ${i.source}</div></div><div class="bar">${statusPill(i)}<button class="btn sm" data-action="ask" data-q="Why has ${i.id} been flagged?">Ask assistant</button></div></div>
+   <div class="facts"><div><span>Billed</span><b>${money(bt)}</b></div><div><span>Calculated</span><b>${money(st)}</b></div><div><span>Difference</span><b class="${fl?'neg':''}">${fl?money(df):'None'}</b></div><div><span>Presented</span><b>${fmtD(i.presented)}</b></div><div><span>${d&&d.kind==='rebate'?`${d.pct}% rebate until`:'Due date'}</span><b class="${d&&d.left<=3?'neg':''}">${d?(d.kind==='rebate'?fmtD(d.until):fmtD(d.due)):'—'}</b></div><div><span>With</span><b>${stageOwner(i)}</b></div></div>
+   ${act}</section>
+  <section class="panel"><div class="tabs" role="tablist">${tabs.map(([k,l])=>`<button role="tab" aria-selected="${S.billTab===k}" data-action="btab" data-id="${k}">${l}</button>`).join('')}</div>${body}</section>`;
+}
+function docViewer(i){
+  const s=SUP[i.sup], bt=billedTotal(i), q=i.qty, ref={sched:['SLDC schedule',q.schedMU],meter:['ABT meter',q.meterMU],jmr:['Joint meter reading',q.jmrMU]}[i.qtyCheck||'sched'], muOk=Math.abs(q.billedMU-ref[1])<0.05, cver=applicableVersion(DOCS.find(x=>x.id===s.docs[0]),i.periodDate);
+  const F=[['sup','Supplier',s.name,99.4,['ok',i.sup==='KCP'?'Mapped to master record by alias (V-302)':'Matched to master record']],['no','Invoice number',i.supplierRef,98.1,['ok','Not a duplicate']],['date','Invoice date',fmtD(i.presented),99.6,['ok','Starts the rebate clock']],['per','Billing period',i.period,99.8,['ok',`Contract in force: ${cver?cver.v:'—'}`]],['mu','Energy',q.billedMU+' MU',97.6,muOk?['ok',`Agrees with ${ref[0]}`]:['bad',`${ref[0]}: ${ref[1]} MU`]],...i.lines.map((l,k)=>['l'+k,l.label.split(' (')[0],money(l.billed),96.5+k*.7,Math.abs(l.billed-l.sys)<0.005?['ok','Recalculation agrees']:['bad',`Recalculated ${money(l.sys)}`]]),['tot','Total',money(bt),99.2,Math.abs(diffOf(i))<0.005?['ok','Agrees']:['bad',`Calculated ${money(sysTotal(i))}`]]];
+  const fx=(k,t)=>{const f=F.find(x=>x[0]===k);return `<span class="fx ${f&&f[4][0]==='bad'?'badfx':''}" data-f="${k}">${t}</span>`;};
+  return `<div class="docv"><div class="paper"><div class="lh"><div><b>${fx('sup',esc(s.name.toUpperCase()))}</b><div>Odisha, India</div></div><div style="text-align:right"><b>TAX INVOICE</b><div>No. ${fx('no',esc(i.supplierRef))}</div><div>Date ${fx('date',fmtD(i.presented))}</div></div></div>
+    <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px"><div><div style="color:#7A808C">BILL TO</div><b>GRIDCO Ltd.</b><div>Bhubaneswar, Odisha</div></div><div style="text-align:right"><div style="color:#7A808C">SUPPLY PERIOD</div><b>${fx('per',i.period)}</b><div>Energy ${fx('mu',q.billedMU+' MU')}</div></div></div>
+    <table><thead><tr><th>Description</th><th class="num">Amount (₹)</th></tr></thead><tbody>${i.lines.map((l,k)=>`<tr><td>${esc(l.label)}</td><td class="num">${fx('l'+k,inr(l.billed*1e7,0))}</td></tr>`).join('')}</tbody><tfoot><tr><td>Total payable</td><td class="num">${fx('tot',inr(bt*1e7,0))}</td></tr></tfoot></table>
+    <div style="margin-top:10px;color:#7A808C">Payment terms as per PPA.</div><div class="wm">SPECIMEN</div></div>
+    <div class="panel"><div class="ph"><h3>Fields read</h3><span class="note">Hover to locate</span></div>${F.map(([k,l,v,c,[st,m]])=>`<div class="xf" data-f="${k}"><span class="k">${l}</span><span class="c">${c.toFixed(1)}%</span><span class="v">${esc(v)}</span><span></span><span class="r ${st==='ok'?'pos':'neg'}">${st==='ok'?'✓':'✕'} ${esc(m)}</span></div>`).join('')}</div></div>`;
+}
+
+/* ---- Regulations & contracts ---- */
+function vLibrary(){
+  const q=S.libQ.toLowerCase(), date=S.libDate, types=['All',...new Set(DOCS.map(d=>d.type))];
+  const docs=DOCS.filter(d=>(S.libType==='All'||d.type===S.libType)&&(!q||(d.title+' '+d.tags.join(' ')+' '+d.versions.map(v=>v.clauses.map(c=>c.join(' ')).join(' ')).join(' ')).toLowerCase().includes(q)));
+  const sel=DOCS.find(d=>d.id===S.libSel)||docs[0], app=sel&&applicableVersion(sel,date);
+  const linked=sel?S.invoices.filter(i=>i.lines.some(l=>l.cites.some(c=>c.startsWith(sel.id+'@')))):[];
+  let tl='';
+  if(sel){ const y0=Math.min(...sel.versions.map(v=>+v.from.slice(0,4))), y1=Math.max(2027,...sel.versions.map(v=>Math.min(+v.to.slice(0,4),2030)))+1, W=700, H=sel.versions.length*26+30, x=s=>{const d=d2(s);return 10+((d.getFullYear()+d.getMonth()/12+d.getDate()/365)-y0)/(y1-y0)*(W-20);};
+    let g=''; for(let yr=y0;yr<=y1;yr++){ if((y1-y0)>8&&yr%2) continue; g+=`<line x1="${x(yr+'-01-01')}" x2="${x(yr+'-01-01')}" y1="0" y2="${H-16}" stroke="#EDEFF2"/><text x="${x(yr+'-01-01')}" y="${H-4}" text-anchor="middle">${yr}</text>`; }
+    sel.versions.forEach((v,k)=>{ const a=x(v.from), b=x(v.to>'2090'?y1+'-01-01':v.to); g+=`<rect x="${a}" y="${k*26+4}" width="${Math.max(3,b-a)}" height="18" fill="${app===v?'var(--accent)':'#CBD1DA'}"/><text x="${a+5}" y="${k*26+17}" style="fill:${app===v?'#fff':'var(--ink2)'};font-weight:500">${esc(v.v)}</text>`; });
+    g+=`<line x1="${x(date)}" x2="${x(date)}" y1="0" y2="${H-16}" stroke="var(--bad)" stroke-width="1.5"/><text x="${x(date)+4}" y="10" style="fill:var(--bad);font-weight:600">${fmtD(date)}</text>`;
+    tl=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Version timeline">${g}</svg>`; }
+  return `<div class="phead"><div><h1>Regulations & contracts</h1><div class="sub">Every document with its versions and effective dates</div></div></div>
+  ${!S.regAck?`<div class="callout info"><div class="bar" style="justify-content:space-between"><span><b>New notice, 12 Oct 2026.</b> Fuel cost adjustment for state thermal changes from 1 Oct 2026. Affects BTPC and BPL energy charge from October bills.</span><span class="bar"><button class="btn sm" data-action="open-doc" data-doc="NOTICE-FPA">Open</button><button class="btn sm pri" data-action="reg-ack">Raise billing rule change</button></span></div></div>`:''}
+  <section class="panel"><div class="ph" style="border:0"><div class="bar" style="flex:1"><input id="libQ" type="search" value="${esc(S.libQ)}" placeholder="Search titles and clauses: rebate, JMR, transmission…" style="max-width:360px" aria-label="Search"><select id="libT" class="in" style="width:auto" aria-label="Type">${types.map(t=>`<option ${t===S.libType?'selected':''}>${t}</option>`).join('')}</select><label class="ctl" for="libD">In force on<input id="libD" type="date" class="in" value="${date}" style="width:auto"></label></div></div></section>
+  <div class="cols c12">
+   <section class="panel"><div class="tw"><table><thead><tr><th>Document</th><th>Version in force on ${fmtDs(date)}</th></tr></thead><tbody>${docs.map(d=>{const a=applicableVersion(d,date);return `<tr class="rowlink ${sel&&sel.id===d.id?'on':''}" data-action="open-doc" data-doc="${d.id}" data-keep="1"><td>${esc(d.title)}<span class="s2"><span class="tag">${d.id}</span> ${d.type} · ${d.issuer}${d.isNew?' · <span class="neg">new</span>':''}</span></td><td>${a?esc(a.v):'<span class="faint">Not in force</span>'}</td></tr>`;}).join('')||'<tr><td colspan="2" class="empty">No match.</td></tr>'}</tbody></table></div></section>
+   ${sel?`<section class="panel"><div class="ph"><div><h2>${esc(sel.title)}</h2><div class="muted small">${sel.id} · ${sel.type} · ${sel.issuer}</div></div><button class="btn sm" data-action="ask" data-q="${sel.id==='PPA-SSP'?'Which tariff applies to Sambal Solar for September 2026?':sel.id==='NOTICE-FPA'?'Does the new fuel adjustment notice affect any bills?':'Which tariff applies to Brahmani Thermal for July 2026?'}">Ask assistant</button></div>
+     <div class="pb" style="display:grid;gap:12px">${tl}
+      ${app?`<div><div class="small muted" style="margin-bottom:2px">In force on ${fmtD(date)}: <b style="color:var(--ink)">${esc(app.v)}</b>, ${fmtD(app.from)} to ${app.to>'2090'?'until amended':fmtD(app.to)}</div>${app.clauses.map(([n,t])=>`<div style="padding:8px 0;border-bottom:1px solid var(--line2)"><span class="tag">§${esc(n)}</span> ${esc(t)}</div>`).join('')}</div>`:`<div class="callout warn">No version in force on ${fmtD(date)}.</div>`}
+      <div class="small"><span class="muted">Cited by:</span> ${linked.length?linked.map(i=>`<button class="ref" data-action="go" data-nav="bill:${i.id}">${i.id}</button>`).join(''):'<span class="faint">no open bill</span>'}</div>
+      <div class="small faint">Clause text is an illustrative paraphrase for this demo.</div></div></section>`:''}
+  </div>`;
+}
+
+/* ---- Assistant ---- */
+const AG={portfolio:'Portfolio agent',billing:'Billing agent',regulatory:'Regulatory agent',analytics:'Analytics agent'};
+const SUGG=['Why has INV-KCP-2609 been flagged?','Which tariff applies to Sambal Solar for September 2026?','Will there be a shortage tomorrow?',"What is the cheapest way to cover tomorrow's shortage?",'Which bills should we pay first?','What is our LPS exposure?','Why did power purchase cost rise in April and May?','Does the new fuel adjustment notice affect any bills?'];
+const DATAEV={'SLDC schedule':'Kalinga Captive, Sep 2026: 25.19 MU scheduled (SLDC final schedule R12).','SLDC availability certificate':'Brahmani Thermal, Sep 2026: PAF 82.4% certified by SLDC on 3 Oct.','SLDC energy account':'Ex-bus energy per SLDC monthly account, Sep 2026.','Joint meter reading':'Coast Wind, Sep 2026: 60.9 MU at interconnection point (JMR signed 2 Oct).','JMR September':'Sambal Solar, Sep 2026: 44.6 MU (JMR).','RPC regional energy account':'REA weeks 36–39: Central Station A 1,612.0 MU.','SLDC declared capability':'Declared capability for 16 Oct, revision 3, received 10:05.','DAM indicative prices 10:30':'Day-ahead indicative curve, 16 Oct, peak ₹10.00/kWh at 19:00.','Demand forecast model v3.2':'Ensemble on weather, calendar and 3 years of load; 30-day MAPE 2.6%.','Cost ledger Oct 2025–Sep 2026':'Monthly power purchase cost by source from the payments ledger.'};
+function findInvoice(q){ const m=q.match(/inv-[a-z]+-\d{4}/i); if(m) return S.invoices.find(i=>i.id.toLowerCase()===m[0].toLowerCase()); const k={kalinga:'KCP',captive:'KCP',brahmani:'BTPC',solar:'SSP',sambal:'SSP',wind:'ECW',baitarani:'BPL',hydro:'MBH',mahanadi:'MBH',central:'CSA'}; for(const [w,v] of Object.entries(k)) if(q.includes(w)) return S.invoices.filter(i=>i.sup===v&&i.status!=='inbox').sort((a,b)=>b.presented.localeCompare(a.presented))[0]; return null; }
+function answer(raw){
+  const q=raw.toLowerCase(), e=epmRun(S.scen), mm=q.match(/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s*(20\d\d)?/);
+  if(/tariff|rate|version|applicable|applies/.test(q)&&!/flag/.test(q)){
+    const inv=findInvoice(q), sk=inv?inv.sup:'SSP', mi=mm?MON.map(x=>x.toLowerCase()).indexOf(mm[1]):8, yr=mm&&mm[2]?+mm[2]:2026, date=`${yr}-${String(mi+1).padStart(2,'0')}-15`;
+    const doc=DOCS.find(d=>d.id===SUP[sk].docs[sk==='BTPC'||sk==='BPL'?1:0]), v=applicableVersion(doc,date), last=doc.versions[doc.versions.length-1];
+    return {agent:'regulatory',date,steps:['search_documents','versions_in_force('+date+')','get_clause'],html:`<p>${SUP[sk].name}, ${MON[mi]} ${yr}: <b>${v?esc(v.v):'no version in force'}</b> of ${doc.id}${v?`, in force ${fmtD(v.from)} to ${v.to>'2090'?'until amended':fmtD(v.to)}`:''}.</p>${last!==v?`<p>The later ${esc(last.v)} starts ${fmtD(last.from)} and does not apply to this period.${sk==='SSP'?' The September bill used that later rate (₹2.71), which is why INV-SSP-2609 is flagged.':''}</p>`:''}`,cites:v?v.clauses.map(c=>`${doc.id}@${c[0]}`):[],navs:sk==='SSP'?[['Open INV-SSP-2609','bill:INV-SSP-2609']]:[['Open document','doc:'+doc.id]]};
+  }
+  if(/notice|fuel|fppca|regulat/.test(q)){
+    return {agent:'regulatory',steps:['list_new_documents','impact_scan'],html:`<p>The notice of 12 Oct 2026 bases fuel cost adjustment on the billing month's landed coal cost, for energy from 1 Oct 2026.</p><p>No September bill in the queue changes. Brahmani Thermal and Baitarani IPP October bills (due early November) need the new rule.${S.regAck?' A rule change has been raised.':''}</p>`,cites:['NOTICE-FPA@2','NOTICE-FPA@4'],navs:S.regAck?[]:[['Raise billing rule change','regack']]};
+  }
+  if(/flag|discrep|why.*(bill|inv)|explain|mismatch|wrong/.test(q)||/inv-/.test(q)){
+    const inv=findInvoice(q)||S.invoices.find(i=>i.status==='discrepancy'); if(!inv) return {agent:'billing',steps:[],html:'<p>No bills are flagged.</p>',cites:[]};
+    const df=diffOf(inv), d=deadlineInfo(inv), fl=Math.abs(df)>0.004;
+    return {agent:'billing',date:inv.periodDate,steps:['get_invoice','contract_in_force(period)','get_schedule','get_meter','recalculate'],html:`<p><b>${inv.id}</b>, ${SUP[inv.sup].short}, ${inv.period}: billed ${money(billedTotal(inv))}, calculated ${money(sysTotal(inv))}${fl?`, <b class="neg">${money(df)} higher</b>`:', matches'}.</p>${fl?`<p>${esc(inv.reason)}</p>`:''}<table><thead><tr><th>Line</th><th class="num">Billed</th><th class="num">Calculated</th></tr></thead><tbody>${inv.lines.map(l=>`<tr><td>${esc(l.label)}</td><td class="num">${money(l.billed)}</td><td class="num">${money(l.sys)}</td></tr>`).join('')}</tbody></table>${d&&d.kind==='rebate'?`<p class="small">Paying the undisputed ${money(sysTotal(inv))} by ${fmtD(d.until)} keeps a ${d.pct}% rebate of ${money(d.amt)}.</p>`:''}<p class="small muted">A flag for the officer to verify, not a finding against the supplier.</p>`,cites:[...new Set(inv.lines.flatMap(l=>l.cites))],navs:[[`Open ${inv.id}`,'bill:'+inv.id]]};
+  }
+  if(/lps|late payment|surcharge|overdue|due date/.test(q)){
+    const rows=openBills().map(i=>[i,deadlineInfo(i)]).sort((a,b)=>daysBetween(TODAY,a[1].due)-daysBetween(TODAY,b[1].due)), near=rows.filter(([i,d])=>daysBetween(TODAY,d.due)<=7);
+    return {agent:'billing',steps:['open_bills','due_dates','estimate_lps'],html:`<p>${near.length?`${near.length} bill reaches its due date within 7 days: <b>${near.map(([i])=>i.id).join(', ')}</b>. Unpaid, LPS accrues at about <b>${money(near.reduce((a,[i])=>a+lpsPerDay(i)*30,0))} a month</b>.`:'No bill is due within 7 days.'}</p><table><thead><tr><th>Bill</th><th>Due</th><th class="num">LPS / day</th></tr></thead><tbody>${rows.slice(0,5).map(([i,d])=>`<tr><td class="id">${i.id}</td><td>${fmtD(d.due)}</td><td class="num">${money(lpsPerDay(i))}</td></tr>`).join('')}</tbody></table>`,cites:['REG-LPS@Due date','REG-LPS@Rate'],navs:[['Open billing','billing']]};
+  }
+  if(/pay first|priorit|rebate|which bills/.test(q)){
+    const rows=openBills().map(i=>({i,s:stakeOf(i)})).sort((a,b)=>b.s.amt/Math.max(.5,b.s.days)-a.s.amt/Math.max(.5,a.s.days)).slice(0,5);
+    return {agent:'billing',steps:['open_bills','rebate_windows','estimate_lps','rank'],html:`<p>Ranked by money lost per day of delay:</p><table><thead><tr><th>Bill</th><th>Deadline</th><th class="num">At stake</th></tr></thead><tbody>${rows.map(r=>`<tr><td class="id">${r.i.id}</td><td>${r.s.days<=0?'today':r.s.days+' days'}</td><td class="num">${r.s.txt}</td></tr>`).join('')}</tbody></table><p class="small">The top two still need maker verification; that step is the bottleneck.</p>`,cites:['PPA-BTPC@9.2','REG-LPS@Due date'],navs:[['Open approvals','approvals']]};
+  }
+  if(/cheap|option|procure|buy|recommend|cover|least.cost/.test(q)){
+    const used=e.byOpt.filter(o=>o.mu>0);
+    return {agent:'portfolio',steps:['demand_forecast','contracted_availability','market_prices','optimise(constraints)'],html:`<p>Least-cost plan for ${fmtD(TOMORROW)}: <b>${money(e.best.cost)}</b>, ${money(e.base.cost-e.best.cost)} less than buying only on the exchange.</p><table><thead><tr><th>Option</th><th class="num">MU</th><th class="num">₹/kWh</th></tr></thead><tbody>${used.map(o=>`<tr><td>${o.short}</td><td class="num">${o.mu.toFixed(2)}</td><td class="num">${o.avg.toFixed(2)}</td></tr>`).join('')}</tbody></table><p class="small">${e.bindingHrs.length?`The ${mw(ATC)} MW import corridor is full in ${hourRanges(e.bindingHrs)}. `:''}The Director (Commercial) approves the plan.</p>`,cites:['DATA:SLDC declared capability','DATA:DAM indicative prices 10:30'],navs:[['Open plan','portfolio']]};
+  }
+  if(/short|deficit|tomorrow|demand|enough/.test(q)){
+    return {agent:'portfolio',steps:['demand_forecast','contracted_availability'],html:`<p>Yes. Peak demand ${mw(e.peakDem)} MW at ${hrLabel(e.dem.indexOf(e.peakDem))}; contracted supply is short in ${hourRanges(e.defHours)}, by up to <b>${mw(e.peakGap)} MW</b> (${e.defMU.toFixed(2)} MU). Solar falls away after 17:00 as demand rises.</p>${posChart(e,{h:200,purchases:false,labels:false})}`,cites:['DATA:Demand forecast model v3.2','DATA:SLDC declared capability'],navs:[['Open plan','portfolio']]};
+  }
+  if(/cost|trend|increase|rise|rose|report|summary|why did/.test(q)){
+    const tot=COST.months.map((_,k)=>COST.series.reduce((a,s)=>a+s.v[k],0)), mk=COST.series.find(s=>s.name==='Market purchases').v, dT=tot[7]-tot[5], dM=mk[7]-mk[5];
+    return {agent:'analytics',steps:['cost_ledger(by_source)','attribute_change'],html:`<p>Monthly cost rose from ₹${tot[5]} cr in March to ₹${tot[7]} cr in May (+${((tot[7]/tot[5]-1)*100).toFixed(1)}%). Market purchases account for <b>₹${dM} cr of the ₹${dT} cr</b> rise (${Math.round(dM/dT*100)}%): summer demand exceeded contracted supply when evening exchange prices were highest.</p><p class="small">The outlook shows the same gap in Mar–Jun 2027; a term contract signed by January would cover it at lower cost.</p>`,cites:['DATA:Cost ledger Oct 2025–Sep 2026'],navs:[['See 12-month outlook','portfolio-year']]};
+  }
+  return null;
+}
+function evidence(a){
+  if(!a) return '<div class="empty">Select an answer to see its sources.</div>';
+  return (a.cites||[]).map(c=>{ if(c.startsWith('DATA:')){ const k=c.slice(5); return `<div class="ev"><div class="h"><span>Data record</span><button class="ref" data-action="go" data-nav="data:lineage">Lineage</button></div><b>${esc(k)}</b><div class="small" style="margin-top:3px">${esc(DATAEV[k]||'Record in the verified data layer.')}</div></div>`; }
+    const [id,cl]=c.split('@'), doc=DOCS.find(d=>d.id===id), v=applicableVersion(doc,a.date||TODAY)||doc.versions[doc.versions.length-1], cc=v.clauses.find(x=>x[0]===cl);
+    return `<div class="ev"><div class="h"><span>${doc.type} · ${esc(v.v)}</span><button class="ref" data-action="open-doc" data-doc="${id}">${id}</button></div><b>${esc(doc.title)}</b>${cc?`<blockquote style="margin-top:6px"><span class="tag">§${esc(cl)}</span> ${esc(cc[1])}</blockquote>`:''}<div class="small muted" style="margin-top:4px">In force ${fmtD(v.from)} to ${v.to>'2090'?'until amended':fmtD(v.to)}</div></div>`; }).join('')||'<div class="empty">No sources cited.</div>';
+}
+function vAssistant(){
+  if(!S.chat){ S.chat=[]; ask('Why has INV-KCP-2609 been flagged?'); }
+  const ans=S.chat.map((m,k)=>[m,k]).filter(([m])=>m.role==='ai'), selK=S.evSel>=0&&S.chat[S.evSel]?S.evSel:(ans.length?ans[ans.length-1][1]:-1);
+  return `<div class="phead"><div><h1>Assistant</h1><div class="sub">Answers from the same verified records as every other screen, with sources</div></div></div>
+  <div class="chatw">
+   <section class="panel conv"><div class="msgs" id="msgs">${S.chat.map((m,k)=>m.role==='user'?`<div class="m-q">${esc(m.text)}</div>`:`<div class="m-a ${k===selK?'on':''}" data-action="ev" data-id="${k}"><div class="hd"><b>${AG[m.agent]||'Assistant'}</b> · ${(m.cites||[]).length} source${(m.cites||[]).length===1?'':'s'}</div>${m.html}${m.steps&&m.steps.length?`<div class="steps">${m.steps.join(' → ')}</div>`:''}${m.navs&&m.navs.length?`<div class="bar">${m.navs.map(([l,n])=>`<button class="btn sm" data-action="go" data-nav="${n}">${esc(l)}</button>`).join('')}</div>`:''}</div>`).join('')}</div>
+    <form class="composer" id="chatForm"><input id="chatIn" class="in" type="text" placeholder="Ask about a bill, a tariff, tomorrow's position, costs" autocomplete="off" aria-label="Question"><button class="btn pri" type="submit">Ask</button></form></section>
+   <div style="display:grid;gap:14px;align-content:start">
+    ${panel('Sources for the selected answer','',evidence(S.chat[selK]),true)}
+    ${panel('Try','',`<div class="sugg">${SUGG.map(s=>`<button data-action="ask" data-q="${esc(s)}">${esc(s)}</button>`).join('')}</div>`,true)}
+   </div></div>`;
+}
+function ask(q){
+  S.chat=S.chat||[]; S.chat.push({role:'user',text:q});
+  const a=answer(q)||{agent:'analytics',steps:[],html:'<p>That is outside the records loaded in this demo. Ask about a bill, a tariff for a month, tomorrow\'s position, payment priority, LPS or cost trends.</p>',cites:[]};
+  S.chat.push({role:'ai',...a}); S.evSel=S.chat.length-1; save();
+}
+
+/* ---- Approvals ---- */
+function vApprovals(){
+  const all=tasks(), list=S.taskFilter==='mine'?all.filter(t=>t.role===S.role):all;
+  return `<div class="phead"><div><h1>Approvals</h1><div class="sub">Maker–checker queue and time-stamped audit trail</div></div><div class="seg"><button data-action="tfilter" data-id="mine" aria-pressed="${S.taskFilter==='mine'}">Mine (${all.filter(t=>t.role===S.role).length})</button><button data-action="tfilter" data-id="all" aria-pressed="${S.taskFilter==='all'}">Everyone (${all.length})</button></div></div>
+  <div class="stats">${['maker','checker','director'].map(r=>stat(ROLENAME[r],all.filter(t=>t.role===r).length,'open items')).join('')}${stat('Urgent',all.filter(t=>t.pri==='High').length,'deadline within 3 days or blocking',all.some(t=>t.pri==='High')?'neg':'')}</div>
+  ${panel('Queue','',`<div class="tw"><table><thead><tr><th>Item</th><th>Detail</th><th>Owner</th><th>At stake</th><th></th></tr></thead><tbody>${list.map(t=>`<tr class="rowlink" data-action="go" data-nav="${t.nav}"><td><span class="st ${t.pri==='High'?'bad':''}">${esc(t.title)}</span></td><td class="muted">${esc(t.sub)}</td><td>${ROLENAME[t.role]}</td><td class="${t.pri==='High'?'neg':''}">${esc(t.stake)}</td><td class="num"><button class="btn sm">Open</button></td></tr>`).join('')||`<tr><td colspan="5" class="empty">Nothing waiting for ${ROLENAME[S.role]}. Switch user at top right to see other queues.</td></tr>`}</tbody></table></div>`,true)}
+  ${panel('Audit trail',`<span class="note">${S.audit.length} events</span>`,`<div class="tw"><table><thead><tr><th>Time</th><th>By</th><th>Event</th><th>Record</th></tr></thead><tbody>${S.audit.map(a=>`<tr><td style="white-space:nowrap">${fmtStamp(a[0])}</td><td>${esc(a[1])}</td><td>${esc(a[2])}</td><td>${a[3]&&a[3].startsWith('INV')?`<button class="ref" data-action="go" data-nav="bill:${a[3]}">${a[3]}</button>`:`<span class="tag">${esc(a[3])}</span>`}</td></tr>`).join('')}</tbody></table></div>`,true)}`;
+}
+
+/* =========================================================
+   9. Router & actions
+   ========================================================= */
+const VIEWS={overview:vOverview,data:vData,portfolio:vPortfolio,billing:vBilling,bill:vBill,library:vLibrary,assistant:vAssistant,approvals:vApprovals};
+function render(keep){
+  const y=window.scrollY; $('#roleSel').value=S.role; $('#avatar').textContent=ROLE[S.role].ini; hideTip(); renderNav();
+  $('#view').innerHTML=VIEWS[route]();
+  const m=$('#msgs'); if(m) m.scrollTop=m.scrollHeight;
+  if(keep) window.scrollTo(0,y); else window.scrollTo(0,0);
+}
+function go(nav){
+  if(nav.startsWith('bill:')){ S.selInv=nav.slice(5); S.billTab='recon'; route='bill'; }
+  else if(nav.startsWith('doc:')){ S.libSel=nav.slice(4); route='library'; }
+  else if(nav.startsWith('data:')){ S.dataTab=nav.slice(5); route='data'; }
+  else if(nav==='portfolio-year'){ S.horizon='year'; route='portfolio'; }
+  else if(nav==='regack'){ regAck(); route='library'; }
+  else route=nav;
+  try{ history.replaceState(null,'','#'+(route==='bill'?'billing':route)); }catch(e){}
+  save(); render();
+}
+function regAck(){ if(S.regAck) return; S.regAck=true; log('Raised billing rule change for fuel cost adjustment notice (BTPC, BPL, Oct 2026 bills onward)','NOTICE-FPA'); toast('Billing rule change raised'); }
+const tip=$('#tip');
+function hideTip(){ tip.classList.remove('on'); }
+document.addEventListener('mouseover',ev=>{ const t=ev.target.closest('[data-tip]'); if(t){ tip.textContent=t.getAttribute('data-tip'); tip.classList.add('on'); } else hideTip();
+  const f=ev.target.closest('[data-f]'); document.querySelectorAll('.fx.hi').forEach(n=>n.classList.remove('hi')); if(f) document.querySelectorAll(`.fx[data-f="${f.dataset.f}"]`).forEach(n=>n.classList.add('hi')); });
+document.addEventListener('mousemove',ev=>{ if(!tip.classList.contains('on')) return; const w=tip.offsetWidth,h=tip.offsetHeight; let x=ev.clientX+12,y=ev.clientY+12; if(x+w>innerWidth-8) x=ev.clientX-w-12; if(y+h>innerHeight-8) y=ev.clientY-h-12; tip.style.left=x+'px'; tip.style.top=y+'px'; });
+document.addEventListener('scroll',hideTip,true);
+document.addEventListener('click',ev=>{
+  const el=ev.target.closest('[data-action]'); if(!el) return; const a=el.dataset.action, id=el.dataset.id;
+  switch(a){
+    case 'go': go(el.dataset.nav); break;
+    case 'reset': S=seedState(); S.billTab='recon'; S.dataTab='lineage'; S.evSel=-1; save(); route='overview'; render(); toast('Demo data reset'); break;
+    case 'dtab': S.dataTab=id; save(); render(true); break;
+    case 'btab': S.billTab=id; save(); render(true); break;
+    case 'sup': S.supSel=S.supSel===id?null:id; render(true); break;
+    case 'cost-month': S.costSel=+id; save(); render(true); break;
+    case 'epm-hour': S.epmHour=+id; save(); render(true); break;
+    case 'lin-node': S.linSel=id; S.linTrace='none'; save(); render(true); break;
+    case 'lin-trace': S.linTrace=id; save(); render(true); break;
+    case 'ev': S.evSel=+id; save(); render(true); break;
+    case 'reconnect': { const c=S.connectors.find(x=>x.id===id); c.status='ok'; c.last='15 Oct '+stamp().slice(11); c.note=''; c.recs='Sep payments: 214 entries'; S.imports.unshift([`15 Oct ${stamp().slice(11)}`,'Payments ledger','214 entries','Loaded']); log(`Reconnected ${c.name}`,'DATA'); save(); render(true); toast('Payments ledger reconnected, 214 entries loaded'); break; }
+    case 'resolve': { const v=S.issues.find(x=>x.id===id); S.issues=S.issues.filter(x=>x.id!==id); log(`Resolved ${id}: ${v.fix}`,'DATA'); save(); render(true); toast(`${id} resolved`); break; }
+    case 'ingest': openIngest(); break;
+    case 'bfilter': S.billFilter=id; save(); render(true); break;
+    case 'maker': makerAct(id,el.dataset.d); break;
+    case 'checker': { const i=S.invoices.find(x=>x.id===id); if(el.dataset.d==='approve'){ i.status='approved'; i.approvedAmt=+payable(i).toFixed(2); log(`Approved ${money(i.approvedAmt)} for payment`,id); toast(`${id} approved`); } else { i.status=isMatch(i)?'reconciled':'discrepancy'; delete i.decision; log('Sent back to maker',id); toast(`${id} sent back`); } save(); render(true); break; }
+    case 'pay': { const i=S.invoices.find(x=>x.id===id); i.status='paid'; i.paidOn=TODAY; const r=rebateNow(i,TODAY); log(`Payment of ${money(payable(i))} released; rebate ${r.pct}% (${money(payable(i)*r.pct/100)})`,id); save(); render(true); toast(r.pct?`Paid. Rebate kept: ${money(payable(i)*r.pct/100)}`:'Paid before due date, no LPS'); break; }
+    case 'corrected': { const i=S.invoices.find(x=>x.id===id); i.lines.forEach(l=>l.billed=l.sys); i.qty.billedMU=i.qtyCheck==='jmr'?i.qty.jmrMU:i.qtyCheck==='meter'?i.qty.meterMU:i.qty.schedMU; i.presented=TODAY; i.status='reconciled'; i.reason='Corrected bill agrees with the recalculation.'; log('Corrected bill received; matched',id); save(); render(true); toast('Corrected bill matched; rebate clock restarted'); break; }
+    case 'horizon': S.horizon=id; save(); render(true); break;
+    case 'save-scen': { const e=epmRun(S.scen), sc=S.scen; const name=[sc.demand?`Demand ${sc.demand>0?'+':''}${sc.demand}%`:'',sc.price?`Price ${sc.price>0?'+':''}${sc.price}%`:'',sc.hydro!==100?`Hydro ${sc.hydro}%`:'',sc.outage?'Unit outage':''].filter(Boolean).join(', ')||'Base case'; S.saved.push({name,gap:e.peakGap,mu:e.byOpt.reduce((a,o)=>a+o.mu,0),cost:e.best.cost,unmet:e.best.unmet/1000}); save(); render(true); toast(`Saved: ${name}`); break; }
+    case 'del-scen': S.saved.splice(+id,1); save(); render(true); break;
+    case 'reset-scen': S.scen={demand:0,price:0,hydro:100,outage:false,sell:true}; save(); render(true); break;
+    case 'epm-submit': { const e=epmRun(S.scen); const p={id:'PLAN-'+(1016+S.proposals.length),status:'pending',mu:e.byOpt.reduce((a,o)=>a+o.mu,0),cost:e.best.cost,by:ROLE[S.role].name}; S.proposals=S.proposals.filter(x=>x.status!=='pending'); S.proposals.push(p); log(`Submitted ${p.id} for ${fmtD(TOMORROW)}: ${p.mu.toFixed(2)} MU, ${money(p.cost)}`,p.id); save(); render(true); toast(`${p.id} sent to Director (Commercial)`); break; }
+    case 'epm-approve': { const p=S.proposals.find(x=>x.status==='pending'); p.status='approved'; p.by=ROLE.director.name; log(`Approved ${p.id}; bids to be placed before 12:00`,p.id); save(); render(true); toast(`${p.id} approved`); break; }
+    case 'epm-reject': { const p=S.proposals.find(x=>x.status==='pending'); p.status='returned'; log(`Returned ${p.id} for revision`,p.id); save(); render(true); toast(`${p.id} returned`); break; }
+    case 'open-doc': { const keep=el.dataset.keep; S.libSel=el.dataset.doc; route='library'; try{history.replaceState(null,'','#library');}catch(e){} save(); render(!!keep); break; }
+    case 'reg-ack': regAck(); save(); render(true); break;
+    case 'ask': route='assistant'; try{history.replaceState(null,'','#assistant');}catch(e){} ask(el.dataset.q); render(); break;
+    case 'tfilter': S.taskFilter=id; save(); render(true); break;
+    case 'close-modal': $('#modalRoot').innerHTML=''; break;
+    case 'close-bg': if(ev.target===el) $('#modalRoot').innerHTML=''; break;
+    case 'open-ingested': $('#modalRoot').innerHTML=''; go('bill:'+id); break;
+  }
+});
+function makerAct(id,d){
+  const i=S.invoices.find(x=>x.id===id), note=($('#mNote')||{}).value||'';
+  if(d==='supplier'&&!note.trim()){ toast('Add a note explaining why the supplier figure is accepted'); $('#mNote').focus(); return; }
+  if(d==='return'){ i.status='returned'; i.returnedOn=TODAY; log(`Returned to supplier (${money(diffOf(i))} in question)${note?': '+note:''}`,id); toast(`${id} returned to supplier`); }
+  else { i.decision=d; i.makerNote=note; i.status='maker_ok'; log(d==='system'?`Verified ${money(sysTotal(i))}${Math.abs(diffOf(i))>0.004?`; dispute raised for ${money(diffOf(i))}`:''}${note?': '+note:''}`:`Accepted supplier figure ${money(billedTotal(i))}: ${note}`,id); toast(`${id} sent to checker`); }
+  save(); render(true);
+}
+document.addEventListener('input',ev=>{ const t=ev.target;
+  if(t.dataset.scen&&t.type==='range'){ S.scen[t.dataset.scen]=+t.value; save(); const id=t.id; render(true); const n=document.getElementById(id); if(n) n.focus(); }
+  if(t.id==='libQ'){ S.libQ=t.value; const p=t.selectionStart; render(true); const n=$('#libQ'); n.focus(); n.setSelectionRange(p,p); } });
+document.addEventListener('change',ev=>{ const t=ev.target;
+  if(t.dataset.scen&&t.type==='checkbox'){ S.scen[t.dataset.scen]=t.checked; save(); render(true); }
+  if(t.id==='libT'){ S.libType=t.value; render(true); }
+  if(t.id==='libD'&&t.value){ S.libDate=t.value; save(); render(true); }
+  if(t.id==='roleSel'){ S.role=t.value; save(); render(true); toast(`Signed in as ${ROLE[S.role].name}, ${ROLENAME[S.role]}`); } });
+document.addEventListener('submit',ev=>{ ev.preventDefault();
+  if(ev.target.id==='chatForm'){ const v=$('#chatIn').value.trim(); if(!v) return; ask(v); render(true); $('#chatIn').focus(); }
+  if(ev.target.id==='topAsk'){ const inp=$('#topAskIn'), v=inp.value.trim(); if(!v) return; inp.value=''; inp.blur(); route='assistant'; try{history.replaceState(null,'','#assistant');}catch(e){} if(!S.chat) S.chat=[]; ask(v); render(); } });
+document.addEventListener('keydown',ev=>{ if(ev.key==='Enter'&&ev.target.classList&&ev.target.classList.contains('n')) ev.target.dispatchEvent(new MouseEvent('click',{bubbles:true})); if(ev.key==='Escape') $('#modalRoot').innerHTML=''; if(ev.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){ ev.preventDefault(); $('#topAskIn').focus(); } });
+
+function openIngest(){
+  const i=S.invoices.find(x=>x.status==='inbox'); if(!i){ toast('Inbox is empty'); return; }
+  const s=SUP[i.sup], bt=billedTotal(i), st=sysTotal(i);
+  const steps=[['Received','Email, 14 Oct 19:42 · Sep26_bill.pdf, 3 pages'],['Fields read',`${4+i.lines.length} fields, lowest confidence 96.5%`],['Matched to contract',`${s.docs.join(', ')} · FY 2026-27 version in force for ${i.period}`],['Supporting records',`Schedule ${i.qty.schedMU} MU · meter ${i.qty.meterMU} MU · PAF ${i.qty.paf}%`],['Recalculated',`Billed ${money(bt)} · calculated ${money(st)}`],['Result',`Discrepancy ${money(bt-st)}: transmission charges not billable (PPA-BPL §3.4)`]];
+  $('#modalRoot').innerHTML=`<div class="mbg" data-action="close-bg"><div class="modal" role="dialog" aria-modal="true" aria-label="Import bill"><div class="ph"><h2>Import bill · ${s.name}</h2><button class="btn sm" data-action="close-modal">Close</button></div><div class="pipe">${steps.map(([t,b],k)=>`<div class="pstep" id="ps${k}"><span class="d">✓</span><div><b style="font-weight:500">${t}</b><div class="small muted">${b}</div></div><span class="small faint">${k===0?'19:42':''}</span></div>`).join('')}</div><div class="ph" style="border-top:1px solid var(--line2);border-bottom:0"><span class="muted small">Routed to Billing Officer for verification</span><button class="btn pri sm" id="ingestDone" disabled data-action="open-ingested" data-id="${i.id}">Open ${i.id}</button></div></div></div>`;
+  const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  steps.forEach((_,k)=>setTimeout(()=>{ const n=document.getElementById('ps'+k); if(n) n.classList.add('on'); if(k===steps.length-1){ const dn=$('#ingestDone'); if(dn) dn.disabled=false; } }, reduce?0:350*k+150));
+  i.status='discrepancy'; const c=S.connectors.find(x=>x.id==='inbox'); c.recs='No new bills'; c.last='15 Oct '+stamp().slice(11);
+  S.imports=S.imports.map(r=>r[1]==='Invoice inbox'&&r[3].startsWith('Waiting')?[r[0],r[1],r[2],'Loaded']:r);
+  S.audit.unshift([stamp(),'System',`${i.id} imported and reconciled: ${money(bt-st)} difference flagged`,i.id]);
+  save(); render(true);
+}
+
+(function(){
+  const h=(location.hash||'').slice(1); if(VIEWS[h]&&h!=='bill') route=h;
+  const tick=()=>{ const d=nowSim(); $('#clock').textContent=`${fmtD(TODAY)}, ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')} IST`; };
+  tick(); setInterval(tick,20000);
+  window.addEventListener('hashchange',()=>{ const h=location.hash.slice(1); if(VIEWS[h]&&h!==route&&!(h==='billing'&&route==='bill')){ route=h; render(); } });
+  render();
+})();
+</script>
+
+</body>
+</html>
