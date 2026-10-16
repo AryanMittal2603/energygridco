@@ -306,6 +306,8 @@ body.drawer-open .content{padding-right:412px}
 @media (max-width:900px){.shell{grid-template-columns:minmax(0,1fr)}.side{padding:6px}.side button{align-items:center}.drawer{top:0}.guide{grid-template-columns:minmax(0,1fr)}.try{justify-content:flex-start}.side .nd{display:none}}
 
 .phead .sub,.ph .note{display:none}
+.row{display:flex;justify-content:space-between;align-items:center;gap:6px 10px;flex-wrap:wrap}
+td.id .s2{white-space:normal}
 .flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
 .flow button{all:unset;box-sizing:border-box;cursor:pointer;padding:12px 16px;border-left:1px solid var(--line2);position:relative;display:grid;gap:1px}
 .flow button:first-child{border-left:0}
@@ -471,7 +473,7 @@ const COST = { months:['Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26','Ap
 /* =========================================================
    2. State (kept in this browser only)
    ========================================================= */
-const STORE_KEY = 'gridco-proto-v5';
+const STORE_KEY = 'gridco-proto-v6';
 const T0 = Date.now();
 function seedState(){ return {
   role:'maker', invoices:seedInvoices(), selInv:'INV-KCP-2609', billFilter:'open', invTab:'recon',
@@ -509,6 +511,22 @@ function seedState(){ return {
      hist:[['2026-06-14','raised','Raised by S. Panda'],['2026-06-15','notice','Dispute notice sent'],['2026-08-20','settled','Supplier accepted; credit note for ₹18.0 lakh adjusted in the August bill']]},
     {id:'D-2026-012', sup:'MBH', bill:'INV-MBH-2606', amt:0.42, reason:'Rate escalation applied from June.', cite:'PPA-MBH@2.1', raised:'2026-07-15', due:'2026-08-24', stage:'settled', outcome:'rejected', recovered:0, lps:0.01,
      hist:[['2026-07-15','raised','Raised by S. Panda'],['2026-07-16','notice','Dispute notice sent'],['2026-08-28','settled','Escalation found valid under the FY 2026-27 schedule; paid with ₹1.0 lakh surcharge']]},
+    {id:'D-2025-031', sup:'BTPC', bill:'INV-BTPC-2510', amt:2.4, reason:'Capacity charge billed in full while availability was below the norm.', cite:'PPA-BTPC@7.3', raised:'2025-11-10', due:'2025-12-20', stage:'settled', outcome:'accepted', recovered:2.4, cause:'Capacity charge vs availability',
+     hist:[['2025-11-10','raised','Raised by S. Panda'],['2025-11-11','notice','Dispute notice sent'],['2026-02-20','settled','Supplier accepted after SLDC confirmed availability; credit note issued']]},
+    {id:'D-2025-034', sup:'CSA', bill:'INV-CSA-2511', amt:0.95, reason:'Energy billed on provisional regional account; final account lower.', cite:'ALLOC-CSA@3', raised:'2025-12-02', due:'2026-01-11', stage:'settled', outcome:'accepted', recovered:0.95, cause:'Quantity or meter',
+     hist:[['2025-12-02','raised','Raised by S. Panda'],['2025-12-03','notice','Dispute notice sent'],['2026-01-28','settled','Revised bill issued on the final regional account']]},
+    {id:'D-2025-038', sup:'SSP', bill:'INV-SSP-2512', amt:0.22, reason:'Rate applied from a draft amendment that was never signed.', cite:'PPA-SSP@5.1', raised:'2026-01-15', due:'2026-02-24', stage:'settled', outcome:'accepted', recovered:0.22, cause:'Tariff version',
+     hist:[['2026-01-15','raised','Raised by S. Panda'],['2026-01-16','notice','Dispute notice sent'],['2026-02-10','settled','Supplier withdrew the higher rate; credit note issued']]},
+    {id:'D-2025-041', sup:'KCP', bill:'INV-KCP-2601', amt:0.31, reason:'Energy billed on injection above schedule.', cite:'PPA-KCP@4.2', raised:'2026-02-05', due:'2026-03-17', stage:'settled', outcome:'partial', recovered:0.15, cause:'Quantity or meter',
+     hist:[['2026-02-05','raised','Raised by S. Panda'],['2026-02-06','notice','Dispute notice sent'],['2026-04-02','settled','Settled at half after joint reconciliation']]},
+    {id:'D-2025-044', sup:'BPL', bill:'INV-BPL-2601', amt:1.12, reason:'Transmission charges billed by the generator.', cite:'PPA-BPL@3.4', raised:'2026-02-20', due:'2026-04-01', stage:'settled', outcome:'accepted', recovered:1.12, cause:'Charge not in contract',
+     hist:[['2026-02-20','raised','Raised by S. Panda'],['2026-02-21','notice','Dispute notice sent'],['2026-03-25','settled','Supplier accepted; charge removed']]},
+    {id:'D-2026-002', sup:'MBH', bill:'INV-MBH-2603', amt:0.08, reason:'Same energy line billed twice.', cite:'PPA-MBH@2.1', raised:'2026-04-12', due:'2026-05-22', stage:'settled', outcome:'accepted', recovered:0.08, cause:'Arithmetic or duplicate',
+     hist:[['2026-04-12','raised','Raised by S. Panda'],['2026-04-13','notice','Dispute notice sent'],['2026-04-30','settled','Duplicate line removed']]},
+    {id:'D-2026-005', sup:'BTPC', bill:'INV-BTPC-2603', amt:1.65, reason:'Capacity charge billed in full; availability below norm.', cite:'PPA-BTPC@7.3', raised:'2026-04-20', due:'2026-05-30', stage:'settled', outcome:'rejected', recovered:0, cause:'Capacity charge vs availability', lps:0.06,
+     hist:[['2026-04-20','raised','Raised by S. Panda'],['2026-04-21','notice','Dispute notice sent'],['2026-07-15','settled','SLDC confirmed deemed availability for coal shortage days; supplier figure upheld']]},
+    {id:'D-2026-007', sup:'ECW', bill:'INV-ECW-2604', amt:0.12, reason:'Billed at generator terminal instead of joint meter reading.', cite:'PPA-ECW@6.2', raised:'2026-05-08', due:'2026-06-17', stage:'settled', outcome:'accepted', recovered:0.12, cause:'Quantity or meter',
+     hist:[['2026-05-08','raised','Raised by S. Panda'],['2026-05-09','notice','Dispute notice sent'],['2026-06-02','settled','Supplier accepted; credit note issued']]},
   ],
   chat:null, agent:'auto', taskFilter:'mine',
   audit:[
@@ -1349,6 +1367,253 @@ function answerX(raw){
 }
 
 /* =========================================================
+   v6: value KPIs, dispute analytics, charges model, priority model
+   ========================================================= */
+/* ---- generic charts ---- */
+function lineChart2({labels, series, h=220, fmt=v=>v, lo, hi, step, ref, unit=''}){
+  const W=560, pad={l:44,r:14,t:16,b:24}, iw=W-pad.l-pad.r, ih=h-pad.t-pad.b, n=labels.length, x=k=>pad.l+(n===1?iw/2:k/(n-1)*iw), y=v=>pad.t+ih-(v-lo)/(hi-lo)*ih;
+  let g=''; for(let v=lo; v<=hi+1e-9; v+=step) g+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="#EDEFF2"/><text x="${pad.l-6}" y="${y(v)+4}" text-anchor="end">${fmt(v)}</text>`;
+  labels.forEach((l,k)=>g+=`<text x="${x(k)}" y="${h-6}" text-anchor="middle">${l}</text>`);
+  if(ref) g+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y(ref.v)}" y2="${y(ref.v)}" stroke="var(--bad)" stroke-dasharray="5 4"/><text x="${pad.l+6}" y="${y(ref.v)-5}" style="fill:var(--bad)">${ref.label}</text>`;
+  series.forEach(s=>{ g+=`<path d="${s.v.map((v,k)=>`${k?'L':'M'}${x(k)},${y(v)}`).join('')}" fill="none" stroke="${s.c}" stroke-width="${s.w||2}" ${s.dash?'stroke-dasharray="5 4"':''}/>`; s.v.forEach((v,k)=>g+=`<circle cx="${x(k)}" cy="${y(v)}" r="3" fill="#fff" stroke="${s.c}" stroke-width="1.5"/>`); const k=s.v.length-1; g+=`<text x="${x(k)-6}" y="${y(s.v[k])+(s.below?15:-8)}" text-anchor="end" style="fill:${s.c};font-weight:600">${fmt(s.v[k])}${unit}</text>`; });
+  labels.forEach((l,k)=>g+=`<rect class="hit" x="${x(k)-iw/(2*(n-1||1))}" y="${pad.t}" width="${iw/(n-1||1)}" height="${ih}" ${tipAttr([l,...series.map(s=>`${s.name}: ${fmt(s.v[k])}${unit}`)])}/>`);
+  return `<svg class="chart" viewBox="0 0 ${W} ${h}" role="img" aria-label="Trend">${g}</svg>`;
+}
+function comboChart({labels, bars, line, h=220, barMax, lineMax=100, barFmt=v=>v, lineFmt=v=>v+'%'}){
+  const W=560, pad={l:40,r:40,t:18,b:24}, iw=W-pad.l-pad.r, ih=h-pad.t-pad.b, n=labels.length, bw=iw/n, yb=v=>pad.t+ih-v/barMax*ih, yl=v=>pad.t+ih-v/lineMax*ih;
+  let g=''; for(let k=0;k<=4;k++){ const v=barMax*k/4; g+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${yb(v)}" y2="${yb(v)}" stroke="#EDEFF2"/><text x="${pad.l-6}" y="${yb(v)+4}" text-anchor="end">${barFmt(v)}</text><text x="${W-pad.r+6}" y="${yb(v)+4}">${lineFmt(lineMax*k/4)}</text>`; }
+  bars.v.forEach((v,k)=>{ const x0=pad.l+k*bw+bw*.25; g+=`<rect x="${x0}" y="${yb(v)}" width="${bw*.5}" height="${yb(0)-yb(v)}" fill="${bars.c}"/><text x="${x0+bw*.25}" y="${yb(v)-5}" text-anchor="middle" style="fill:var(--ink2)">${barFmt(v)}</text><text x="${x0+bw*.25}" y="${h-6}" text-anchor="middle">${labels[k]}</text>`; });
+  g+=`<path d="${line.v.map((v,k)=>`${k?'L':'M'}${pad.l+k*bw+bw/2},${yl(v)}`).join('')}" fill="none" stroke="${line.c}" stroke-width="2"/>`;
+  line.v.forEach((v,k)=>g+=`<circle cx="${pad.l+k*bw+bw/2}" cy="${yl(v)}" r="3.5" fill="#fff" stroke="${line.c}" stroke-width="2"/><rect class="hit" x="${pad.l+k*bw}" y="${pad.t}" width="${bw}" height="${ih}" ${tipAttr([labels[k],`${bars.name}: ${barFmt(bars.v[k])}`,`${line.name}: ${lineFmt(line.v[k])}`])}/>`);
+  return `<svg class="chart" viewBox="0 0 ${W} ${h}" role="img" aria-label="Trend">${g}</svg>`;
+}
+
+/* ---- value delivered ---- */
+const KPI={months:['Apr','May','Jun','Jul','Aug','Sep'],
+  mu:[3480,3720,3610,3390,3350,3260],
+  appc:[3.44,3.47,3.41,3.36,3.33,3.31],
+  payDays:[17,15,12,9,7,4], within5:[22,31,45,58,66,83],
+  paidMkt:[5.10,5.62,4.95,4.20,4.05,4.38], damAvg:[5.48,6.21,5.40,4.51,4.36,4.72],
+  merit:[92.1,93.4,95.0,96.2,96.8,97.3]};
+const APPROVED_APPC=3.39;
+function vValue(){
+  const ser=valueSeries(), sum=c=>c.v.reduce((a,b)=>a+b,0), tot=ser.reduce((a,c)=>a+sum(c),0), run=tot/6.5*12;
+  const months=VAL.months, mtot=months.map((_,k)=>ser.reduce((a,c)=>a+c.v[k],0)), cum=mtot.map((v,k)=>mtot.slice(0,k+1).reduce((a,b)=>a+b,0));
+  const W=780,H=250,pad={l:40,r:52,t:22,b:24}, iw=W-pad.l-pad.r, ih=H-pad.t-pad.b, bw=iw/7, bmax=Math.max(20,Math.ceil(Math.max(...mtot)/5)*5), cmax=Math.ceil(cum[6]/20)*20, yb=v=>pad.t+ih-v/bmax*ih, yc=v=>pad.t+ih-v/cmax*ih;
+  let g=''; for(let k=0;k<=4;k++){ g+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${yb(bmax*k/4)}" y2="${yb(bmax*k/4)}" stroke="#EDEFF2"/><text x="${pad.l-6}" y="${yb(bmax*k/4)+4}" text-anchor="end">${bmax*k/4}</text><text x="${W-pad.r+6}" y="${yb(bmax*k/4)+4}" style="fill:var(--ink2)">${cmax*k/4}</text>`; }
+  months.forEach((m,k)=>{ const x0=pad.l+k*bw+bw*.22, w=bw*.56; let acc=0; ser.forEach(c=>{ const v=c.v[k]; if(v<=0) return; g+=`<rect x="${x0}" y="${yb(acc+v)}" width="${w}" height="${yb(acc)-yb(acc+v)}" fill="${c.c}"/>`; acc+=v; }); g+=`<text x="${x0+w/2}" y="${H-6}" text-anchor="middle">${m}${k===6?' (to 15th)':''}</text><rect class="hit" x="${pad.l+k*bw}" y="${pad.t}" width="${bw}" height="${ih}" ${tipAttr([`${m} 2026: ₹${mtot[k].toFixed(2)} cr (running total ₹${cum[k].toFixed(1)} cr)`,...ser.map(c=>`${c.n}  ₹${c.v[k].toFixed(2)} cr`)])}/>`; });
+  g+=`<path d="${cum.map((v,k)=>`${k?'L':'M'}${pad.l+k*bw+bw/2},${yc(v)}`).join('')}" fill="none" stroke="var(--ink)" stroke-width="2"/>`+cum.map((v,k)=>`<circle cx="${pad.l+k*bw+bw/2}" cy="${yc(v)}" r="3" fill="#fff" stroke="var(--ink)" stroke-width="1.5"/>`).join('')+`<text x="${pad.l+6*bw+bw/2}" y="${yc(cum[6])-9}" text-anchor="middle" style="fill:var(--ink);font-weight:600">₹${cum[6].toFixed(1)} cr</text>`;
+  const without=KPI.appc.map((a,k)=>+(a+mtot[k]*10/KPI.mu[k]).toFixed(3)), paise=((KPI.appc[5]-KPI.appc[0])*100), saveP=(without[5]-KPI.appc[5])*100;
+  const tbl=`<div class="tw"><table><thead><tr><th>Source of value</th><th class="num">FY to date</th><th class="num">Share</th><th>Measured as</th></tr></thead><tbody>${ser.slice().sort((a,b)=>sum(b)-sum(a)).map(c=>`<tr><td><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${c.c};margin-right:8px"></i>${c.n}</td><td class="num">${money(sum(c))}</td><td class="num"><span style="display:inline-block;width:70px;height:6px;background:var(--line2);border-radius:3px;vertical-align:middle;margin-right:6px"><span style="display:block;height:100%;width:${sum(c)/tot*100}%;background:${c.c};border-radius:3px"></span></span>${Math.round(sum(c)/tot*100)}%</td><td class="muted">${c.how}</td></tr>`).join('')}</tbody><tfoot><tr><td>Total</td><td class="num">${money(tot)}</td><td></td><td></td></tr></tfoot></table></div>`;
+  return `<div class="phead"><div><h1>Value delivered</h1></div></div>
+  <div class="stats">${stat('FY 2026-27 to date',money(tot),`Full-year estimate ${money(run)}`,'pos')}${stat('Purchase cost per unit',`₹${KPI.appc[5].toFixed(2)}`,`Sep, down ${Math.abs(paise).toFixed(0)} paise since Apr; approved ₹${APPROVED_APPC.toFixed(2)}`)}${stat('Bills paid within 5 days',`${KPI.within5[5]}%`,`Sep, up from ${KPI.within5[0]}% in Apr`)}${stat('Energy bought in merit order',`${KPI.merit[5]}%`,`Sep, up from ${KPI.merit[0]}% in Apr`)}</div>
+  ${panel('Value by month, ₹ cr','',ins(`<b>${money(tot)}</b> delivered since 1 April; the black line is the running total (right axis). Rebates and procurement optimisation make up ${Math.round((sum(ser[2])+sum(ser[0]))/tot*100)}% of it.`)+`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Value by month">${g}</svg>`+leg([...ser.map(c=>[c.n,c.c]),['Running total','var(--ink)']]))}
+  <div class="cols c2">
+   ${panel('Average power purchase cost, ₹/kWh','',ins(`Without the savings, September would have cost <b>₹${without[5].toFixed(2)}</b> a unit instead of ₹${KPI.appc[5].toFixed(2)}. Each paisa per unit is worth about <b>₹4 cr a year</b> on GRIDCO's ~40,000 MU.`)+lineChart2({labels:KPI.months,series:[{name:'Without the system',c:'#9CA3AF',v:without,dash:true},{name:'Actual',c:'var(--accent)',v:KPI.appc,below:true}],lo:3.2,hi:3.6,step:0.1,fmt:v=>'₹'+v.toFixed(2),ref:{v:APPROVED_APPC,label:'OERC approved ₹3.39'}})+leg([['Actual','var(--accent)'],['Without the system','#9CA3AF'],['Approved by OERC','var(--bad)']]))}
+   ${panel('How fast bills get paid','',ins(`Median time from bill to payment fell from <b>${KPI.payDays[0]} to ${KPI.payDays[5]} days</b>. That moved ${KPI.within5[5]}% of bills inside the 5-day window where the 1.5% rebate applies.`)+comboChart({labels:KPI.months,bars:{name:'Median days to pay',c:'#CBD1DA',v:KPI.payDays},line:{name:'Paid within 5 days',c:'#2E9E62',v:KPI.within5},barMax:20,barFmt:v=>Math.round(v)+'d'})+leg([['Median days to pay (left)','#CBD1DA'],['Share paid within 5 days (right)','#2E9E62']]))}
+  </div>
+  <div class="cols c2">
+   ${panel('Market price paid vs exchange average, ₹/kWh','',ins(`Buying in the cheaper hours and blocks kept GRIDCO's market price <b>${Math.round((KPI.damAvg[5]-KPI.paidMkt[5])*100)} paise</b> below the day-ahead average in September.`)+lineChart2({labels:KPI.months,series:[{name:'Exchange day-ahead average',c:'var(--o-dam)',v:KPI.damAvg},{name:'GRIDCO paid',c:'var(--accent)',v:KPI.paidMkt,below:true}],lo:3.5,hi:6.5,step:0.5,fmt:v=>'₹'+v.toFixed(2)})+leg([['GRIDCO paid','var(--accent)'],['Exchange day-ahead average','var(--o-dam)']]))}
+   ${panel('Energy dispatched in merit order, %','',ins(`Merit order means using the cheapest available power first. Scheduling with the optimiser raised adherence from <b>${KPI.merit[0]}% to ${KPI.merit[5]}%</b>; the remainder is held back by must-run and grid limits.`)+comboChart({labels:KPI.months,bars:{name:'Out-of-merit energy, MU',c:'#F6B8AD',v:KPI.merit.map((m,k)=>Math.round((100-m)/100*KPI.mu[k]))},line:{name:'In merit order',c:'var(--accent)',v:KPI.merit},barMax:400,lineMax:100,barFmt:v=>Math.round(v)})+leg([['Out-of-merit energy, MU (left)','#F6B8AD'],['Share in merit order (right)','var(--accent)']]))}
+  </div>
+  ${panel('Where the value comes from','',tbl,true)}`;
+}
+
+/* ---- disputes: analytics, evidence, notice ---- */
+const CAUSE={'D-2026-014':'Capacity charge vs availability','D-2026-016':'Charge not in contract','D-2026-009':'Quantity or meter','D-2026-011':'Quantity or meter','D-2026-012':'Tariff version','INV-KCP-2609':'Quantity or meter','INV-ECW-2609':'Quantity or meter','INV-SSP-2609':'Tariff version','INV-BTPC-2609':'Capacity charge vs availability','INV-BPL-2609':'Charge not in contract'};
+const causeOf = d => d.cause||CAUSE[d.id]||CAUSE[d.bill]||'Other';
+const settledOn = d => d.stage==='settled'?lastStep(d):null;
+const BILLED_FY={BTPC:1690,CSA:2470,MBH:357,SSP:78,ECW:117,KCP:65,BPL:793};
+function agingChart(open){
+  const B=[['0–30 days',0,30],['31–60 days',31,60],['61–90 days',61,90],['Over 90 days',91,9999]].map(([l,a,b])=>{ const ds=open.filter(d=>{const g=daysBetween(d.raised,TODAY);return g>=a&&g<=b;}); return {l,ds,amt:ds.reduce((x,d)=>x+d.amt,0)}; });
+  const mx=Math.max(...B.map(b=>b.amt),0.01);
+  return `<div style="display:grid;gap:10px">${B.map((b,k)=>`<div><div class="row small"><span>${b.l}</span><span><b>${b.amt?money(b.amt):'—'}</b> <span class="muted">· ${b.ds.length}</span></span></div><div style="height:10px;background:var(--line2);border-radius:3px;overflow:hidden"><div style="height:100%;width:${b.amt/mx*100}%;background:${['#A8DDBD','#E09A2C','#E07B24','var(--bad)'][k]}"></div></div>${b.ds.length?`<div class="small muted" style="margin-top:2px">${b.ds.map(d=>`<button class="ref" data-action="dsel" data-id="${d.id}">${d.id}</button>`).join('')}</div>`:''}</div>`).join('')}</div>`;
+}
+function causeTable(all){
+  const by={}; all.forEach(d=>{ const c=causeOf(d); (by[c]=by[c]||[]).push(d); });
+  const rows=Object.entries(by).map(([c,ds])=>{ const st=ds.filter(d=>d.stage==='settled'), won=st.reduce((a,d)=>a+(d.outcome==='accepted'?1:d.outcome==='partial'?0.5:0),0), days=st.length?Math.round(st.reduce((a,d)=>a+daysBetween(d.raised,settledOn(d)),0)/st.length):null; return {c,n:ds.length,amt:ds.reduce((a,d)=>a+d.amt,0),win:st.length?won/st.length:null,days,st:st.length}; }).sort((a,b)=>b.amt-a.amt);
+  const mx=Math.max(...rows.map(r=>r.amt));
+  return {rows, html:`<div class="tw"><table><thead><tr><th>Cause</th><th class="num">Disputes</th><th>Amount</th><th class="num">GRIDCO wins</th><th class="num">Days to settle</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.c}</td><td class="num">${r.n}</td><td style="white-space:nowrap"><span style="display:inline-block;width:70px;height:7px;background:var(--line2);border-radius:3px;vertical-align:middle;margin-right:8px"><span style="display:block;height:100%;width:${r.amt/mx*100}%;background:var(--accent);border-radius:3px"></span></span>${money(r.amt)}</td><td class="num ${r.win===null?'faint':r.win>=0.7?'pos':r.win<0.5?'neg':''}">${r.win===null?'—':Math.round(r.win*100)+'%'}<span class="s2">${r.st} settled</span></td><td class="num">${r.days??'—'}</td></tr>`).join('')}</tbody></table></div>`};
+}
+function supplierScore(all){
+  const rows=Object.entries(SUP).map(([k,s])=>{ const ds=all.filter(d=>d.sup===k&&d.raised>='2026-04-01'), amt=ds.reduce((a,d)=>a+d.amt,0), st=all.filter(d=>d.sup===k&&d.stage==='settled'), rec=st.reduce((a,d)=>a+(d.recovered||0),0), sAmt=st.reduce((a,d)=>a+d.amt,0); return {k,s,n:ds.length,amt,pct:amt/BILLED_FY[k]*100,rec:sAmt?rec/sAmt:null}; }).sort((a,b)=>b.pct-a.pct);
+  const mx=Math.max(...rows.map(r=>r.pct),0.01);
+  return `<div class="tw"><table><thead><tr><th>Supplier</th><th class="num">Billed FY to date</th><th class="num">Disputed</th><th>Disputed share of billing</th><th class="num">Recovered when settled</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.s.short}</td><td class="num">${money(BILLED_FY[r.k])}</td><td class="num">${r.amt?money(r.amt):'—'}<span class="s2">${r.n} dispute${r.n===1?'':'s'}</span></td><td><span style="display:inline-block;width:110px;height:7px;background:var(--line2);border-radius:3px;vertical-align:middle;margin-right:8px"><span style="display:block;height:100%;width:${r.pct/mx*100}%;background:${r.pct>0.5?'var(--bad)':r.pct>0.2?'#E09A2C':'#A8DDBD'};border-radius:3px"></span></span>${r.pct.toFixed(2)}%</td><td class="num">${r.rec===null?'<span class="faint">—</span>':Math.round(r.rec*100)+'%'}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function evidence2(d){
+  const c=causeOf(d), i=S.invoices.find(x=>x.id===d.bill), items=[['Supplier bill',true]];
+  if(c==='Quantity or meter') items.push(['SLDC schedule / regional account',true],['ABT meter data',true],['Joint meter reading',!!(i&&i.qty&&i.qty.jmrMU)||d.stage!=='raised']);
+  if(c==='Tariff version') items.push(['Contract version in force for the period',true],['Amendment with effective date',true]);
+  if(c==='Capacity charge vs availability') items.push(['SLDC availability certificate',true],['Supplier claim for deemed availability',d.stage==='reconciliation'||d.stage==='escalated'||d.stage==='settled'],['SLDC confirmation of deemed availability',d.stage==='settled']);
+  if(c==='Charge not in contract') items.push(['Contract clause on delivery point',true],['Transmission licensee invoice for the same period',true]);
+  if(d.stage==='escalated') items.push(['Petition and annexures filed',true]);
+  return `<div><div class="small muted" style="margin-bottom:4px">Evidence</div>${items.map(([t,ok])=>`<div class="small" style="padding:2px 0"><span class="${ok?'pos':'faint'}">${ok?'✓':'○'}</span> ${t}${ok?'':' <span class="faint">pending</span>'}</div>`).join('')}</div>`;
+}
+function noticeText(d){
+  const i=S.invoices.find(x=>x.id===d.bill), [docId,cl]=(d.cite||'').split('@'), doc=DOCS.find(x=>x.id===docId), v=doc&&(applicableVersion(doc,i?i.periodDate:d.raised)||doc.versions[doc.versions.length-1]), cc=v&&v.clauses.find(x=>x[0]===cl);
+  return `To: The Head (Commercial), ${SUP[d.sup].name}
+From: GRIDCO Ltd., Bhubaneswar
+Date: ${fmtD(TODAY)}
+Ref: Bill ${d.bill}${i?` dated ${fmtD(i.presented)}`:''}; GRIDCO dispute ${d.id}
+
+Subject: Notice of billing dispute
+
+GRIDCO disputes ${money(d.amt)} of the above bill.
+
+${d.reason}
+${cc?`\nBasis: ${doc.title}, ${v.v}, clause ${cl}: "${cc[1]}"\n`:''}
+${i?`GRIDCO is paying the undisputed amount of ${money(sysTotal(i))} within the rebate period. `:''}Please issue a credit note for the disputed amount, or send the records supporting your figure, within 30 days of this notice. If the matter is not resolved by then, GRIDCO will propose a joint reconciliation of the meter and schedule records.
+
+For GRIDCO Ltd.
+${ROLE.maker.name}, ${ROLENAME.maker}`;
+}
+function openNotice(id){
+  const d=S.disputes.find(x=>x.id===id), t=noticeText(d);
+  $('#modalRoot').innerHTML=`<div class="mbg" data-action="close-bg"><div class="modal" role="dialog" aria-modal="true" aria-label="Dispute notice"><div class="ph"><h2>Dispute notice · ${d.id}</h2><div class="bar"><button class="btn sm" data-action="copynotice">Copy text</button><button class="btn sm" data-action="close-modal">Close</button></div></div><div class="pb"><pre id="noticeTxt" style="white-space:pre-wrap;font-family:var(--f);font-size:13px;margin:0;line-height:1.6">${esc(t)}</pre></div>${d.stage==='raised'&&S.role==='maker'?`<div class="ph" style="border-top:1px solid var(--line2);border-bottom:0"><span class="muted small">Sending records the notice date and starts the 30-day reply clock.</span><button class="btn sm pri" data-action="dact" data-id="${d.id}" data-d="notice">Send notice</button></div>`:''}</div></div>`;
+}
+function vDisputes(){
+  const all=S.disputes, open=openDisp(), f=S.dispStage||'open';
+  const list=all.filter(d=>f==='all'||(f==='open'?d.stage!=='settled':d.stage===f)).sort((a,b)=>b.raised.localeCompare(a.raised));
+  const sel=list.find(d=>d.id===S.dispSel)||list[0];
+  const fy=all.filter(d=>d.stage==='settled'&&settledOn(d)>='2026-04-01'), rec=fy.reduce((a,d)=>a+(d.recovered||0),0), held=open.reduce((a,d)=>a+d.amt,0), expo=open.reduce((a,d)=>a+dExposure(d),0);
+  const st=all.filter(d=>d.stage==='settled'), winAmt=st.reduce((a,d)=>a+(d.recovered||0),0)/Math.max(0.01,st.reduce((a,d)=>a+d.amt,0));
+  const C=causeTable(all), best=C.rows.filter(r=>r.win!==null).sort((a,b)=>b.win-a.win)[0], worst=C.rows.filter(r=>r.win!==null).sort((a,b)=>a.win-b.win)[0];
+  return `<div class="phead"><div><h1>Disputes</h1></div><div class="seg"><button data-action="dstage" data-id="open" aria-pressed="${f==='open'}">Open</button><button data-action="dstage" data-id="all" aria-pressed="${f==='all'}">All</button></div></div>
+  <div class="stats">${stat('Amount in dispute',money(held),`${open.length} open`)}${stat('Recovered this year',money(rec),`${fy.length} settled since 1 Apr`,'pos')}${stat('Recovery rate',`${Math.round(winAmt*100)}%`,'Share of settled amounts GRIDCO got back')}${stat('If every open dispute is lost',money(expo),'Including surcharge since due date','neg')}</div>
+  <div class="flow" role="group" aria-label="Stages">${DSTG.map(([k,l])=>{const ds=all.filter(d=>d.stage===k);return `<button data-action="dstage" data-id="${k}" aria-pressed="${f===k}"><span class="fl">${l}</span><b>${ds.length}</b><span class="fl">${ds.length?money(ds.reduce((a,d)=>a+d.amt,0)):'—'}</span></button>`;}).join('')}</div>
+  <div class="cols c12">
+   <section class="panel"><div class="tw"><table><thead><tr><th>Dispute</th><th class="num">Amount</th><th>Stage</th></tr></thead><tbody>${list.map(d=>`<tr class="rowlink ${sel&&sel.id===d.id?'on':''}" data-action="dsel" data-id="${d.id}"><td class="id">${d.id}<span class="s2" style="font-family:var(--f)">${SUP[d.sup].short} · ${causeOf(d)}</span></td><td class="num">${money(d.amt)}</td><td><span class="st ${d.stage==='settled'?(d.outcome==='rejected'?'':'good'):d.stage==='escalated'?'bad':'warn'}">${d.stage==='settled'?(d.outcome==='accepted'?'Won':d.outcome==='partial'?'Part won':'Lost'):stageName(d.stage)}</span></td></tr>`).join('')||'<tr><td colspan="3" class="empty">No disputes at this stage.</td></tr>'}</tbody></table></div></section>
+   ${sel?dispDetail(sel):''}
+  </div>
+  <div class="cols c12">
+   ${panel('How long open disputes have run','',ins(`Disputes over 90 days old usually end up with the commission. <b>${money(open.filter(d=>daysBetween(d.raised,TODAY)>90).reduce((a,d)=>a+d.amt,0))}</b> is in that bracket now.`)+agingChart(open))}
+   ${panel('What causes disputes, and how often GRIDCO wins','',`<div class="pb" style="padding-bottom:0">${ins(best&&worst?`GRIDCO wins <b>${Math.round(best.win*100)}%</b> of <b>${best.c.toLowerCase()}</b> disputes but only <b>${Math.round(worst.win*100)}%</b> of <b>${worst.c.toLowerCase()}</b> ones; check the evidence on that type before raising.`:'')}</div>`+C.html,true)}
+  </div>
+  ${panel('Supplier billing accuracy, FY 2026-27','',`<div class="pb" style="padding-bottom:0">${ins('Disputed share of each supplier\'s billing. Above 0.5% is a signal to review that supplier\'s billing process with them.')}</div>`+supplierScore(all),true)}`;
+}
+function dispDetail(d){
+  const nd=nextDue(d), hasBill=S.invoices.some(i=>i.id===d.bill), lost=d.outcome==='rejected';
+  return `<section class="panel"><div class="ph"><h2><span class="mono">${d.id}</span> · ${SUP[d.sup].name}</h2><div class="bar"><button class="btn sm" data-action="dnotice" data-id="${d.id}">${d.stage==='raised'?'Draft notice':'View notice'}</button>${hasBill?`<button class="btn sm" data-action="go" data-nav="bill:${d.bill}">Open bill</button>`:''}</div></div>
+   <div class="facts"><div><span>Disputed</span><b>${money(d.amt)}</b></div><div><span>Raised</span><b>${fmtD(d.raised)}</b></div><div><span>Next step</span><b class="${nd&&nd<=addDaysLocal(TODAY,3)?'neg':''}">${nd?`${dispOwner(d)}, by ${fmtDs(nd)}`:d.stage==='escalated'?'Hearing 12 Nov':'Closed'}</b></div><div><span>${d.stage==='settled'?'Recovered':'If lost, GRIDCO pays'}</span><b class="${d.stage==='settled'?(lost?'':'pos'):'neg'}">${d.stage==='settled'?money(d.recovered||0):money(dExposure(d))}</b></div></div>
+   <div class="pb" style="display:grid;gap:12px;border-top:1px solid var(--line2)">
+    <div><span class="tag">${causeOf(d)}</span> <span class="mono">${d.bill}</span> · ${esc(d.reason)} ${d.cite?citeBtn(d.cite):''}</div>
+    <div class="cols c2" style="gap:16px"><table><tbody>${d.hist.map(h=>`<tr><td class="muted" style="white-space:nowrap;width:92px">${fmtDs(h[0])}</td><td>${esc(h[2])}</td></tr>`).join('')}</tbody></table>${evidence2(d)}</div>
+    ${d.stage==='settled'?`<div class="callout ${lost?'warn':'good'}">${d.outcome==='accepted'?`Settled in GRIDCO's favour after ${daysBetween(d.raised,settledOn(d))} days: ${money(d.recovered)} recovered.`:d.outcome==='partial'?`Settled at ${money(d.recovered)} of ${money(d.amt)}.`:`Supplier's figure upheld: ${money(d.amt)} paid${d.lps?` with ${money(d.lps)} surcharge`:''}.`}</div>`:`<div class="bar">${dispActions(d)}</div>`}
+   </div></section>`;
+}
+
+/* ---- liabilities & charges ---- */
+const CHG={req:2650, con:2700, ecr:2.03, trans:78, fpa:0.08, thermalShare:0.8};
+function chargeModel(delta){
+  const R=CHG.req*(1+delta/100), drawn=Math.min(R,CHG.con), short=Math.max(0,R-CHG.con), unused=CHG.con-drawn, fx=Object.values(FIXED).reduce((a,b)=>a+b,0);
+  const mktP=5.2+short/1000*1.5, parts=[
+    {k:'fixed',n:'Fixed (capacity) charges',c:'#394150',v:fx,t:'Fixed',note:'Same every month under the contracts'},
+    {k:'trans',n:'Transmission and SLDC charges',c:'#8C96A5',v:CHG.trans,t:'Fixed',note:'Charged per MW of capacity booked'},
+    {k:'energy',n:'Energy charges',c:'var(--accent)',v:drawn*CHG.ecr/10,t:'Varies with demand',note:`${mw(drawn)} MU drawn × ₹${CHG.ecr.toFixed(2)}/kWh`},
+    {k:'fpa',n:'Fuel cost adjustment',c:'#6E56CF',v:drawn*CHG.thermalShare*CHG.fpa/10,t:'Varies with demand',note:'₹0.08/kWh on thermal energy (new notice)'},
+    {k:'mkt',n:'Market purchases above contract',c:'var(--o-dam)',v:short*mktP/10,t:'Only above contract',note:short?`${mw(short)} MU at ₹${mktP.toFixed(2)}/kWh`:'None needed'},
+    {k:'dsm',n:'Deviation charges',c:'#F6B8AD',v:3+60*Math.abs(delta)/100,t:'Rises with forecast error',note:'Grows when demand departs from schedule'}];
+  const tot=parts.reduce((a,p)=>a+p.v,0);
+  return {R,drawn,short,unused,parts,tot,unit:tot/R*10,fixedUnit:(fx+CHG.trans)/drawn*10,fx};
+}
+function chargeCurve(sel){
+  const pts=[]; for(let d=-15; d<=15; d++) pts.push([d,chargeModel(d).unit]);
+  const W=560,H=230,pad={l:46,r:14,t:16,b:30}, iw=W-pad.l-pad.r, ih=H-pad.t-pad.b, lo=3.0, hi=3.6, x=d=>pad.l+(d+15)/30*iw, y=v=>pad.t+ih-(v-lo)/(hi-lo)*ih;
+  let g=''; for(let v=lo; v<=hi+1e-9; v+=0.1) g+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="#EDEFF2"/><text x="${pad.l-6}" y="${y(v)+4}" text-anchor="end">₹${v.toFixed(2)}</text>`;
+  [-15,-10,-5,0,5,10,15].forEach(d=>g+=`<text x="${x(d)}" y="${H-12}" text-anchor="middle">${d>0?'+':''}${d}%</text>`);
+  g+=`<text x="${pad.l+iw/2}" y="${H-1}" text-anchor="middle" style="font-size:10.5px">Demand against plan</text>`;
+  const cx=x((CHG.con/CHG.req-1)*100); g+=`<line x1="${cx}" x2="${cx}" y1="${pad.t}" y2="${pad.t+ih}" stroke="#C9CED6" stroke-dasharray="3 3"/><text x="${cx+4}" y="${pad.t+12}" style="font-size:10.5px">contract fully used</text>`;
+  g+=`<path d="${pts.map((p,k)=>`${k?'L':'M'}${x(p[0])},${y(p[1])}`).join('')}" fill="none" stroke="var(--ink)" stroke-width="2"/>`;
+  const m=chargeModel(sel); g+=`<circle cx="${x(sel)}" cy="${y(m.unit)}" r="6" fill="var(--accent)" stroke="#fff" stroke-width="2"/><text x="${x(sel)}" y="${y(m.unit)-12}" text-anchor="middle" style="fill:var(--accent);font-weight:600">₹${m.unit.toFixed(2)}</text>`;
+  pts.forEach(p=>g+=`<rect class="hit" x="${x(p[0])-iw/60}" y="${pad.t}" width="${iw/30}" height="${ih}" data-action="demset" data-id="${p[0]}" ${tipAttr([`Demand ${p[0]>0?'+':''}${p[0]}%`,`Cost per unit ₹${p[1].toFixed(2)}`])}/>`);
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Cost per unit against demand">${g}</svg>`;
+}
+
+/* ---- priority model for fund allocation ---- */
+const RISK={CSA:1,BTPC:.6,BPL:.6,MBH:.3,SSP:.2,ECW:.2,KCP:.2};
+const PW=[['lps','Surcharge exposure',40,'var(--bad)'],['reb','Rebate at stake',30,'#2E9E62'],['time','Time left',15,'#E09A2C'],['risk','Supply cut-off risk',10,'#6E56CF'],['size','Quick win (small bill)',5,'#8C96A5']];
+function prioFeatures(i){
+  const d=deadlineInfo(i), acc=lpsAccrued(i), days=acc>0?0:Math.max(0,d.left);
+  const f={lps:acc>0?1:(d.kind==='lps'&&d.left<=14?0.6:0), reb:d.kind==='rebate'?d.pct/1.5:0, time:1/(1+days/2), risk:RISK[i.sup]||.2, size:1-Math.min(1,payable(i)/400)};
+  const contrib=PW.map(([k,,w])=>[k,w*f[k]]), score=contrib.reduce((a,c)=>a+c[1],0);
+  return {f,contrib,score,days,acc,d};
+}
+function allocate2(cash,borrow,mode){
+  const lc=LOAN.rate/100*LOAN.days/365;
+  const items=openBills().map(i=>{ const P=prioFeatures(i), d=P.d; let kind,rate=0,why;
+    if(P.acc>0){ kind='over'; rate=LPS_PA/100/12; why=`Overdue ${daysBetween(dueDate(i),TODAY)} days`; }
+    else if(d.kind==='rebate'){ kind='reb'; rate=d.pct/100; why=`${d.pct}% rebate ${d.left<=0?'ends today':'until '+fmtDs(d.until)}`; }
+    else if(d.left<=14){ kind='due'; rate=LPS_PA/100/12; why=`Due ${fmtDs(d.due)}`; }
+    else { kind='defer'; why=`Due ${fmtDs(d.due)}`; }
+    return {i,amt:payable(i)+P.acc,acc:P.acc,rate,kind,why,P}; });
+  const order = mode==='fifo' ? items.slice().sort((a,b)=>a.i.presented.localeCompare(b.i.presented)) : items.slice().sort((a,b)=>(b.kind==='over')-(a.kind==='over')||b.P.score-a.P.score);
+  let c=cash, loan=borrow&&mode!=='fifo'?LOAN.max:0; const R={rows:[],paid:0,loan:0,reb:0,lps:0,cost:0};
+  for(const x of order){ let pay=0, fromLoan=0;
+    if(mode==='fifo'||x.kind!=='defer'){ pay=Math.min(x.amt,c); c-=pay; if(pay<x.amt-1e-6&&loan>0&&x.kind!=='defer'&&x.rate>lc){ fromLoan=Math.min(x.amt-pay,loan); loan-=fromLoan; pay+=fromLoan; } }
+    const share=x.amt?pay/x.amt:0; let ben=0;
+    if(x.kind==='over'){ ben=lpsPerDay(x.i)*30*share; R.lps+=ben; } else if(x.kind==='reb'){ ben=x.rate*pay; R.reb+=ben; } else if(x.kind==='due'){ ben=x.rate*pay; R.lps+=ben; }
+    R.cost+=fromLoan*lc; R.loan+=fromLoan; R.paid+=pay; R.rows.push({...x,pay,fromLoan,ben}); }
+  R.left=c; R.net=R.reb+R.lps-R.cost; return R;
+}
+function prioMatrix(R){
+  const W=560,H=280,pad={l:52,r:16,t:16,b:34}, iw=W-pad.l-pad.r, ih=H-pad.t-pad.b, xmax=30, ymax=2, x=v=>pad.l+Math.min(v,xmax)/xmax*iw, y=v=>pad.t+ih-v/ymax*ih, amax=Math.max(...R.rows.map(r=>r.amt));
+  let g=`<rect x="${pad.l}" y="${pad.t}" width="${x(7)-pad.l}" height="${y(1)-pad.t}" fill="#FEF3F2"/><text x="${pad.l+6}" y="${pad.t+14}" style="fill:var(--bad);font-weight:600">Pay now</text><text x="${W-pad.r-6}" y="${y(0)-8}" text-anchor="end" style="fill:var(--muted);font-weight:600">Can wait</text>`;
+  for(let v=0;v<=ymax;v+=0.5) g+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="#EDEFF2"/><text x="${pad.l-6}" y="${y(v)+4}" text-anchor="end">${v.toFixed(1)}%</text>`;
+  [0,7,14,21,30].forEach(v=>g+=`<text x="${x(v)}" y="${H-16}" text-anchor="middle">${v===0?'0 / overdue':v+'d'}</text>`);
+  g+=`<text x="${pad.l+iw/2}" y="${H-2}" text-anchor="middle" style="font-size:10.5px">Days until money is lost</text><text transform="translate(12 ${pad.t+ih/2}) rotate(-90)" text-anchor="middle" style="font-size:10.5px">Saved per ₹100 paid</text>`;
+  const rank=new Map(R.rows.slice().sort((a,b)=>(b.kind==='over')-(a.kind==='over')||b.P.score-a.P.score).map((r,k)=>[r.i.id,k+1]));
+  R.rows.slice().sort((a,b)=>b.amt-a.amt).forEach(r=>{ const days=r.kind==='over'?0:r.P.days, rr=7+Math.sqrt(r.amt/amax)*9, full=r.pay>=r.amt-0.01, part=r.pay>0&&!full, yy=r.kind==='defer'?0.05:r.rate*100;
+    g+=`<circle cx="${x(days)}" cy="${y(yy)}" r="${rr}" fill="${full?'var(--accent)':part?'#9DB3F0':'#D5D9DF'}" fill-opacity=".75" stroke="#fff" stroke-width="1.5" data-action="go" data-nav="bill:${r.i.id}" style="cursor:pointer" ${tipAttr([`${r.i.id} · ${SUP[r.i.sup].short}`,`Amount ${money(r.amt)}`,`Priority score ${Math.round(r.P.score)}`,r.why,full?'Fully funded':part?`Part funded: ${money(r.pay)}`:'Not funded this week'])}/><text x="${x(days)}" y="${y(yy)+4}" text-anchor="middle" style="fill:${full?'#fff':'var(--ink)'};font-size:10.5px;font-weight:600;pointer-events:none">${rank.get(r.i.id)}</text>`; });
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Priority matrix">${g}</svg>`;
+}
+function cashBar(R,cash){
+  const total=Math.max(cash+R.loan, R.paid, 1), W=100; let acc=0;
+  const segs=R.rows.filter(r=>r.pay>0).map(r=>{ const w=r.pay/total*W, s=`<div style="position:absolute;left:${acc}%;width:${w}%;top:0;bottom:0;background:${r.kind==='over'?'var(--bad)':r.kind==='reb'?'#2E9E62':'#E09A2C'};border-right:1px solid #fff" ${tipAttr([`${r.i.id}: ${money(r.pay)}`,r.why])}></div>`; acc+=w; return s; }).join('');
+  return `<div style="position:relative;height:22px;background:var(--line2);border-radius:4px;overflow:hidden">${segs}</div><div style="position:relative;height:16px;font-size:11.5px;color:var(--muted)"><span style="position:absolute;left:0">₹0</span>${R.loan?`<span style="position:absolute;left:${cash/total*100}%;transform:translateX(-50%);border-left:1.5px solid var(--ink);height:28px;top:-22px"></span><span style="position:absolute;left:${cash/total*100}%;transform:translateX(-50%)">cash ${money(cash)}</span>`:''}<span style="position:absolute;right:0">${money(total)}${R.loan?' with loan':''}</span></div>`;
+}
+function vPayments(){
+  const open=openBills(), ov=overdueBills(), soon=open.filter(i=>{const l=daysBetween(TODAY,dueDate(i));return l>=0&&l<=7;}), later=open.filter(i=>daysBetween(TODAY,dueDate(i))>7), held=openDisp().reduce((a,d)=>a+d.amt,0), acc=open.reduce((a,i)=>a+lpsAccrued(i),0);
+  const L=[['Not yet due',later.reduce((a,i)=>a+payable(i),0),'#CBD1DA'],['Due in 7 days',soon.reduce((a,i)=>a+payable(i),0),'#E09A2C'],['Overdue',ov.reduce((a,i)=>a+payable(i),0),'var(--bad)'],['In dispute',held,'#6E56CF']], Lt=L.reduce((a,x)=>a+x[1],0);
+  const strip=`<section class="panel"><div class="pb" style="display:grid;gap:8px"><div class="row"><span><span class="muted">Liabilities</span> <b style="font-size:16px">${money(Lt)}</b></span><span class="small muted">${ov.length?`${money(acc)} surcharge accrued on overdue`:''}</span></div><div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--line2)">${L.map(([n,v,c])=>`<div style="width:${v/Lt*100}%;background:${c}" ${tipAttr([`${n}: ${money(v)}`])}></div>`).join('')}</div><div class="legend">${L.map(([n,v,c])=>`<span><i style="background:${c}"></i>${n} ${money(v)}</span>`).join('')}</div></div></section>`;
+  const dl=S.demDelta||0, M=chargeModel(dl), M0=chargeModel(0);
+  const charges=`<section class="panel"><div class="ph"><h2>November charges: fixed vs demand-based</h2><label class="ctl" for="demDelta">Demand against plan<input id="demDelta" type="range" min="-15" max="15" step="1" value="${dl}"><output>${dl>0?'+':''}${dl}%</output></label></div>
+   <div class="cols c2" style="padding:14px 18px;gap:20px">
+    <div>${ins(`At ${dl>0?'+':''}${dl}% demand (${mw(M.R)} MU), November costs <b>${money(M.tot)}</b>, or <b>₹${M.unit.toFixed(2)}/kWh</b>. ${dl<-1?`Fixed charges stay at ${money(M.fx+CHG.trans)} while less power is drawn, so each unit carries ₹${M.fixedUnit.toFixed(2)} of fixed cost instead of ₹${M0.fixedUnit.toFixed(2)}.`:M.short>0?`Demand is above contracted energy by ${mw(M.short)} MU, bought on the market at a higher price.`:`Contracted energy covers demand, so market purchases are not needed.`}`)}
+     <div style="display:flex;height:26px;border-radius:4px;overflow:hidden;margin:4px 0 10px">${M.parts.filter(p=>p.v>0.05).map(p=>`<div style="width:${p.v/M.tot*100}%;background:${p.c}" ${tipAttr([`${p.n}: ${money(p.v)}`])}></div>`).join('')}</div>
+     <div class="tw"><table><tbody>${M.parts.map(p=>`<tr><td><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${p.c};margin-right:8px"></i>${p.n}<span class="s2">${p.note}</span></td><td><span class="tag">${p.t}</span></td><td class="num">${money(p.v)}${Math.abs(p.v-M0.parts.find(q=>q.k===p.k).v)>0.05&&dl?`<span class="s2 ${p.v>M0.parts.find(q=>q.k===p.k).v?'neg':'pos'}">${p.v>M0.parts.find(q=>q.k===p.k).v?'+':'−'}${money(Math.abs(p.v-M0.parts.find(q=>q.k===p.k).v))}</span>`:''}</td></tr>`).join('')}</tbody><tfoot><tr><td>Total</td><td></td><td class="num">${money(M.tot)}</td></tr></tfoot></table></div></div>
+    <div><div class="small muted" style="margin-bottom:4px">Cost per unit across demand levels (click the curve)</div>${chargeCurve(dl)}<div class="small muted">Cost per unit is lowest when contracted capacity is fully used. Below it, fixed charges are spread over fewer units; above it, extra power is bought at market prices.</div></div>
+   </div></section>`;
+  const R=allocate2(S.fund.cash,S.fund.borrow), B=allocate2(S.fund.cash,false,'fifo'), gain=R.net-B.net;
+  const ranked=R.rows.slice().sort((a,b)=>(b.kind==='over')-(a.kind==='over')||b.P.score-a.P.score);
+  const table=`<div class="tw"><table><thead><tr><th class="num">#</th><th>Bill</th><th>Priority score and what drives it</th><th class="num">Pay now</th><th class="num">Saves</th><th>Status</th></tr></thead><tbody>${ranked.map((r,k)=>`<tr class="rowlink" data-action="go" data-nav="bill:${r.i.id}"><td class="num faint">${k+1}</td><td class="id">${r.i.id}<span class="s2" style="font-family:var(--f)">${SUP[r.i.sup].short} · ${r.why}</span></td><td><div style="display:flex;align-items:center;gap:8px"><b style="width:24px;text-align:right">${Math.round(r.P.score)}</b><div style="display:flex;height:9px;width:180px;background:var(--line2);border-radius:3px;overflow:hidden">${r.P.contrib.map(([key,v])=>{const p=PW.find(x=>x[0]===key);return v>0.2?`<div style="width:${v}%;background:${p[3]}" ${tipAttr([`${p[1]}: +${v.toFixed(1)} of ${p[2]}`])}></div>`:'';}).join('')}</div></div></td><td class="num">${r.pay?money(r.pay):'—'}${r.fromLoan?`<span class="s2">${money(r.fromLoan)} from loan</span>`:''}${r.pay&&r.pay<r.amt-0.01?`<span class="s2">of ${money(r.amt)}</span>`:''}</td><td class="num ${r.ben?'pos':'faint'}">${r.ben?money(r.ben):'—'}</td><td>${r.i.status==='approved'?statusPill(r.i):'<span class="st warn">Needs sign-off</span>'}</td></tr>`).join('')}</tbody></table></div>`;
+  const alloc=`<section class="panel"><div class="ph"><h2>Fund allocation and prioritisation</h2>${S.role==='checker'?`<button class="btn sm pri" data-action="release">Release approved payments</button>`:'<span class="muted small">DGM Finance releases payments</span>'}</div>
+   <div class="ctlbar" style="border-bottom:1px solid var(--line2)"><label class="ctl" for="fundCash">Cash available this week<input id="fundCash" type="range" min="0" max="800" step="25" value="${S.fund.cash}"><output>${money(S.fund.cash)}</output></label><label class="ctl"><input id="fundBorrow" type="checkbox" ${S.fund.borrow?'checked':''}> Allow a short-term loan at ${LOAN.rate}% a year, up to ${money(LOAN.max)}, for ${LOAN.days} days</label></div>
+   <div class="stats" style="border:0;border-bottom:1px solid var(--line2);border-radius:0">${stat('Paid this week',money(R.paid),R.loan?`incl. ${money(R.loan)} loan`:`${money(R.left)} left over`)}${stat('Rebate kept',money(R.reb),'','pos')}${stat('Surcharge avoided',money(R.lps),'','pos')}${stat('Loan interest',money(R.cost),R.loan?`${LOAN.days} days at ${LOAN.rate}%`:'No loan used')}${stat('Better than paying oldest first',money(gain),`Oldest first saves ${money(B.net)}`,gain>0?'pos':'')}</div>
+   <div class="cols c2" style="padding:14px 18px;gap:20px">
+    <div>${ins(`Each bubble is a bill, numbered by its rank in the table below. Further left means money is lost sooner, higher means more is saved per rupee, bigger means a larger bill. <b>Blue</b> bills are funded this week.`)}${prioMatrix(R)}</div>
+    <div style="display:grid;gap:12px;align-content:start">
+     <div><div class="small muted" style="margin-bottom:6px">How this week's cash is used, in priority order</div>${cashBar(R,S.fund.cash)}<div class="legend" style="margin-top:6px"><span><i style="background:var(--bad)"></i>Overdue (cleared first by law)</span><span><i style="background:#2E9E62"></i>Rebate</span><span><i style="background:#E09A2C"></i>Due soon</span></div></div>
+     <div><div class="small muted" style="margin-bottom:6px">What the priority score weighs</div><table><tbody>${PW.map(([k,n,w,c])=>`<tr><td><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${c};margin-right:8px"></i>${n}</td><td class="num">up to ${w}</td></tr>`).join('')}</tbody></table><div class="small muted" style="margin-top:6px">Overdue dues always come first, as the LPS Rules require. In production these weights are learned from past payment outcomes; in this demo they are fixed.</div></div>
+    </div>
+   </div>${table}</section>`;
+  return `<div class="phead"><div><h1>Liabilities & payments</h1></div></div>${strip}${charges}${alloc}`;
+}
+function releasePlan(){
+  if(S.role!=='checker'){ toast('Releasing payments needs DGM Finance'); return; }
+  const R=allocate2(S.fund.cash,S.fund.borrow); let n=0, amt=0;
+  R.rows.forEach(r=>{ if(r.i.status==='approved'&&r.pay>=r.amt-0.01){ r.i.status='paid'; r.i.paidOn=TODAY; n++; amt+=r.pay; log(`Payment of ${money(r.pay)} released from fund plan${r.acc?`, including ${money(r.acc)} surcharge`:''}`,r.i.id); } });
+  save(); render(true); toast(n?`${n} payment${n>1?'s':''} released, ${money(amt)}`:'No approved bill is fully funded in this plan');
+}
+Object.assign(GUIDES,{
+  value:()=>[`<b>What the system has saved GRIDCO this year</b>, and the operating measures behind it: cost per unit, payment speed, market prices and merit-order dispatch.`,
+    [chip('Bills behind the rebates','data-action="go" data-nav="billing"'),chip("Today's buying plan",'data-action="go" data-nav="portfolio"')]],
+  disputes:()=>[`<b>Bill amounts GRIDCO has challenged.</b> The undisputed part is paid on time so the rebate is kept. The difference goes through a notice, joint reconciliation and, if needed, the commission.`,
+    [chip('Dispute due in 3 days','data-action="dsel" data-id="D-2026-014"'),chip('Draft a notice','data-action="dnotice" data-id="D-2026-016"'),chip('Past outcomes','data-action="dstage" data-id="settled"')]],
+  payments:()=>[`<b>What GRIDCO owes, what drives its charges, and what to pay first.</b> Move the demand slider to see fixed against demand-based charges; set the week's cash to see the payment plan.`,
+    [chip('Demand 10% below plan','data-action="demset" data-id="-10"'),chip('Demand 10% above plan','data-action="demset" data-id="10"'),chip('Only ₹150 cr cash','data-action="fundset" data-id="150"')]],
+});
+
+/* =========================================================
    9. Router & actions
    ========================================================= */
 const VIEWS={overview:vOverview,value:vValue,disputes:vDisputes,payments:vPayments,data:vData,portfolio:vPortfolio,billing:vBilling,bill:vBill,library:vLibrary,assistant:vAssistant,approvals:vApprovals};
@@ -1388,11 +1653,14 @@ document.addEventListener('click',ev=>{
     case 'libpick': S.libSel=el.dataset.doc; S.libDate=el.dataset.date; S.did.lib=true; route='library'; save(); render(true); break;
     case 'dstage': S.dispStage=id; save(); render(true); break;
     case 'dsel': S.dispSel=id; save(); render(true); break;
-    case 'dact': dispAct(id,el.dataset.d); break;
+    case 'dact': $('#modalRoot').innerHTML=''; dispAct(id,el.dataset.d); break;
     case 'paytab': S.payTab=id; route='payments'; save(); render(true); break;
     case 'fundset': S.fund.cash=+id; S.payTab='alloc'; save(); render(true); break;
     case 'fundloan': S.fund.borrow=!S.fund.borrow; S.payTab='alloc'; save(); render(true); break;
     case 'release': releasePlan(); break;
+    case 'dnotice': openNotice(id); break;
+    case 'copynotice': { const t=$('#noticeTxt').textContent; (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Notice text copied')).catch(()=>{ const r=document.createRange(); r.selectNodeContents($('#noticeTxt')); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); toast('Text selected; press Ctrl+C to copy'); }); break; }
+    case 'demset': S.demDelta=+id; route='payments'; save(); render(true); break;
     case 'go': go(el.dataset.nav); break;
     case 'reset': { const go2=S.guideOpen; S=seedState(); S.billTab='recon'; S.dataTab='lineage'; S.evSel=-1; S.guideOpen=go2; save(); route='overview'; render(); toast('Demo data reset'); break; }
     case 'dtab': S.dataTab=id; save(); render(true); break;
@@ -1436,6 +1704,7 @@ function makerAct(id,d){
 }
 document.addEventListener('input',ev=>{ const t=ev.target;
   if(t.dataset.scen&&t.type==='range'){ S.scen[t.dataset.scen]=+t.value; save(); const id=t.id; render(true); const n=document.getElementById(id); if(n) n.focus(); }
+  if(t.id==='demDelta'){ S.demDelta=+t.value; save(); render(true); const n=$('#demDelta'); if(n) n.focus(); }
   if(t.id==='fundCash'){ S.fund.cash=+t.value; save(); render(true); const n=$('#fundCash'); if(n) n.focus(); }
   if(t.id==='libQ'){ S.libQ=t.value; const p=t.selectionStart; render(true); const n=$('#libQ'); n.focus(); n.setSelectionRange(p,p); } });
 document.addEventListener('change',ev=>{ const t=ev.target;
