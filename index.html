@@ -246,6 +246,63 @@ svg text{font-family:var(--f);font-size:11px;fill:var(--muted)}
   .top-r{gap:8px}
   .user select{max-width:150px}
 }
+
+/* polish */
+:root{--bg:#F5F6F8;--line:#E4E7EB;--line2:#EFF1F4}
+body{font-size:14px}
+.content{padding:22px 28px 64px;gap:16px}
+.panel,.stats,.guide{border-radius:8px}
+.ph{padding:12px 18px}
+.pb{padding:16px 18px}
+.stat,button.stat{padding:14px 18px}
+.stat-v{font-size:22px}
+th{padding:8px 14px} td{padding:10px 14px}
+.shell{grid-template-columns:232px minmax(0,1fr)}
+.side{padding:14px 10px}
+.side button{align-items:flex-start;padding:8px 10px;gap:11px}
+.side svg{margin-top:2px}
+.side .nl{display:grid;gap:1px;min-width:0}
+.side .nd{font-size:11.5px;color:var(--faint);font-weight:400;line-height:1.3}
+.side button[aria-current="page"] .nd{color:#7C93D6}
+/* page guide */
+.guide{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px 24px;align-items:center;background:var(--panel);border:1px solid var(--line);padding:12px 18px}
+.guide .what{color:var(--ink2);line-height:1.5}
+.guide .what b{color:var(--ink);font-weight:600}
+.try{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:flex-end}
+.try>span{font-size:12px;color:var(--muted);margin-right:2px}
+.chip{all:unset;cursor:pointer;font-size:12.5px;border:1px solid var(--line);border-radius:14px;padding:3px 11px;background:var(--sub);color:var(--ink2);white-space:nowrap}
+.chip:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.chip:focus-visible{outline:2px solid var(--accent)}
+.chip.go{background:var(--accent);border-color:var(--accent);color:#fff}
+.insight{font-size:13px;color:var(--ink2);margin:0 0 12px;line-height:1.5}
+.insight b{color:var(--ink);font-weight:600}
+abbr.term{text-decoration:underline dotted #9CA3AF;text-underline-offset:3px;cursor:help}
+/* demo guide drawer */
+.gbtn{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 11px;border:1px solid #C7D4F7;color:var(--accent);background:var(--accent-soft);border-radius:5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.gbtn b{font-weight:600;font-variant-numeric:tabular-nums}
+.gbtn:hover{border-color:var(--accent)}
+.drawer{position:fixed;top:48px;right:0;bottom:0;width:384px;max-width:100%;background:#fff;border-left:1px solid var(--line);box-shadow:-10px 0 30px rgba(20,23,28,.08);z-index:40;display:flex;flex-direction:column}
+.drawer .dh{padding:14px 18px;border-bottom:1px solid var(--line2)}
+.prog{height:4px;background:var(--line2);border-radius:2px;overflow:hidden;margin-top:10px}
+.prog i{display:block;height:100%;background:var(--good)}
+.dsteps{overflow:auto;flex:1}
+.dstep{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;padding:11px 18px;border-bottom:1px solid var(--line2);align-items:start}
+.dstep .ck{width:20px;height:20px;border-radius:50%;border:1.5px solid #CDD2D9;display:grid;place-items:center;font-size:11px;color:#fff;font-weight:600}
+.dstep.done .ck{background:var(--good);border-color:var(--good)}
+.dstep.next{background:#F7F9FF}
+.dstep .m{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.06em}
+.dstep .t{font-weight:500}
+.dstep.done .t{color:var(--muted)}
+.dstep .h{font-size:12.5px;color:var(--muted);margin-top:2px}
+.dfoot{padding:12px 18px;border-top:1px solid var(--line2);display:grid;gap:8px}
+.gloss{max-height:220px;overflow:auto;font-size:12.5px}
+.gloss div{padding:4px 0;border-bottom:1px solid var(--line2)}
+.gloss b{display:inline-block;min-width:54px;font-weight:600}
+body.drawer-open .content{padding-right:412px}
+@media (max-width:1280px){body.drawer-open .content{padding-right:28px}}
+@media (max-width:1760px){body.drawer-open .c21,body.drawer-open .c12,body.drawer-open .chatw,body.drawer-open .docv{grid-template-columns:minmax(0,1fr)}body.drawer-open .conv{height:auto;min-height:0}body.drawer-open .msgs{max-height:560px}body.drawer-open .guide{grid-template-columns:minmax(0,1fr)}body.drawer-open .try{justify-content:flex-start}}
+@media (max-width:560px){.top-r{flex-wrap:wrap;margin-left:0;width:100%;justify-content:space-between}.env{display:none}.user select{max-width:170px}.seg{flex-wrap:wrap}}
+@media (max-width:900px){.shell{grid-template-columns:minmax(0,1fr)}.side{padding:6px}.side button{align-items:center}.drawer{top:0}.guide{grid-template-columns:minmax(0,1fr)}.try{justify-content:flex-start}.side .nd{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
@@ -255,6 +312,7 @@ svg text{font-family:var(--f);font-size:11px;fill:var(--muted)}
   <div class="logo"><i><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></i><b>GRIDCO</b><span>Power Purchase Intelligence</span></div>
   <form class="gsearch" id="topAsk" role="search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="topAskIn" type="text" placeholder="Ask about a bill, tariff, tomorrow's position…" aria-label="Ask the assistant" autocomplete="off"><kbd>/</kbd></form>
   <div class="top-r">
+    <button class="gbtn" type="button" data-action="guide" aria-label="Open demo guide">Demo guide <b id="guideProg"></b></button>
     <span class="env" title="All figures are illustrative">DEMO DATA</span>
     <span class="clock" id="clock"></span>
     <label class="user" for="roleSel"><span class="av" id="avatar">SP</span>
@@ -272,6 +330,7 @@ svg text{font-family:var(--f);font-size:11px;fill:var(--muted)}
 <div id="modalRoot"></div>
 <div id="toastRoot"></div>
 <div id="tip" role="tooltip"></div>
+<div id="drawerRoot"></div>
 
 <script>
 /* =========================================================
@@ -395,7 +454,7 @@ const COST = { months:['Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26','Ap
 /* =========================================================
    2. State (kept in this browser only)
    ========================================================= */
-const STORE_KEY = 'gridco-proto-v3';
+const STORE_KEY = 'gridco-proto-v4';
 const T0 = Date.now();
 function seedState(){ return {
   role:'maker', invoices:seedInvoices(), selInv:'INV-KCP-2609', billFilter:'open', invTab:'recon',
@@ -629,7 +688,7 @@ function waterfall(i){
   g+=`<line x1="${pad.l+(n-2)*bw+bw*.8}" x2="${pad.l+(n-1)*bw+bw*.2}" y1="${y(cur)}" y2="${y(cur)}" stroke="#9AA3AF" stroke-dasharray="2 2"/>`;
   bar(n-1,lo,st,'var(--accent)','Payable (system)',money(st),true);
   g+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y(lo)}" y2="${y(lo)}" stroke="#C9CED6"/><text x="${pad.l}" y="${H-6}" style="font-size:10.5px">Axis starts at ${money(lo)} to make the adjustment visible</text>`;
-  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="From supplier bill to payable amount">${g}</svg>`;
+  return `<svg class="chart" style="max-width:600px" viewBox="0 0 ${W} ${H}" role="img" aria-label="From supplier bill to payable amount">${g}</svg>`;
 }
 // Q: Which bills lose money if we wait, and when? (payment calendar)
 function payCalendar(bills, {from='2026-09-01', to='2026-12-05', compact=false}={}){
@@ -688,18 +747,18 @@ const ROLENAME={maker:'Billing Officer',checker:'DGM Finance',director:'Director
 /* =========================================================
    8. Pages
    ========================================================= */
-const NAV=[['overview','Overview','<path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/>'],
-  ['data','Data hub','<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>'],null,
-  ['portfolio','Portfolio (EPM)','<path d="M3 3v18h18"/><path d="m7 15 4-5 4 3 5-7"/>'],
-  ['billing','Billing','<path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h8M9 17h5"/>'],
-  ['library','Regulations & contracts','<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/>'],null,
-  ['assistant','Assistant','<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'],
-  ['approvals','Approvals','<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>']];
+const NAV=[['overview','Overview','<path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/>','Today at a glance'],
+  ['data','Data hub','<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>','Where the numbers come from'],null,
+  ['portfolio','Portfolio (EPM)','<path d="M3 3v18h18"/><path d="m7 15 4-5 4 3 5-7"/>',"Plan tomorrow's power buying"],
+  ['billing','Billing','<path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h8M9 17h5"/>','Check supplier bills before paying'],
+  ['library','Regulations & contracts','<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/>','Which rule applied on which date'],null,
+  ['assistant','Assistant','<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>','Ask questions, see the sources'],
+  ['approvals','Approvals','<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>','Sign-offs and audit trail']];
 let route='overview';
 function renderNav(){
   const mine=tasks().filter(t=>t.role===S.role), hot=mine.some(t=>t.pri==='High'), active=route==='bill'?'billing':route;
   const flagged=S.invoices.filter(i=>i.status==='discrepancy').length;
-  $('#nav').innerHTML=NAV.map(n=>!n?'<div class="sep"></div>':`<button type="button" data-action="go" data-nav="${n[0]}" ${active===n[0]?'aria-current="page"':''}>${I(n[2],16,1.8)}<span>${n[1]}</span>${n[0]==='approvals'&&mine.length?`<span class="cnt ${hot?'hot':''}">${mine.length}</span>`:n[0]==='billing'&&flagged?`<span class="cnt">${flagged}</span>`:''}</button>`).join('')+`<div class="side-foot"><div>Figures are illustrative. Actions are saved in this browser only.</div><button data-action="reset">Reset demo</button></div>`;
+  $('#nav').innerHTML=NAV.map(n=>!n?'<div class="sep"></div>':`<button type="button" data-action="go" data-nav="${n[0]}" ${active===n[0]?'aria-current="page"':''}>${I(n[2],16,1.8)}<span class="nl"><span>${n[1]}</span><span class="nd">${n[3]}</span></span>${n[0]==='approvals'&&mine.length?`<span class="cnt ${hot?'hot':''}">${mine.length}</span>`:n[0]==='billing'&&flagged?`<span class="cnt">${flagged}</span>`:''}</button>`).join('')+`<div class="side-foot"><div>Figures are illustrative. Actions are saved in this browser only.</div><button data-action="reset">Reset demo</button></div>`;
 }
 
 /* ---- Overview ---- */
@@ -719,12 +778,12 @@ function vOverview(){
     ${stat('Money at risk in 7 days',money(riskAmt),`${risk.length} bills with a rebate or due date this week`,riskAmt?'neg':'','billing')}
   </div>
   <div class="cols c21">
-    ${panel(`Tomorrow, ${fmtDs(TOMORROW)}: demand against contracted supply`,`<button class="btn sm" data-action="go" data-nav="portfolio">Open plan</button>`, posChart(e,{h:260,purchases:false})+leg([['Contracted supply','#EEF0F3'],['Surplus','#D9F0E1'],['Shortfall to buy','#F6B8AD']]))}
+    ${panel(`Tomorrow, ${fmtDs(TOMORROW)}: demand against contracted supply`,`<button class="btn sm" data-action="go" data-nav="portfolio">Open plan</button>`, ins(`Demand is higher than power already contracted in <b>${hourRanges(e.defHours)}</b>, by up to <b>${mw(e.peakGap)} MW</b> at the evening peak, because solar output fades after 17:00. Around midday there is spare power (green).`)+posChart(e,{h:260,purchases:false})+leg([['Contracted supply','#EEF0F3'],['Surplus','#D9F0E1'],['Shortfall to buy','#F6B8AD']]))}
     ${panel('Needs action',`<span class="note">${ROLENAME[S.role]} and others</span>`, mine.map(t=>`<div class="act" data-action="go" data-nav="${t.nav}"><span class="st ${t.pri==='High'?'bad':''}"></span><div><div>${esc(t.title)}</div><div class="who">${esc(t.sub)} · ${ROLENAME[t.role]}</div></div><div class="amt small ${t.pri==='High'?'neg':''}">${esc(t.stake)}</div></div>`).join(''),true)}
   </div>
-  ${panel('Payment calendar',`<span class="note">Each bar runs from presentation; what each open bill is worth if paid today</span>`, payCalendar(cal))}
+  ${panel('Payment calendar',`<span class="note">Each bar runs from presentation; what each open bill is worth if paid today</span>`, ins(calInsight(cal))+payCalendar(cal))}
   <div class="cols c21">
-    ${panel('Power purchase cost, ₹ cr per month',`<span class="note">Click a month</span>`, costChart(k)+leg([['Contracted sources','#CBD1DA'],['Market purchases','var(--o-dam)']]))}
+    ${panel('Power purchase cost, ₹ cr per month',`<span class="note">Click a month</span>`, ins(costInsight())+costChart(k)+leg([['Contracted sources','#CBD1DA'],['Market purchases','var(--o-dam)']]))}
     ${panel(`${COST.months[k]} by source`,`<span class="note">vs ${COST.months[Math.max(0,prev)]}</span>`,`<div class="tw"><table><thead><tr><th>Source</th><th class="num">₹ cr</th><th class="num">Change</th></tr></thead><tbody>${COST.series.map(s=>{const dd=prev>=0?s.v[k]-s.v[prev]:0;return `<tr><td>${s.name}</td><td class="num">${s.v[k]}</td><td class="num ${dd>0?'neg':dd<0?'pos':'faint'}">${dd>0?'+':''}${dd||'0'}</td></tr>`;}).join('')}</tbody><tfoot><tr><td>Total</td><td class="num">${mw(tot[k])}</td><td class="num">${prev>=0?((tot[k]-tot[prev])>0?'+':'')+(tot[k]-tot[prev]):''}</td></tr></tfoot></table></div>`,true)}
   </div>
   ${panel('Data feeds',`<button class="btn sm" data-action="go" data-nav="data:sources">Data hub</button>`,`<div class="tw"><table><tbody>${S.connectors.map(c=>`<tr><td>${esc(c.name)}</td><td class="muted">${c.last}</td><td><span class="st ${c.status==='ok'?'good':c.status==='warn'?'warn':'bad'}">${c.status==='ok'?'Current':c.status==='warn'?(c.note||'Warnings'):(c.note||'Failed')}</span></td></tr>`).join('')}</tbody></table></div>`,true).replace('<h2>Data feeds</h2>',`<h2>Data feeds <span class="muted" style="font-weight:400">· ${ok} of ${S.connectors.length} current</span></h2>`)}`;
@@ -795,7 +854,7 @@ function vPortfolio(){
   if(S.horizon==='year'){ const v=OUTLOOK.con.map((c,i)=>c-OUTLOOK.req[i]), gap=v.filter(x=>x<0).reduce((a,x)=>a-x,0);
     return `<div class="phead"><div><h1>Portfolio · 12-month outlook</h1><div class="sub">Contracted energy against forecast requirement, Nov 2026 to Oct 2027</div></div>${tabs}</div>
     <div class="stats">${stat('Deficit months','4','Mar to Jun 2027','neg')}${stat('Energy short',`${mw(gap)} <small>MU</small>`,'Peak 370 MU in May')}${stat('Surplus Jul–Sep',`${v.slice(8,11).reduce((a,x)=>a+Math.max(0,x),0)} <small>MU</small>`,'Can repay a banking arrangement')}${stat('Exposure if bought on exchange',`≈ ${money(gap*6.1/10)}`,'At ₹6.10/kWh summer average')}</div>
-    ${panel('Monthly balance, MU','<span class="note">Contracted minus requirement</span>',outlookChart())}
+    ${panel('Monthly balance, MU','<span class="note">Contracted minus requirement</span>',ins(`Contracted power runs short from <b>March to June 2027</b> (red) and is in surplus in late summer (green). Arranging extra supply now is usually cheaper than buying on the exchange during the summer peak.`)+outlookChart())}
     ${panel('Options to close the summer gap',null,`<div class="tw"><table><thead><tr><th>Option</th><th>Volume</th><th class="num">Est. ₹/kWh</th><th class="num">Est. cost</th><th>Notes</th></tr></thead><tbody><tr><td>Round-the-clock tender, Mar–May</td><td>3 × 250 MW</td><td class="num">5.40</td><td class="num">${money(540*5.4/10)}</td><td class="muted">Needs 60-day lead time; start by 1 Jan</td></tr><tr><td>Banking with winter-peaking state</td><td>200 MW, Apr–Jun</td><td class="num">3.40</td><td class="num">${money(430*3.4/10)}</td><td class="muted">Return 105% in Jul–Sep surplus</td></tr><tr><td>Term-ahead market</td><td>Residual</td><td class="num">6.10</td><td class="num">${money(80*6.1/10)}</td><td class="muted">Price risk; buy monthly</td></tr></tbody></table></div>`,true)}`; }
   const ctl=(id,label,min,max,st,val,unit)=>`<label class="ctl" for="${id}">${label}<input id="${id}" type="range" min="${min}" max="${max}" step="${st}" value="${val}" data-scen="${id.slice(1).toLowerCase()}"><output>${val>0&&unit==='%'&&id!=='sHydro'?'+':''}${val}${unit}</output></label>`;
   const rowsUsed=e.opts.filter(o=>b.rows.some(r=>r.alloc[o.id]));
@@ -807,8 +866,8 @@ function vPortfolio(){
     <div class="bar"><button class="btn sm" data-action="save-scen">Save scenario</button><button class="btn sm" data-action="reset-scen">Base case</button></div></div></section>
   <div class="stats">${stat('Peak demand',`${mw(e.peakDem)} <small>MW</small>`,`at ${hrLabel(e.dem.indexOf(e.peakDem))} · forecast error ±2.8%`)}${stat('Shortfall',`${e.defMU.toFixed(2)} <small>MU</small>`,`peak ${mw(e.peakGap)} MW · ${hourRanges(e.defHours)}`,e.peakGap>0?'neg':'')}${stat('Plan cost',money(b.cost),`exchange only: ${money(e.base.cost)}`)}${stat('Saving',money(e.base.cost-b.cost),`${e.base.cost?Math.round((e.base.cost-b.cost)/e.base.cost*100):0}% of exchange-only cost`,'pos')}${stat('Unserved',`${(b.unmet/1000).toFixed(2)} <small>MU</small>`,b.unmet?'Load relief needed':'Fully covered',b.unmet?'neg':'')}</div>
   <div class="cols c21">
-    ${panel('Hourly position with planned purchases, MW','<span class="note">Click an hour to see how it is filled</span>', posChart(e,{sel:hh,action:'epm-hour'})+leg([['Contracted','#EEF0F3'],['Surplus','#D9F0E1'],...rowsUsed.map(o=>[o.short,OPTC[o.id]]),['Unserved','#F6B8AD']]))}
-    ${panel(`${hrLabel(hh)}–${hrLabel((hh+1)%24)}: options by price`,'',meritChart(e,hh)+`<dl class="kv" style="margin-top:10px"><dt>Demand / contracted</dt><dd>${mw(b.rows[hh].dem)} / ${mw(b.rows[hh].avail)} MW</dd><dt>Import corridor used</dt><dd>${mw(b.rows[hh].imp)} of ${mw(ATC)} MW</dd>${b.rows[hh].binding?'<dt class="neg">Corridor limit reached</dt><dd class="neg">in-state options used</dd>':''}</dl>`)}
+    ${panel('Hourly position with planned purchases, MW','<span class="note">Click an hour to see how it is filled</span>', ins(`Grey is power already contracted; the black line is forecast demand. The coloured blocks are what the plan buys to fill the gap, cheapest options first. <b>Click any hour</b> to see how it is filled.`)+posChart(e,{sel:hh,action:'epm-hour'})+leg([['Contracted','#EEF0F3'],['Surplus','#D9F0E1'],...rowsUsed.map(o=>[o.short,OPTC[o.id]]),['Unserved','#F6B8AD']]))}
+    ${panel(`${hrLabel(hh)}–${hrLabel((hh+1)%24)}: options by price`,'',ins(meritInsight(e,hh))+meritChart(e,hh)+`<dl class="kv" style="margin-top:10px"><dt>Demand / contracted</dt><dd>${mw(b.rows[hh].dem)} / ${mw(b.rows[hh].avail)} MW</dd><dt>Import corridor used</dt><dd>${mw(b.rows[hh].imp)} of ${mw(ATC)} MW</dd>${b.rows[hh].binding?'<dt class="neg">Corridor limit reached</dt><dd class="neg">in-state options used</dd>':''}</dl>`)}
   </div>
   <section class="panel"><div class="ph"><h2>Recommended plan</h2><div class="bar">${approved?`<span class="st good">${approved.id} approved by ${approved.by}</span>`:pending?`<span class="st info">${pending.id} awaiting Director</span>`:'<span class="st">Draft</span>'}
     ${S.role==='director'&&pending?`<button class="btn sm dng" data-action="epm-reject">Return</button><button class="btn sm pri" data-action="epm-approve">Approve ${pending.id}</button>`:!pending?`<button class="btn sm pri" data-action="epm-submit" ${used.length?'':'disabled'}>Submit for approval</button>`:''}</div></div>
@@ -829,7 +888,7 @@ function vBilling(){
   const paid=S.invoices.filter(i=>i.status==='paid'), lost=paid.reduce((a,i)=>a+payable(i)*(REBATE_T1.pct-rebateNow(i,i.paidOn).pct)/100,0);
   return `<div class="phead"><div><h1>Billing</h1><div class="sub">Power purchase bills, recalculated against contract, tariff version, schedules and meters</div></div><div class="bar">${inbox.length?`<button class="btn pri" data-action="ingest">Import from inbox (${inbox.length})</button>`:''}</div></div>
   <div class="stats">${stat('Open bills',`${open.length}`,`${money(open.reduce((a,i)=>a+payable(i),0))} payable`)}${stat('Under dispute',money(disc.reduce((a,i)=>a+diffOf(i),0)),`${disc.length} bills, supplier figure above ours`,disc.length?'neg':'')}${stat('Matched without change',`${proc.filter(isMatch).length} of ${proc.length}`,'No manual recalculation')}${stat('Rebate lost to delay',money(lost),'Paid bills, last 30 days',lost?'neg':'')}</div>
-  ${panel('Payment calendar','<span class="note">Pay before a window closes to keep the rebate; after 45 days LPS accrues</span>',payCalendar(open.slice().sort((a,b)=>stakeOf(a).days-stakeOf(b).days)))}
+  ${panel('Payment calendar','<span class="note">Pay before a window closes to keep the rebate; after 45 days LPS accrues</span>',ins(calInsight(open))+payCalendar(open.slice().sort((a,b)=>stakeOf(a).days-stakeOf(b).days)))}
   <section class="panel"><div class="ph"><h2>Bills</h2><div class="seg">${[['open','Open'],['disc','Discrepancy'],['paid','Paid'],['all','All']].map(([k,l])=>`<button data-action="bfilter" data-id="${k}" aria-pressed="${f===k}">${l}</button>`).join('')}</div></div>
   <div class="tw"><table><thead><tr><th>Bill</th><th>Supplier</th><th>Period</th><th class="num">Billed</th><th class="num">Calculated</th><th class="num">Difference</th><th>Status</th><th>With</th><th>Deadline</th></tr></thead><tbody>
   ${list.map(i=>{const df=diffOf(i);return `<tr class="rowlink" data-action="go" data-nav="bill:${i.id}"><td class="id">${i.id}</td><td>${SUP[i.sup].short}</td><td>${i.period}</td><td class="num">${money(billedTotal(i))}</td><td class="num">${money(sysTotal(i))}</td><td class="num ${Math.abs(df)>0.004?'neg':'faint'}">${Math.abs(df)>0.004?money(df):'—'}</td><td>${statusPill(i)}</td><td class="muted">${stageOwner(i)}</td><td>${deadlinePill(i)}</td></tr>`;}).join('')||'<tr><td colspan="9" class="empty">No bills.</td></tr>'}
@@ -850,7 +909,7 @@ function vBill(){
   if(S.billTab==='recon'){
     const q=i.qty, ref={sched:['SLDC schedule',q.schedMU],meter:['ABT meter',q.meterMU],jmr:['Joint meter reading',q.jmrMU]}[i.qtyCheck||'sched'];
     body=`<div class="cols ${fl?'c12':''}" style="padding:14px">
-      ${fl?`<div><h3 style="margin-bottom:6px">From supplier's figure to payable</h3>${waterfall(i)}</div>`:''}
+      ${fl?`<div><h3 style="margin-bottom:6px">From supplier's figure to payable</h3>${ins(`The supplier asked for <b>${money(bt)}</b>. Recalculating from the contract and meter records gives <b>${money(st)}</b>. The red bar is the amount the officer needs to look into.`)}${waterfall(i)}</div>`:''}
       <div style="display:grid;gap:10px;align-content:start">${fl?`<div class="callout bad">${esc(i.reason)}</div>`:`<div class="callout good">Every line agrees with the contract, tariff version and supporting records.</div>`}
        <dl class="kv"><dt>Energy billed</dt><dd>${q.billedMU} MU</dd><dt>SLDC / REA scheduled</dt><dd>${q.schedMU} MU</dd><dt>ABT meter</dt><dd>${q.meterMU} MU</dd>${q.jmrMU?`<dt>Joint meter reading</dt><dd>${q.jmrMU} MU</dd>`:''}${q.paf?`<dt>Availability (PAF / NAPAF)</dt><dd>${q.paf}% / ${q.napaf}%</dd>`:''}<dt>Billable basis</dt><dd>${ref[0]}</dd><dt>Contract version for ${i.period}</dt><dd>${ver?esc(ver.v):'—'}</dd></dl></div></div>
      <div class="tw"><table><thead><tr><th>Charge</th><th>Basis</th><th class="num">Billed</th><th class="num">Calculated</th><th class="num">Difference</th></tr></thead><tbody>${i.lines.map(l=>{const dd=l.billed-l.sys;return `<tr><td>${esc(l.label)}</td><td><div class="small">${esc(l.basis)}</div><div>${l.cites.map(citeBtn).join('')}</div></td><td class="num">${money(l.billed)}</td><td class="num">${money(l.sys)}</td><td class="num ${Math.abs(dd)>0.004?'neg':'faint'}">${Math.abs(dd)>0.004?money(dd):'—'}</td></tr>`;}).join('')}</tbody><tfoot><tr><td colspan="2">Total</td><td class="num">${money(bt)}</td><td class="num">${money(st)}</td><td class="num ${fl?'neg':''}">${fl?money(df):'—'}</td></tr></tfoot></table></div>`;
@@ -975,13 +1034,90 @@ function vApprovals(){
   ${panel('Audit trail',`<span class="note">${S.audit.length} events</span>`,`<div class="tw"><table><thead><tr><th>Time</th><th>By</th><th>Event</th><th>Record</th></tr></thead><tbody>${S.audit.map(a=>`<tr><td style="white-space:nowrap">${fmtStamp(a[0])}</td><td>${esc(a[1])}</td><td>${esc(a[2])}</td><td>${a[3]&&a[3].startsWith('INV')?`<button class="ref" data-action="go" data-nav="bill:${a[3]}">${a[3]}</button>`:`<span class="tag">${esc(a[3])}</span>`}</td></tr>`).join('')}</tbody></table></div>`,true)}`;
 }
 
+
+/* =========================================================
+   Guidance layer: page guides, takeaways, glossary, demo steps
+   ========================================================= */
+const ins = h => `<p class="insight">${h}</p>`;
+function calInsight(bills){
+  const urgent=bills.map(i=>[i,stakeOf(i)]).filter(([i,s])=>s&&s.days<=3).sort((a,b)=>a[1].days-b[1].days);
+  const tot=urgent.reduce((a,[i,s])=>a+s.amt,0);
+  return urgent.length?`<b>${urgent.length} bill${urgent.length>1?'s':''}</b> lose money within 3 days if not paid: ${urgent.map(([i,s])=>`${i.id} (${s.days<=0?'today':s.days+'d'})`).join(', ')}. That is <b>${money(tot)}</b> at stake. Green bands are rebate windows; red is where late-payment surcharge starts.`:'No bill loses money in the next 3 days. Green bands are rebate windows; red is where late-payment surcharge starts.';
+}
+function costInsight(){
+  const tot=COST.months.map((_,k)=>COST.series.reduce((a,s)=>a+s.v[k],0)), mk=COST.series.find(s=>s.name==='Market purchases').v, pk=tot.indexOf(Math.max(...tot));
+  return `Spending peaked in <b>${COST.months[pk]} at ₹${mw(tot[pk])} cr</b>. Most of the rise from March came from <b>market purchases</b> (orange), bought when contracted power ran short. Click any month to see its breakdown.`;
+}
+function meritInsight(e,hh){
+  const r=e.best.rows[hh]; if(r.gap<=0) return `At ${hrLabel(hh)} contracted power already covers demand.`;
+  return `At ${hrLabel(hh)} the grid needs <b>${mw(r.gap)} MW</b> more. Options are lined up from cheapest to dearest and the plan buys from the left until the red line.${r.binding?` Imports are capped at ${mw(ATC)} MW, so dearer in-state options fill the rest.`:''}`;
+}
+const GLOSS={MW:'Megawatt: how much power is flowing at one moment.',MU:'Million units (million kWh): an amount of energy over a period. 1,000 MW for one hour is 1 MU.',LPS:'Late Payment Surcharge: interest charged when a bill is paid after its due date (45 days after it is presented).',PAF:'Plant Availability Factor: the share of the month a power plant was ready to generate.',NAPAF:'Normative availability: the PAF a plant must reach to earn its full fixed charge.',DSM:'Deviation Settlement Mechanism: charges for drawing more or less power than scheduled.',DAM:'Day-Ahead Market: the power exchange where tomorrow\'s electricity is bought hour by hour.',RTM:'Real-Time Market: exchange trading close to delivery; prices are less predictable.',OTC:'Over-the-counter: a direct deal with a seller at a fixed price, here a block for 17:00–23:00.',JMR:'Joint Meter Reading: the meter reading signed by buyer and seller; the figure that is billed.',SLDC:'State Load Despatch Centre: the grid operator that schedules power every 15 minutes.',REA:'Regional Energy Account: monthly statement of energy scheduled from central power stations.',PPA:'Power Purchase Agreement: the contract that sets the price and billing rules with a supplier.',EPM:'Energy Portfolio Management: deciding what power to buy, when, and at what cost.',ABT:'Availability-Based Tariff meters record energy in 15-minute blocks.',ECR:'Energy Charge Rate: the price per unit of energy in a two-part tariff.',rebate:'Discount for paying early: 1.5% if paid within 5 days of the bill, 1% within 30 days.'};
+function glossWrap(root){
+  const seen=new Set(), keys=Object.keys(GLOSS), re=new RegExp('\\b('+keys.filter(k=>k!=='rebate').join('|')+'|[Rr]ebate)\\b');
+  const skip=n=>n.closest('svg,button,select,option,textarea,input,abbr,.mono,.id,.tag,.ref,.paper,.chip,.st,.flag,th,.legend,.steps,label');
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.nodeValue.trim()&&!skip(n.parentElement)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT});
+  const nodes=[]; while(w.nextNode()) nodes.push(w.currentNode);
+  for(const n of nodes){ if(seen.size>=keys.length) break; const m=n.nodeValue.match(re); if(!m) continue; const k=/^[Rr]ebate$/.test(m[1])?'rebate':m[1]; if(seen.has(k)) continue; seen.add(k);
+    const after=n.splitText(m.index); after.nodeValue=after.nodeValue.slice(m[1].length); const ab=document.createElement('abbr'); ab.className='term'; ab.setAttribute('data-tip',GLOSS[k]); ab.textContent=m[1]; n.parentNode.insertBefore(ab,after); }
+}
+const chip=(label,attrs,go)=>`<button class="chip ${go?'go':''}" ${attrs}>${label}</button>`;
+const GUIDES={
+  overview:()=>[`<b>The day at a glance.</b> How much electricity GRIDCO is short of tomorrow, what the cheapest way to buy it costs, which supplier bills are waiting, and how much money is at risk if they are paid late.`,
+    [chip('Start the demo guide','data-action="guide"',true),chip('Why did May cost more?','data-action="cost-month" data-id="7"'),chip('Bill most at risk','data-action="go" data-nav="bill:INV-ECW-2609"')]],
+  data:()=>[`<b>Where every number comes from.</b> Eight source systems (grid schedules, meters, invoices, contracts, market prices, payments) are checked and linked into one record set. Every other page reads from it, so numbers always agree.`,
+    [chip('Trace one bill end to end','data-action="lin-trace" data-id="kcp"'),chip('Fix the failed payments feed','data-action="dtab" data-id="sources"'),chip('Resolve a data issue','data-action="dtab" data-id="validation"')]],
+  portfolio:()=>[`<b>Planning tomorrow's electricity purchases.</b> The system forecasts demand hour by hour, compares it with power already contracted, and picks the cheapest mix of extra purchases within contract and grid limits. A Director approves the plan.`,
+    [chip('Inspect the 7 pm peak','data-action="epm-hour" data-id="19"'),chip('Simulate a heatwave','data-action="heatwave"'),chip("See next year's gap",'data-action="horizon" data-id="year"')]],
+  billing:()=>[`<b>Checking supplier bills before paying them.</b> Each bill is recalculated from the contract and meter records. Differences go to an officer, a second officer approves, and payment timing decides whether GRIDCO earns a rebate or pays a surcharge.`,
+    [chip('Open the ₹30 lakh example','data-action="go" data-nav="bill:INV-KCP-2609"'),...(S.invoices.some(i=>i.status==='inbox')?[chip('Import a new bill','data-action="ingest"')]:[]),chip('Show only flagged bills','data-action="bfilter" data-id="disc"')]],
+  bill:()=>[`<b>One bill, checked line by line.</b> Compare what the supplier asked for with what the contract allows, see why they differ, view the original document, then verify or approve depending on who is signed in.`,
+    [chip('See the original invoice','data-action="btab" data-id="doc"'),chip('See payment deadlines','data-action="btab" data-id="dead"'),chip(S.role==='maker'?'Switch to the approver':'Switch to the Billing Officer',`data-action="role" data-id="${S.role==='maker'?'checker':'maker'}"`)]],
+  library:()=>[`<b>The rulebook, by date.</b> Contracts and regulations change over time. Pick a date to see which version applied then. This is how the system knows a September bill must use September's rate.`,
+    [chip('Solar contract in September','data-action="libpick" data-doc="PPA-SSP" data-date="2026-09-15"'),chip('… and in November','data-action="libpick" data-doc="PPA-SSP" data-date="2026-11-15"'),chip('Read the new notice','data-action="open-doc" data-doc="NOTICE-FPA"')]],
+  assistant:()=>[`<b>Ask in plain English.</b> Answers use the same records as every other page. The panel on the right shows the exact clause or data record each answer relied on.`,
+    [chip('Which bills should we pay first?','data-action="ask" data-q="Which bills should we pay first?"'),chip('Shortage tomorrow?','data-action="ask" data-q="Will there be a shortage tomorrow?"')]],
+  approvals:()=>[`<b>Who needs to do what.</b> Every bill and purchase plan needs one person to prepare it and another to approve it. The audit trail records every action with name and time.`,
+    [chip("Show everyone's tasks",'data-action="tfilter" data-id="all"'),chip('Sign in as DGM Finance','data-action="role" data-id="checker"'),chip('Sign in as Director','data-action="role" data-id="director"')]],
+};
+function guideStrip(r){ const g=GUIDES[r]; if(!g) return ''; const [w,c]=g(); return `<div class="guide"><div class="what">${w}</div><div class="try"><span>Try</span>${c.join('')}</div></div>`; }
+const kcpInv=()=>S.invoices.find(i=>i.id==='INV-KCP-2609');
+const DEMO=[
+  {m:'Overview',t:"See tomorrow's shortfall and money at risk",h:'The four numbers at the top summarise the day.',done:()=>S.did.v_overview,go:'overview'},
+  {m:'Data hub',t:'Trace one bill through the data layer',h:'Pick INV-KCP-2609 above the map.',done:()=>S.did.trace,go:'data:lineage'},
+  {m:'Data hub',t:'Reconnect the failed payments feed',h:'Click Reconnect on Payments ledger (ERP).',done:()=>S.connectors.find(c=>c.id==='erp').status==='ok',go:'data:sources'},
+  {m:'Billing',t:'Import a new bill from the inbox',h:'Watch it get read, matched to its contract and recalculated.',done:()=>S.invoices.find(i=>i.id==='INV-BPL-2609').status!=='inbox',go:'billing'},
+  {m:'Billing',t:'Read why INV-KCP-2609 is ₹30 lakh too high',h:'Then open the Source document tab.',done:()=>S.did.doc,go:'bill:INV-KCP-2609'},
+  {m:'Billing',t:'Verify it as the Billing Officer',h:'Click "Verify ₹9.70 cr, dispute ₹30.0 lakh".',done:()=>['maker_ok','approved','paid'].includes(kcpInv().status),go:'bill:INV-KCP-2609',role:'maker'},
+  {m:'Billing',t:'Approve and pay it as DGM Finance',h:'The guide signs you in as DGM Finance. Paying today keeps the 1.5% rebate.',done:()=>kcpInv().status==='paid',go:'bill:INV-KCP-2609',role:'checker'},
+  {m:'Portfolio',t:'Inspect the 7 pm peak',h:'Click the 19:00 column to see why each option was bought.',done:()=>S.did.hour,go:'portfolio'},
+  {m:'Portfolio',t:'Simulate a heatwave and save it',h:'Use "Simulate a heatwave", then Save scenario.',done:()=>S.saved.length>0,go:'portfolio'},
+  {m:'Portfolio',t:'Submit the plan, approve it as Director',h:'Submit for approval, then press Go again to sign in as Director.',done:()=>S.proposals.some(p=>p.status==='approved'),go:'portfolio',role:()=>S.proposals.some(p=>p.status==='pending')?'director':null},
+  {m:'Regulations',t:'See which solar rate applied when',h:'Compare September with November.',done:()=>S.did.lib,go:'doc:PPA-SSP'},
+  {m:'Assistant',t:'Ask a question and check its sources',h:'Sources appear on the right.',done:()=>S.chat&&S.chat.length>2,go:'assistant'},
+  {m:'Approvals',t:'Review the audit trail of your actions',h:'Every action is recorded with name and time.',done:()=>S.did.v_approvals,go:'approvals'},
+];
+function renderDrawer(){
+  const done=DEMO.filter(d=>d.done()).length, nextK=DEMO.findIndex(d=>!d.done());
+  $('#guideProg').textContent=`${done}/${DEMO.length}`;
+  document.body.classList.toggle('drawer-open',!!S.guideOpen);
+  if(!S.guideOpen){ $('#drawerRoot').innerHTML=''; return; }
+  $('#drawerRoot').innerHTML=`<aside class="drawer" aria-label="Demo guide"><div class="dh"><div class="bar" style="justify-content:space-between"><h2>Demo guide</h2><button class="btn sm" data-action="guide">Close</button></div><div class="small muted" style="margin-top:4px">${DEMO.length} steps, about 5 minutes. Each <b>Go</b> opens the right page and user. Steps tick off as you do them.</div><div class="prog"><i style="width:${done/DEMO.length*100}%"></i></div></div>
+   <div class="dsteps">${DEMO.map((d,k)=>{ const ok=d.done(); return `<div class="dstep ${ok?'done':''} ${k===nextK?'next':''}"><span class="ck">${ok?'✓':''}</span><div><div class="m">${d.m}</div><div class="t">${esc(d.t)}</div>${ok?'':`<div class="h">${esc(d.h)}</div>`}</div>${ok?'':`<button class="btn sm ${k===nextK?'pri':''}" data-action="gstep" data-id="${k}">Go</button>`}</div>`; }).join('')}</div>
+   <div class="dfoot"><details><summary class="small" style="cursor:pointer">Terms used in this system</summary><div class="gloss">${Object.entries(GLOSS).map(([k,v])=>`<div><b>${k}</b> ${esc(v)}</div>`).join('')}</div></details>
+   <div class="bar" style="justify-content:space-between"><label class="ctl"><input type="checkbox" data-action="tips" ${S.tips!==false?'checked':''}> Show page tips</label><button class="btn sm" data-action="reset">Start over</button></div></div></aside>`;
+}
+
 /* =========================================================
    9. Router & actions
    ========================================================= */
 const VIEWS={overview:vOverview,data:vData,portfolio:vPortfolio,billing:vBilling,bill:vBill,library:vLibrary,assistant:vAssistant,approvals:vApprovals};
 function render(keep){
-  const y=window.scrollY; $('#roleSel').value=S.role; $('#avatar').textContent=ROLE[S.role].ini; hideTip(); renderNav();
+  const y=window.scrollY; S.did=S.did||{}; S.did['v_'+route]=true; if(S.guideOpen===undefined) S.guideOpen=innerWidth>=1280;
+  $('#roleSel').value=S.role; $('#avatar').textContent=ROLE[S.role].ini; hideTip(); renderNav();
   $('#view').innerHTML=VIEWS[route]();
+  const ph=$('#view .phead')||$('#view .crumbs'); if(ph&&S.tips!==false) ph.insertAdjacentHTML('afterend',guideStrip(route));
+  glossWrap($('#view')); renderDrawer();
   const m=$('#msgs'); if(m) m.scrollTop=m.scrollHeight;
   if(keep) window.scrollTo(0,y); else window.scrollTo(0,0);
 }
@@ -1005,15 +1141,21 @@ document.addEventListener('scroll',hideTip,true);
 document.addEventListener('click',ev=>{
   const el=ev.target.closest('[data-action]'); if(!el) return; const a=el.dataset.action, id=el.dataset.id;
   switch(a){
+    case 'guide': S.guideOpen=!S.guideOpen; save(); renderDrawer(); break;
+    case 'tips': S.tips=el.checked; save(); render(true); break;
+    case 'gstep': { const d=DEMO[+id]; const r=typeof d.role==='function'?d.role():d.role; if(r&&r!==S.role){ S.role=r; toast(`Signed in as ${ROLE[r].name}, ${ROLENAME[r]}`); } go(d.go); break; }
+    case 'role': S.role=id; save(); render(true); toast(`Signed in as ${ROLE[id].name}, ${ROLENAME[id]}`); break;
+    case 'heatwave': S.scen={...S.scen,demand:6,price:30}; S.horizon='day'; save(); render(true); toast('Heatwave: demand +6%, exchange price +30%. Press Save scenario to keep it.'); break;
+    case 'libpick': S.libSel=el.dataset.doc; S.libDate=el.dataset.date; S.did.lib=true; route='library'; save(); render(true); break;
     case 'go': go(el.dataset.nav); break;
-    case 'reset': S=seedState(); S.billTab='recon'; S.dataTab='lineage'; S.evSel=-1; save(); route='overview'; render(); toast('Demo data reset'); break;
+    case 'reset': { const go2=S.guideOpen; S=seedState(); S.billTab='recon'; S.dataTab='lineage'; S.evSel=-1; S.guideOpen=go2; save(); route='overview'; render(); toast('Demo data reset'); break; }
     case 'dtab': S.dataTab=id; save(); render(true); break;
-    case 'btab': S.billTab=id; save(); render(true); break;
+    case 'btab': S.billTab=id; if(id==='doc') S.did.doc=true; save(); render(true); break;
     case 'sup': S.supSel=S.supSel===id?null:id; render(true); break;
     case 'cost-month': S.costSel=+id; save(); render(true); break;
-    case 'epm-hour': S.epmHour=+id; save(); render(true); break;
+    case 'epm-hour': S.epmHour=+id; S.did.hour=true; if(route!=='portfolio'){route='portfolio';} S.horizon='day'; save(); render(true); break;
     case 'lin-node': S.linSel=id; S.linTrace='none'; save(); render(true); break;
-    case 'lin-trace': S.linTrace=id; save(); render(true); break;
+    case 'lin-trace': S.linTrace=id; S.dataTab='lineage'; if(id!=='none') S.did.trace=true; route='data'; save(); render(true); break;
     case 'ev': S.evSel=+id; save(); render(true); break;
     case 'reconnect': { const c=S.connectors.find(x=>x.id===id); c.status='ok'; c.last='15 Oct '+stamp().slice(11); c.note=''; c.recs='Sep payments: 214 entries'; S.imports.unshift([`15 Oct ${stamp().slice(11)}`,'Payments ledger','214 entries','Loaded']); log(`Reconnected ${c.name}`,'DATA'); save(); render(true); toast('Payments ledger reconnected, 214 entries loaded'); break; }
     case 'resolve': { const v=S.issues.find(x=>x.id===id); S.issues=S.issues.filter(x=>x.id!==id); log(`Resolved ${id}: ${v.fix}`,'DATA'); save(); render(true); toast(`${id} resolved`); break; }
@@ -1052,7 +1194,7 @@ document.addEventListener('input',ev=>{ const t=ev.target;
 document.addEventListener('change',ev=>{ const t=ev.target;
   if(t.dataset.scen&&t.type==='checkbox'){ S.scen[t.dataset.scen]=t.checked; save(); render(true); }
   if(t.id==='libT'){ S.libType=t.value; render(true); }
-  if(t.id==='libD'&&t.value){ S.libDate=t.value; save(); render(true); }
+  if(t.id==='libD'&&t.value){ S.libDate=t.value; S.did.lib=true; save(); render(true); }
   if(t.id==='roleSel'){ S.role=t.value; save(); render(true); toast(`Signed in as ${ROLE[S.role].name}, ${ROLENAME[S.role]}`); } });
 document.addEventListener('submit',ev=>{ ev.preventDefault();
   if(ev.target.id==='chatForm'){ const v=$('#chatIn').value.trim(); if(!v) return; ask(v); render(true); $('#chatIn').focus(); }
